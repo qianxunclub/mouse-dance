@@ -80,7 +80,7 @@ struct MouseDanceApp: App {
 
                 ForEach(store.displays) { display in
                     Button {
-                        ScreenJumpService.jumpCursor(to: display, among: store.displays)
+                        store.jumpToDisplay(display)
                     } label: {
                         HStack {
                             Label {

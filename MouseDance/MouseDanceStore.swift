@@ -241,6 +241,7 @@ enum ScreenJumpService {
 @MainActor
 final class ScreenOverlayManager {
     private var windows: [CGDirectDisplayID: NSPanel] = [:]
+    private var cursorIndicatorPanel: NSPanel?
     private var hideTask: Task<Void, Never>?
 
     func showLabels(for displays: [DisplayShortcut], shortcuts: [CGDirectDisplayID: ShortcutKey]) {
@@ -265,6 +266,47 @@ final class ScreenOverlayManager {
         hideTask = nil
         windows.values.forEach { $0.orderOut(nil) }
         windows.removeAll()
+    }
+
+    func showCursorIndicator(at point: CGPoint, in displayFrame: CGRect) {
+        let indicatorSize: CGFloat = 160
+        let indicatorFrame = CGRect(
+            x: point.x - indicatorSize / 2,
+            y: point.y - indicatorSize / 2,
+            width: indicatorSize,
+            height: indicatorSize
+        )
+
+        let panel = NSPanel(
+            contentRect: indicatorFrame,
+            styleMask: [.borderless, .nonactivatingPanel],
+            backing: .buffered,
+            defer: false
+        )
+        panel.isOpaque = false
+        panel.backgroundColor = .clear
+        panel.hasShadow = false
+        panel.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.cursorWindow)))
+        panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary, .stationary, .ignoresCycle]
+        panel.ignoresMouseEvents = true
+        panel.hidesOnDeactivate = false
+        panel.isFloatingPanel = true
+        panel.contentView = NSHostingView(rootView: CursorIndicatorView())
+
+        DispatchQueue.main.async { [weak self] in
+            panel.orderFrontRegardless()
+            self?.cursorIndicatorPanel = panel
+        }
+
+        Task { [weak self] in
+            try? await Task.sleep(for: .seconds(1.2))
+            await MainActor.run { [weak self] in
+                panel.orderOut(nil)
+                if self?.cursorIndicatorPanel === panel {
+                    self?.cursorIndicatorPanel = nil
+                }
+            }
+        }
     }
 
     private func makePanel(for display: DisplayShortcut, shortcut: ShortcutKey?) -> NSPanel {
@@ -327,6 +369,36 @@ private struct ScreenOverlayView: View {
                     }
                 }
             }
+        }
+    }
+}
+
+private struct CursorIndicatorView: View {
+    @State private var isVisible = false
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .stroke(.white.opacity(0.6), lineWidth: 3)
+                .frame(width: 120, height: 120)
+                .scaleEffect(isVisible ? 1.0 : 1.8)
+                .opacity(isVisible ? 0 : 1)
+
+            Circle()
+                .fill(.white.opacity(0.15))
+                .frame(width: 100, height: 100)
+                .scaleEffect(isVisible ? 1.0 : 1.5)
+                .opacity(isVisible ? 0 : 1)
+
+            Circle()
+                .fill(.white.opacity(0.25))
+                .frame(width: 24, height: 24)
+                .scaleEffect(isVisible ? 1.0 : 1.3)
+                .opacity(isVisible ? 0 : 1)
+        }
+        .animation(.easeOut(duration: 1.0), value: isVisible)
+        .onAppear {
+            isVisible = true
         }
     }
 }
@@ -418,8 +490,8 @@ final class MouseDanceStore: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] _ in
-            Task { @MainActor in
-                guard let self else { return }
+            guard let self else { return }
+            Task { @MainActor [self] in
                 self.refreshScreens(updateStatus: false)
                 self.statusMessage = "检测到显示器变化，可点击「重新标记屏幕」同步最新编号。"
             }
@@ -429,15 +501,12 @@ final class MouseDanceStore: ObservableObject {
             forName: NSWindow.willCloseNotification,
             object: nil,
             queue: .main
-        ) { [weak self] _ in
-            Task { @MainActor in
-                guard let self else { return }
-                let normalWindows = NSApp.windows.filter { window in
-                    window.styleMask.contains(.titled) && !(window is NSPanel)
-                }
-                if normalWindows.isEmpty {
-                    NSApp.setActivationPolicy(.accessory)
-                }
+        ) { _ in
+            let normalWindows = NSApp.windows.filter { window in
+                window.styleMask.contains(.titled) && !(window is NSPanel)
+            }
+            if normalWindows.isEmpty {
+                NSApp.setActivationPolicy(.accessory)
             }
         }
     }
@@ -506,6 +575,24 @@ final class MouseDanceStore: ObservableObject {
         NSApp.terminate(nil)
     }
 
+    func jumpToDisplay(_ display: DisplayShortcut) {
+        let currentLocation = CGEvent(source: nil)?.location ?? .zero
+        let currentDisplayID = displays.first(where: { $0.frame.contains(currentLocation) })?.displayID
+
+        if let current = currentDisplayID, current != display.displayID {
+            lastActiveDisplayID = current
+        }
+
+        let result = ScreenJumpService.jumpCursor(to: display, among: displays)
+        if result == .success {
+            let targetPoint = CGEvent(source: nil)?.location ?? .zero
+            overlayManager.showCursorIndicator(at: targetPoint, in: display.frame)
+            statusMessage = "鼠标已跳转到屏幕：\(display.name)。"
+        } else {
+            statusMessage = "鼠标跳转失败，系统返回：\(result.rawValue)。"
+        }
+    }
+
     @discardableResult
     private func openInputMonitoringSettings() -> Bool {
         if let privacyURL = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent"),
@@ -537,23 +624,10 @@ final class MouseDanceStore: ObservableObject {
     }
 
     private func jumpToScreen(displayID: CGDirectDisplayID) {
-        let currentLocation = CGEvent(source: nil)?.location ?? .zero
-        let currentDisplayID = displays.first(where: { $0.frame.contains(currentLocation) })?.displayID
-        
         guard let target = displays.first(where: { $0.displayID == displayID }) else {
             return
         }
-
-        if let current = currentDisplayID, current != displayID {
-            lastActiveDisplayID = current
-        }
-
-        let result = ScreenJumpService.jumpCursor(to: target, among: displays)
-        if result == .success {
-            statusMessage = "鼠标已跳转到屏幕：\(target.name)。"
-        } else {
-            statusMessage = "鼠标跳转失败，系统返回：\(result.rawValue)。"
-        }
+        jumpToDisplay(target)
     }
 
     private func toggleScreen() {
