@@ -1,10 +1,5 @@
 
 
-Based on the provided code map, I need to analyze the project structure to create an informative README. However, I'm encountering issues accessing the raw files directly through the search tools.
-
-Looking at the code map you've provided, I can see this is a **macOS application** called **MouseDance** built with **SwiftUI** and **AppKit**. Let me create a comprehensive README based on the available code map information:
-
-```markdown
 # MouseDance
 
 一款 macOS 平台的多显示器快捷键管理工具，帮助用户通过自定义快捷键在多个显示器之间快速切换光标。
@@ -15,21 +10,25 @@ Looking at the code map you've provided, I can see this is a **macOS application
 - 自动检测系统中所有连接的显示器
 - 为每个显示器分配独立的快捷键
 - 支持自定义跳转快捷键映射
+- 显示每个显示器的分辨率和布局信息
 
 ### ⌨️ 全局快捷键
 - 支持自定义全局热键组合
 - 一键在不同显示器间快速跳转光标
 - 支持修饰键（Command、Option、Control、Shift）组合
+- 支持特殊快捷键（如双击 Command）
 
 ### 🖱️ 光标导航
 - 按下快捷键后自动将光标移动到目标显示器
-- 显示屏幕标签叠加层，方便识别
+- 显示屏幕标签叠加层，方便识别显示器
 - 光标位置指示器，实时显示当前位置
+- 智能定位算法，预测最佳落点
 
 ### ⚙️ 系统集成
-- 检测输入监控权限状态
-- 请求必要的系统权限
+- 检测「辅助功能」权限状态
+- 优雅引导用户授权必要权限
 - 支持 Retina 视网膜显示屏
+- 监听显示器连接/断开事件
 
 ## 系统要求
 
@@ -50,47 +49,77 @@ git clone https://gitee.com/qianxunclub/mouse-dance.git
 open MouseDance.xcodeproj
 ```
 
-3. 在 Xcode 中选择目标设备和签名配置，然后点击运行。
+3. 在 Xcode 中选择目标设备和签名配置，然后点击运行（或使用 `Cmd+R`）。
+
+### 打包为 DMG
+
+项目提供了构建脚本，可生成分发用 DMG 包：
+
+```bash
+./scripts/build-dmg.sh
+```
+
+生成的 DMG 文件位于 `build/` 目录下。
 
 ## 使用指南
 
 ### 首次设置
 
-1. 应用启动后会请求「辅助功能」权限
-2. 在系统偏好设置 > 安全性与隐私 > 隐私 > 辅助功能中添加本应用
-3. 授权后会显示已连接的显示器列表
+1. 运行应用后，系统会提示请求「辅助功能」权限
+2. 打开 **系统设置 > 隐私与安全性 > 辅助功能**，将 MouseDance 添加到允许的应用列表
+3. 授权成功后，主界面将显示已连接的显示器列表
 
 ### 配置快捷键
 
-1. 点击显示器卡片的「记录快捷键」区域
-2. 按下想要设置的快捷键组合
-3. 保存后，按下快捷键即可将光标跳转到对应显示器
+1. 点击显示器卡片上的「记录快捷键」区域
+2. 按下想要设置的快捷键组合（如 `⌘+Option+1`）
+3. 快捷键会自动保存，无需额外操作
 
 ### 切换显示器
 
-直接按下为每个显示器配置的快捷键，光标将自动移动到该显示器上。
+配置完成后，直接按下为每个显示器设置的快捷键，光标将自动移动到对应的显示器上。
+
+### 显示标签叠加层
+
+按下全局切换快捷键时，屏幕会短暂显示标签叠加层，指示当前光标所在位置和目标位置。
 
 ## 项目结构
 
 ```
 MouseDance/
-├── MouseDanceApp.swift       # 应用入口和菜单栏配置
-├── MouseDanceStore.swift     # 核心数据存储和管理逻辑
-├── ContentView.swift         # 主界面视图
-├── ShortcutRecorderView.swift # 快捷键录制组件
-└── Assets.xcassets/          # 应用资源
+├── MouseDanceApp.swift           # 应用入口、菜单栏配置、窗口管理
+├── MouseDanceStore.swift       # 核心业务逻辑、状态管理、快捷键服务
+├── ContentView.swift           # 主界面视图、卡片组件、权限提示
+├── ShortcutRecorderView.swift   # 快捷键录制组件、自定义 NSView
+└── Assets.xcassets/            # 应用图标、颜色资源
 ```
+
+### 核心模块说明
+
+- **MouseDanceStore**：负责显示器检测、快捷键存储、全局事件监控、光标跳转等核心逻辑
+- **GlobalHotKeyMonitor**：全局热键监听器，基于 CGEvent Tap 实现
+- **ScreenOverlayManager**：屏幕标签和光标指示器的显示管理
+- **ShortcutRecorderView**：用于捕获用户输入的自定义快捷键组合
 
 ## 技术栈
 
-- **SwiftUI** - 用户界面框架
-- **AppKit** - 系统级功能集成
-- **CoreGraphics** - 显示器检测和光标控制
-- **CGEvent** - 全局事件监控
+- **SwiftUI** — 现代声明式 UI 框架
+- **AppKit** — 系统级功能集成
+- **CoreGraphics** — 显示器检测（CGGetActiveDisplayList 等）
+- **CGEvent** — 全局事件监控与模拟
+- **NSPanel** — 自定义窗口层叠显示
+
+## 常见问题
+
+**Q：为什么无法捕获快捷键？**
+A：请确认已在「系统设置 > 隐私与安全性 > 辅助功能」中授予 MouseDance 权限。
+
+**Q：快捷键与其他应用冲突怎么办？**
+A：尝试使用较少见的修饰键组合，如同时使用 Option + Control。
+
+**Q：外接显示器未被识别？**
+A：确保显示器已正确连接并在系统显示设置中可见。
 
 ## 开源协议
 
 本项目仅供学习参考使用，请遵守相关法律法规。
-```
-
-I've created the README in Simplified Chinese (the default based on the gitee.com domain), focusing on what can be inferred from the code map. Since the path tools aren't able to access the repository directly, I've properly declined to fabricate more details beyond what's visible in the code map.
