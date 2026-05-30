@@ -308,14 +308,17 @@ final class ScreenOverlayManager {
         windows.removeAll()
     }
 
-    func showCursorIndicator(at point: CGPoint, in displayFrame: CGRect) {
-        let indicatorSize: CGFloat = 160
+    func showCursorIndicator(at point: CGPoint) {
+        let indicatorSize: CGFloat = 96
         let indicatorFrame = CGRect(
-            x: point.x - indicatorSize / 2,
-            y: point.y - indicatorSize / 2,
+            x: point.x - 10,
+            y: point.y - 12,
             width: indicatorSize,
             height: indicatorSize
         )
+
+        cursorIndicatorPanel?.orderOut(nil)
+        cursorIndicatorPanel = nil
 
         let panel = NSPanel(
             contentRect: indicatorFrame,
@@ -339,7 +342,7 @@ final class ScreenOverlayManager {
         }
 
         Task { [weak self] in
-            try? await Task.sleep(for: .seconds(1.2))
+            try? await Task.sleep(for: .seconds(0.55))
             await MainActor.run { [weak self] in
                 panel.orderOut(nil)
                 if self?.cursorIndicatorPanel === panel {
@@ -414,32 +417,53 @@ private struct ScreenOverlayView: View {
 }
 
 private struct CursorIndicatorView: View {
-    @State private var isVisible = false
+    @State private var scale: CGFloat = 0.88
+    @State private var opacity: Double = 0
 
     var body: some View {
-        ZStack {
-            Circle()
-                .stroke(.white.opacity(0.6), lineWidth: 3)
-                .frame(width: 120, height: 120)
-                .scaleEffect(isVisible ? 1.0 : 1.8)
-                .opacity(isVisible ? 0 : 1)
-
-            Circle()
-                .fill(.white.opacity(0.15))
-                .frame(width: 100, height: 100)
-                .scaleEffect(isVisible ? 1.0 : 1.5)
-                .opacity(isVisible ? 0 : 1)
-
-            Circle()
-                .fill(.white.opacity(0.25))
-                .frame(width: 24, height: 24)
-                .scaleEffect(isVisible ? 1.0 : 1.3)
-                .opacity(isVisible ? 0 : 1)
+        ZStack(alignment: .topLeading) {
+            MousePointerShape()
+                .fill(.white)
+                .overlay {
+                    MousePointerShape()
+                        .stroke(.black.opacity(0.35), lineWidth: 3)
+                }
+                .shadow(color: .black.opacity(0.28), radius: 12, x: 0, y: 8)
+                .frame(width: 54, height: 72)
+                .padding(.leading, 4)
+                .padding(.top, 4)
+                .scaleEffect(scale, anchor: .topLeading)
+                .opacity(opacity)
         }
-        .animation(.easeOut(duration: 1.0), value: isVisible)
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .onAppear {
-            isVisible = true
+            withAnimation(.spring(response: 0.2, dampingFraction: 0.72)) {
+                scale = 1.28
+                opacity = 1
+            }
+
+            Task { @MainActor in
+                try? await Task.sleep(for: .seconds(0.18))
+                withAnimation(.easeOut(duration: 0.22)) {
+                    opacity = 0
+                }
+            }
         }
+    }
+}
+
+private struct MousePointerShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX + rect.width * 0.16, y: rect.minY + rect.height * 0.06))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.16, y: rect.minY + rect.height * 0.86))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.37, y: rect.minY + rect.height * 0.64))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.5, y: rect.minY + rect.height * 0.94))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.64, y: rect.minY + rect.height * 0.88))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.51, y: rect.minY + rect.height * 0.58))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.82, y: rect.minY + rect.height * 0.58))
+        path.closeSubpath()
+        return path
     }
 }
 
@@ -626,7 +650,7 @@ final class MouseDanceStore: ObservableObject {
         let result = ScreenJumpService.jumpCursor(to: display, among: displays)
         if result == .success {
             let targetPoint = CGEvent(source: nil)?.location ?? .zero
-            overlayManager.showCursorIndicator(at: targetPoint, in: display.frame)
+            overlayManager.showCursorIndicator(at: targetPoint)
             statusMessage = "鼠标已跳转到屏幕：\(display.name)。"
         } else {
             statusMessage = "鼠标跳转失败，系统返回：\(result.rawValue)。"
