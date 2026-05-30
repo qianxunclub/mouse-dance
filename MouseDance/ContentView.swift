@@ -154,6 +154,9 @@ struct ContentView: View {
                     Text("在当前屏幕与上一个活跃屏幕之间快速切换鼠标")
                         .font(.system(size: 11, weight: .medium, design: .rounded))
                         .foregroundStyle(.secondary)
+                    Text("支持录入双击 Command / Control / Option")
+                        .font(.system(size: 10, weight: .medium, design: .rounded))
+                        .foregroundStyle(.tertiary)
                 }
                 
                 Spacer()

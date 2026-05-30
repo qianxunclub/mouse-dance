@@ -1,12 +1,75 @@
 import AppKit
 import SwiftUI
 
+enum SpecialShortcut: String, Codable, Hashable {
+    case doubleCommand
+    case doubleControl
+    case doubleOption
+
+    var keyName: String {
+        switch self {
+        case .doubleCommand:
+            return "Command"
+        case .doubleControl:
+            return "Control"
+        case .doubleOption:
+            return "Option"
+        }
+    }
+
+    var displayName: String {
+        switch self {
+        case .doubleCommand:
+            return "双击 Command"
+        case .doubleControl:
+            return "双击 Control"
+        case .doubleOption:
+            return "双击 Option"
+        }
+    }
+
+    var keySymbols: [String] {
+        switch self {
+        case .doubleCommand:
+            return ["⌘", "⌘"]
+        case .doubleControl:
+            return ["⌃", "⌃"]
+        case .doubleOption:
+            return ["⌥", "⌥"]
+        }
+    }
+
+    static func from(modifierMask: ModifierMask) -> SpecialShortcut? {
+        switch modifierMask {
+        case ModifierMask(command: true, option: false, control: false, shift: false):
+            return .doubleCommand
+        case ModifierMask(command: false, option: false, control: true, shift: false):
+            return .doubleControl
+        case ModifierMask(command: false, option: true, control: false, shift: false):
+            return .doubleOption
+        default:
+            return nil
+        }
+    }
+}
+
 struct ShortcutKey: Codable, Hashable {
     var modifiers: ModifierMask
     var keyCode: UInt16
     var keyString: String
+    var specialShortcut: SpecialShortcut? = nil
+
+    static let doubleCommand = ShortcutKey(
+        modifiers: ModifierMask(command: true, option: false, control: false, shift: false),
+        keyCode: 55,
+        keyString: "Command",
+        specialShortcut: .doubleCommand
+    )
 
     var displayName: String {
+        if let specialShortcut {
+            return specialShortcut.displayName
+        }
         let mods = modifiers.displayName
         if mods.isEmpty {
             return keyString
@@ -15,6 +78,7 @@ struct ShortcutKey: Codable, Hashable {
     }
 
     func matches(_ flags: CGEventFlags, keyCode: CGKeyCode) -> Bool {
+        guard specialShortcut == nil else { return false }
         return modifiers.matches(flags) && self.keyCode == keyCode
     }
 }
@@ -32,6 +96,10 @@ extension ModifierMask {
 
 extension ShortcutKey {
     var keySymbols: [String] {
+        if let specialShortcut {
+            return specialShortcut.keySymbols
+        }
+
         var parts = modifiers.symbols
         let mappedKey: String
         switch keyString.uppercased() {
@@ -52,15 +120,19 @@ extension ShortcutKey {
 }
 
 final class ShortcutEventView: NSView {
+    private let doubleTapThreshold: TimeInterval = 0.35
+
     var onShortcutChanged: ((ShortcutKey?) -> Void)?
     var onRecordingStateChanged: ((Bool) -> Void)?
     var onModifiersChanged: ((ModifierMask?) -> Void)?
+    private var lastModifierTap: (shortcut: SpecialShortcut, timestamp: TimeInterval)?
     
     var isRecording = false {
         didSet {
             onRecordingStateChanged?(isRecording)
             if !isRecording {
                 onModifiersChanged?(nil)
+                lastModifierTap = nil
             }
         }
     }
@@ -118,14 +190,27 @@ final class ShortcutEventView: NSView {
     override func flagsChanged(with event: NSEvent) {
         guard isRecording else { return }
 
-        let mask = ModifierMask(
-            command: event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.command),
-            option: event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.option),
-            control: event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.control),
-            shift: event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.shift)
-        )
+        let mask = modifierMask(from: event.modifierFlags)
 
         onModifiersChanged?(mask.isEmpty ? nil : mask)
+
+        guard let specialShortcut = SpecialShortcut.from(modifierMask: mask) else { return }
+
+        let now = ProcessInfo.processInfo.systemUptime
+        if let lastModifierTap,
+           lastModifierTap.shortcut == specialShortcut,
+           now - lastModifierTap.timestamp <= doubleTapThreshold {
+            onShortcutChanged?(ShortcutKey(
+                modifiers: mask,
+                keyCode: event.keyCode,
+                keyString: specialShortcut.keyName,
+                specialShortcut: specialShortcut
+            ))
+            isRecording = false
+            window?.makeFirstResponder(nil)
+        } else {
+            lastModifierTap = (specialShortcut, now)
+        }
     }
     
     private func keyString(for event: NSEvent) -> String {
@@ -140,6 +225,16 @@ final class ShortcutEventView: NSView {
         default:
             return event.charactersIgnoringModifiers?.uppercased() ?? ""
         }
+    }
+
+    private func modifierMask(from flags: NSEvent.ModifierFlags) -> ModifierMask {
+        let normalizedFlags = flags.intersection(.deviceIndependentFlagsMask)
+        return ModifierMask(
+            command: normalizedFlags.contains(.command),
+            option: normalizedFlags.contains(.option),
+            control: normalizedFlags.contains(.control),
+            shift: normalizedFlags.contains(.shift)
+        )
     }
 }
 

@@ -2,11 +2,16 @@ import SwiftUI
 
 @main
 struct MouseDanceApp: App {
+    @Environment(\.openWindow) private var openWindow
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var store = MouseDanceStore()
 
+    private enum WindowIdentifier {
+        static let main = "main"
+    }
+
     var body: some Scene {
-        WindowGroup {
+        Window("MouseDance", id: WindowIdentifier.main) {
             ContentView()
                 .environmentObject(store)
                 .frame(width: 760, height: 430)
@@ -43,16 +48,6 @@ struct MouseDanceApp: App {
             }
             .padding(.horizontal, 8)
             .padding(.top, 8)
-
-            HStack {
-                Image(systemName: "display")
-                    .imageScale(.small)
-                    .foregroundStyle(.secondary)
-                Text("\(store.displays.count) 块屏幕")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-            }
-            .padding(.horizontal, 8)
 
             Divider()
                 .padding(.vertical, 4)
@@ -110,7 +105,7 @@ struct MouseDanceApp: App {
                 .padding(.vertical, 4)
 
             Button {
-                store.showMainWindow()
+                openMainWindow()
             } label: {
                 Label("打开主窗口", systemImage: "window.vertical.closed")
             }
@@ -135,6 +130,12 @@ struct MouseDanceApp: App {
                 .imageScale(.medium)
                 .foregroundStyle(store.inputMonitoringGranted ? .primary : .secondary)
         }
+    }
+
+    private func openMainWindow() {
+        NSApp.setActivationPolicy(.regular)
+        openWindow(id: WindowIdentifier.main)
+        NSApp.activate(ignoringOtherApps: true)
     }
 }
 

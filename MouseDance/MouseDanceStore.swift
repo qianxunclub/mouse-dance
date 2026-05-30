@@ -78,6 +78,7 @@ final class GlobalHotKeyMonitor {
 
     private var eventTap: CFMachPort?
     private var runLoopSource: CFRunLoopSource?
+    private var lastModifierTap: (shortcut: SpecialShortcut, timestamp: CFAbsoluteTime)?
 
     init(
         shortcutProvider: @escaping ShortcutProvider,
@@ -120,7 +121,7 @@ final class GlobalHotKeyMonitor {
             return
         }
 
-        let eventMask = CGEventMask(1 << CGEventType.keyDown.rawValue)
+        let eventMask = CGEventMask((1 << CGEventType.keyDown.rawValue) | (1 << CGEventType.flagsChanged.rawValue))
         let userInfo = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
 
         guard let tap = CGEvent.tapCreate(
@@ -178,6 +179,11 @@ final class GlobalHotKeyMonitor {
     }
 
     private func handle(eventType: CGEventType, event: CGEvent) {
+        if eventType == .flagsChanged {
+            handleModifierEvent(event)
+            return
+        }
+
         guard eventType == .keyDown else { return }
 
         let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
@@ -198,6 +204,40 @@ final class GlobalHotKeyMonitor {
                 }
                 return
             }
+        }
+    }
+
+    private func handleModifierEvent(_ event: CGEvent) {
+        guard let configuredShortcut = toggleShortcutProvider()?.specialShortcut,
+              let detectedShortcut = specialShortcut(from: event) else { return }
+
+        let now = CFAbsoluteTimeGetCurrent()
+        if let lastTap = lastModifierTap,
+           lastTap.shortcut == configuredShortcut,
+           detectedShortcut == configuredShortcut,
+           now - lastTap.timestamp <= 0.35 {
+            lastModifierTap = nil
+            Task { @MainActor in
+                onToggleMatch()
+            }
+        } else {
+            lastModifierTap = detectedShortcut == configuredShortcut ? (configuredShortcut, now) : nil
+        }
+    }
+
+    private func specialShortcut(from event: CGEvent) -> SpecialShortcut? {
+        let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
+        let activeFlags = event.flags.intersection(ModifierMask.relevantCGFlags)
+
+        switch keyCode {
+        case 54, 55 where activeFlags == .maskCommand:
+            return .doubleCommand
+        case 59, 62 where activeFlags == .maskControl:
+            return .doubleControl
+        case 58, 61 where activeFlags == .maskAlternate:
+            return .doubleOption
+        default:
+            return nil
         }
     }
 }
@@ -457,7 +497,7 @@ final class MouseDanceStore: ObservableObject {
     init(previewMode: Bool = false) {
         self.previewMode = previewMode
         self.screenShortcuts = Self.loadScreenShortcuts()
-        self.toggleShortcut = Self.loadToggleShortcut()
+        self.toggleShortcut = Self.loadToggleShortcut() ?? Self.defaultToggleShortcut
 
         if previewMode {
             displays = Self.previewDisplays
@@ -700,6 +740,10 @@ final class MouseDanceStore: ObservableObject {
         let keyString = "\(index + 1)"
         let keyCode = index < digits.count ? digits[index] : digits[0]
         return ShortcutKey(modifiers: .recommended, keyCode: keyCode, keyString: keyString)
+    }
+
+    private static var defaultToggleShortcut: ShortcutKey {
+        .doubleCommand
     }
 
     private func refreshPermissionState(startMonitor: Bool) {

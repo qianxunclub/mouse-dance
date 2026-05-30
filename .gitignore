@@ -1,0 +1,10 @@
+.DS_Store
+
+# Local Xcode user data
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+
+# Build artifacts
+build/
+dist/
