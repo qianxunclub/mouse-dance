@@ -55,6 +55,65 @@ struct DisplayShortcut: Identifiable, Hashable {
     var frameDescription: String {
         return ""
     }
+
+    var pixelSize: CGSize {
+        let fallbackWidth = frame.width * max(scaleFactor, 1)
+        let fallbackHeight = frame.height * max(scaleFactor, 1)
+        let pixelWidth = CGFloat(CGDisplayPixelsWide(displayID))
+        let pixelHeight = CGFloat(CGDisplayPixelsHigh(displayID))
+
+        return CGSize(
+            width: pixelWidth > 0 ? pixelWidth : fallbackWidth,
+            height: pixelHeight > 0 ? pixelHeight : fallbackHeight
+        )
+    }
+
+    var pixelsPerPointX: CGFloat {
+        guard frame.width > 0 else { return max(scaleFactor, 1) }
+        return pixelSize.width / frame.width
+    }
+
+    var pixelsPerPointY: CGFloat {
+        guard frame.height > 0 else { return max(scaleFactor, 1) }
+        return pixelSize.height / frame.height
+    }
+
+    var localVisibleFrame: CGRect {
+        CGRect(
+            x: visibleFrame.minX - frame.minX,
+            y: visibleFrame.minY - frame.minY,
+            width: visibleFrame.width,
+            height: visibleFrame.height
+        )
+    }
+
+    func pointToLocalPixel(_ point: CGPoint) -> CGPoint {
+        CGPoint(
+            x: (point.x - frame.minX) * pixelsPerPointX,
+            y: (point.y - frame.minY) * pixelsPerPointY
+        )
+    }
+
+    func localPixelToPoint(_ point: CGPoint) -> CGPoint {
+        CGPoint(
+            x: frame.minX + point.x / pixelsPerPointX,
+            y: frame.minY + point.y / pixelsPerPointY
+        )
+    }
+
+    func usableLocalPixelFrame(edgePadding: CGFloat) -> CGRect {
+        let localPixelFrame = CGRect(
+            x: localVisibleFrame.minX * pixelsPerPointX,
+            y: localVisibleFrame.minY * pixelsPerPointY,
+            width: localVisibleFrame.width * pixelsPerPointX,
+            height: localVisibleFrame.height * pixelsPerPointY
+        )
+
+        let insetX = min(edgePadding * pixelsPerPointX, max(0, localPixelFrame.width / 2 - 1))
+        let insetY = min(edgePadding * pixelsPerPointY, max(0, localPixelFrame.height / 2 - 1))
+        return localPixelFrame.insetBy(dx: insetX, dy: insetY)
+    }
+
 }
 
 enum InputMonitoringStatus {
@@ -244,37 +303,9 @@ final class GlobalHotKeyMonitor {
 
 enum ScreenJumpService {
     @discardableResult
-    static func jumpCursor(to target: DisplayShortcut, among displays: [DisplayShortcut]) -> CGError {
-        let currentLocation = CGEvent(source: nil)?.location ?? .zero
-        let source = displays.first { $0.frame.contains(currentLocation) }
-        let targetPoint = destinationPoint(for: currentLocation, from: source, to: target)
-        return CGWarpMouseCursorPosition(targetPoint)
-    }
-
-    private static func destinationPoint(
-        for currentLocation: CGPoint,
-        from source: DisplayShortcut?,
-        to target: DisplayShortcut
-    ) -> CGPoint {
-        let targetFrame = target.visibleFrame.insetBy(dx: 24, dy: 24)
-
-        guard let source else {
-            return CGPoint(x: targetFrame.midX, y: targetFrame.midY)
-        }
-
-        let sourceFrame = source.visibleFrame.insetBy(dx: 24, dy: 24)
-        let xRatio = normalizedRatio(value: currentLocation.x, min: sourceFrame.minX, max: sourceFrame.maxX)
-        let yRatio = normalizedRatio(value: currentLocation.y, min: sourceFrame.minY, max: sourceFrame.maxY)
-
-        return CGPoint(
-            x: targetFrame.minX + xRatio * targetFrame.width,
-            y: targetFrame.minY + yRatio * targetFrame.height
-        )
-    }
-
-    private static func normalizedRatio(value: CGFloat, min: CGFloat, max: CGFloat) -> CGFloat {
-        guard max > min else { return 0.5 }
-        return Swift.min(1, Swift.max(0, (value - min) / (max - min)))
+    static func jumpCursor(to target: DisplayShortcut, among displays: [DisplayShortcut]) -> (error: CGError, targetPoint: CGPoint) {
+        let targetPoint = CGPoint(x: target.frame.midX, y: target.frame.midY)
+        return (CGWarpMouseCursorPosition(targetPoint), targetPoint)
     }
 }
 
@@ -308,20 +339,12 @@ final class ScreenOverlayManager {
         windows.removeAll()
     }
 
-    func showCursorIndicator(at point: CGPoint) {
-        let indicatorSize: CGFloat = 96
-        let indicatorFrame = CGRect(
-            x: point.x - 10,
-            y: point.y - 12,
-            width: indicatorSize,
-            height: indicatorSize
-        )
-
+    func showCursorIndicator(on display: DisplayShortcut) {
         cursorIndicatorPanel?.orderOut(nil)
         cursorIndicatorPanel = nil
 
         let panel = NSPanel(
-            contentRect: indicatorFrame,
+            contentRect: display.frame,
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -335,6 +358,7 @@ final class ScreenOverlayManager {
         panel.hidesOnDeactivate = false
         panel.isFloatingPanel = true
         panel.contentView = NSHostingView(rootView: CursorIndicatorView())
+        panel.setFrame(display.frame, display: true)
 
         DispatchQueue.main.async { [weak self] in
             panel.orderFrontRegardless()
@@ -371,6 +395,13 @@ final class ScreenOverlayManager {
         panel.setFrame(display.frame, display: true)
         return panel
     }
+}
+
+private enum CursorIndicatorMetrics {
+    static let pointerSize = CGSize(width: 54, height: 72)
+    static let pointerPadding = CGSize(width: 4, height: 4)
+    static let initialScale: CGFloat = 0.88
+    static let visibleScale: CGFloat = 1.28
 }
 
 private struct ScreenOverlayView: View {
@@ -417,28 +448,29 @@ private struct ScreenOverlayView: View {
 }
 
 private struct CursorIndicatorView: View {
-    @State private var scale: CGFloat = 0.88
+    @State private var scale: CGFloat = CursorIndicatorMetrics.initialScale
     @State private var opacity: Double = 0
 
     var body: some View {
-        ZStack(alignment: .topLeading) {
-            MousePointerShape()
-                .fill(.white)
-                .overlay {
-                    MousePointerShape()
-                        .stroke(.black.opacity(0.35), lineWidth: 3)
-                }
-                .shadow(color: .black.opacity(0.28), radius: 12, x: 0, y: 8)
-                .frame(width: 54, height: 72)
-                .padding(.leading, 4)
-                .padding(.top, 4)
-                .scaleEffect(scale, anchor: .topLeading)
-                .opacity(opacity)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        Color.clear
+            .overlay {
+                MousePointerShape()
+                    .fill(.white)
+                    .overlay {
+                        MousePointerShape()
+                            .stroke(.black.opacity(0.35), lineWidth: 3)
+                    }
+                    .shadow(color: .black.opacity(0.28), radius: 12, x: 0, y: 8)
+                    .frame(width: CursorIndicatorMetrics.pointerSize.width, height: CursorIndicatorMetrics.pointerSize.height)
+                    .padding(.horizontal, CursorIndicatorMetrics.pointerPadding.width)
+                    .padding(.vertical, CursorIndicatorMetrics.pointerPadding.height)
+                    .scaleEffect(scale)
+                    .opacity(opacity)
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         .onAppear {
             withAnimation(.spring(response: 0.2, dampingFraction: 0.72)) {
-                scale = 1.28
+                scale = CursorIndicatorMetrics.visibleScale
                 opacity = 1
             }
 
@@ -643,17 +675,21 @@ final class MouseDanceStore: ObservableObject {
         let currentLocation = CGEvent(source: nil)?.location ?? .zero
         let currentDisplayID = displays.first(where: { $0.frame.contains(currentLocation) })?.displayID
 
+        if currentDisplayID == display.displayID {
+            statusMessage = "鼠标已在当前屏幕：\(display.name)。"
+            return
+        }
+
         if let current = currentDisplayID, current != display.displayID {
             lastActiveDisplayID = current
         }
 
-        let result = ScreenJumpService.jumpCursor(to: display, among: displays)
-        if result == .success {
-            let targetPoint = CGEvent(source: nil)?.location ?? .zero
-            overlayManager.showCursorIndicator(at: targetPoint)
+        let jumpResult = ScreenJumpService.jumpCursor(to: display, among: displays)
+        if jumpResult.error == .success {
+            overlayManager.showCursorIndicator(on: display)
             statusMessage = "鼠标已跳转到屏幕：\(display.name)。"
         } else {
-            statusMessage = "鼠标跳转失败，系统返回：\(result.rawValue)。"
+            statusMessage = "鼠标跳转失败，系统返回：\(jumpResult.error.rawValue)。"
         }
     }
 

@@ -2,7 +2,15 @@
 
 set -euo pipefail
 
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+if [[ -d "$SCRIPT_DIR/MouseDance.xcodeproj" ]]; then
+  ROOT_DIR="$SCRIPT_DIR"
+elif [[ -d "$SCRIPT_DIR/../MouseDance.xcodeproj" ]]; then
+  ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+else
+  ROOT_DIR="$SCRIPT_DIR"
+fi
 PROJECT_PATH="${PROJECT_PATH:-$ROOT_DIR/MouseDance.xcodeproj}"
 SCHEME="${SCHEME:-MouseDance}"
 CONFIGURATION="${CONFIGURATION:-Release}"
@@ -63,7 +71,7 @@ if [[ -z "$PRODUCT_NAME" ]]; then
 fi
 
 if [[ -z "$MARKETING_VERSION" ]]; then
-  MARKETING_VERSION="0.0.0"
+  MARKETING_VERSION="2026.6.2"
 fi
 
 if [[ -z "$CURRENT_PROJECT_VERSION" ]]; then
