@@ -28,6 +28,60 @@ require_command() {
   fi
 }
 
+validate_xcode_environment() {
+  local developer_dir=""
+  local detected_xcode_dir=""
+  local candidate=""
+
+  if [[ -d "/Applications/Xcode.app/Contents/Developer" ]]; then
+    detected_xcode_dir="/Applications/Xcode.app/Contents/Developer"
+  else
+    for candidate in /Applications/Xcode*.app/Contents/Developer; do
+      if [[ -d "$candidate" ]]; then
+        detected_xcode_dir="$candidate"
+        break
+      fi
+    done
+  fi
+
+  if [[ -n "${DEVELOPER_DIR:-}" ]]; then
+    developer_dir="$DEVELOPER_DIR"
+  else
+    developer_dir="$(xcode-select -p 2>/dev/null || true)"
+  fi
+
+  if [[ -z "$developer_dir" ]]; then
+    echo "Unable to determine the active Xcode developer directory." >&2
+    echo "Install Xcode and select it before running this script." >&2
+    exit 1
+  fi
+
+  if [[ "$developer_dir" == "/Library/Developer/CommandLineTools" ]]; then
+    if [[ -n "$detected_xcode_dir" ]]; then
+      echo "Active developer directory points to CommandLineTools; using Xcode instead:" >&2
+      echo "  $detected_xcode_dir" >&2
+      export DEVELOPER_DIR="$detected_xcode_dir"
+      developer_dir="$detected_xcode_dir"
+    else
+      echo "This script requires the full Xcode app, but the active developer directory is:" >&2
+      echo "  $developer_dir" >&2
+      echo >&2
+      echo "Install Xcode, then run one of the following commands:" >&2
+      echo "  sudo xcode-select -s /Applications/Xcode.app/Contents/Developer" >&2
+      echo "  DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer $0" >&2
+      echo "If your app has a different name, replace Xcode.app with that app name." >&2
+      exit 1
+    fi
+  fi
+
+  if ! xcodebuild -version >/dev/null 2>&1; then
+    echo "xcodebuild is installed but not usable with the current developer directory:" >&2
+    echo "  $developer_dir" >&2
+    echo "Check your Xcode installation or set DEVELOPER_DIR to a valid Xcode path." >&2
+    exit 1
+  fi
+}
+
 read_build_setting() {
   local key="$1"
   echo "$BUILD_SETTINGS" | awk -F ' = ' -v target_key="$key" '
@@ -42,8 +96,10 @@ read_build_setting() {
   '
 }
 
+require_command xcode-select
 require_command xcodebuild
 require_command hdiutil
+validate_xcode_environment
 
 if [[ ! -d "$PROJECT_PATH" ]]; then
   echo "Xcode project not found: $PROJECT_PATH" >&2

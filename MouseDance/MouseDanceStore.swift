@@ -289,11 +289,15 @@ final class GlobalHotKeyMonitor {
         let activeFlags = event.flags.intersection(ModifierMask.relevantCGFlags)
 
         switch keyCode {
-        case 54, 55 where activeFlags == .maskCommand:
+        case 54, 
+            55 where activeFlags == .maskCommand:
             return .doubleCommand
-        case 59, 62 where activeFlags == .maskControl:
+        case 59, 
+            
+            62 where activeFlags == .maskControl:
             return .doubleControl
-        case 58, 61 where activeFlags == .maskAlternate:
+        case 58, 
+            61 where activeFlags == .maskAlternate:
             return .doubleOption
         default:
             return nil
