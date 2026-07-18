@@ -2,6 +2,7 @@ import AppKit
 import Carbon.HIToolbox
 import Combine
 import CoreGraphics
+import ServiceManagement
 import SwiftUI
 
 struct ModifierMask: Codable, Hashable {
@@ -512,6 +513,7 @@ final class MouseDanceStore: ObservableObject {
     @Published private(set) var statusMessage = "等待初始化..."
     @Published private(set) var hasMarkedScreens = false
     @Published private(set) var lastMarkedAt: Date?
+    @Published private(set) var launchAtLoginEnabled = false
 
     @Published var screenShortcuts: [CGDirectDisplayID: ShortcutKey] = [:] {
         didSet {
@@ -558,6 +560,7 @@ final class MouseDanceStore: ObservableObject {
         self.previewMode = previewMode
         self.screenShortcuts = Self.loadScreenShortcuts()
         self.toggleShortcut = Self.loadToggleShortcut() ?? Self.defaultToggleShortcut
+        self.launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
 
         if previewMode {
             displays = Self.previewDisplays
@@ -575,6 +578,35 @@ final class MouseDanceStore: ObservableObject {
             get: { self.screenShortcuts[displayID] },
             set: { self.screenShortcuts[displayID] = $0 }
         )
+    }
+
+    /// 开机自启动开关绑定
+    var launchAtLoginBinding: Binding<Bool> {
+        Binding(
+            get: { self.launchAtLoginEnabled },
+            set: { self.setLaunchAtLogin($0) }
+        )
+    }
+
+    func refreshLaunchAtLoginState() {
+        launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
+    }
+
+    func setLaunchAtLogin(_ enabled: Bool) {
+        guard !previewMode else { return }
+        do {
+            if enabled {
+                try SMAppService.mainApp.register()
+            } else {
+                try SMAppService.mainApp.unregister()
+            }
+            statusMessage = enabled
+                ? "已开启开机自启动，登录后 MouseDance 将自动在菜单栏运行。"
+                : "已关闭开机自启动。"
+        } catch {
+            statusMessage = (enabled ? "开启" : "关闭") + "开机自启动失败：\(error.localizedDescription)"
+        }
+        refreshLaunchAtLoginState()
     }
 
     func start() {

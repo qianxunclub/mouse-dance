@@ -14,7 +14,6 @@ struct MouseDanceApp: App {
         Window("MouseDance", id: WindowIdentifier.main) {
             ContentView()
                 .environmentObject(store)
-                .frame(width: 760, height: 430)
                 .task {
                     store.start()
                 }
@@ -25,13 +24,20 @@ struct MouseDanceApp: App {
                     }
                 }
         }
-        .windowStyle(.hiddenTitleBar)
+        .defaultLaunchBehavior(appDelegate.launchedAsLoginItem ? .suppressed : .automatic)
+        .windowStyle(.titleBar)
+        .windowToolbarStyle(.unified)
         .windowResizability(.contentSize)
 
         MenuBarExtra {
             menuContent
         } label: {
             menuBarLabel
+                // 登录自启动时主窗口被抑制，ContentView 的 .task 不会执行，
+                // 在这里保证快捷键监听照常启动（start 内部幂等）。
+                .task {
+                    store.start()
+                }
         }
     }
 
@@ -105,6 +111,18 @@ struct MouseDanceApp: App {
                 .padding(.vertical, 4)
 
             Button {
+                store.setLaunchAtLogin(!store.launchAtLoginEnabled)
+            } label: {
+                Label(
+                    store.launchAtLoginEnabled ? "开机自启动：已开启" : "开机自启动：已关闭",
+                    systemImage: store.launchAtLoginEnabled ? "checkmark.circle.fill" : "circle"
+                )
+            }
+
+            Divider()
+                .padding(.vertical, 4)
+
+            Button {
                 openMainWindow()
             } label: {
                 Label("打开主窗口", systemImage: "window.vertical.closed")
@@ -140,6 +158,26 @@ struct MouseDanceApp: App {
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
+    /// 是否为系统登录时自动拉起
+    private(set) var launchedAsLoginItem = false
+
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        launchedAsLoginItem = Self.isLaunchedAsLoginItem()
+        if launchedAsLoginItem {
+            // 登录自启动时以 accessory 模式运行，程序坞不显示图标
+            NSApp.setActivationPolicy(.accessory)
+        }
+    }
+
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        guard launchedAsLoginItem else { return }
+        NSApp.setActivationPolicy(.accessory)
+        // 兜底：若主窗口仍被创建则直接关闭
+        for window in NSApp.windows where window.styleMask.contains(.titled) && !(window is NSPanel) {
+            window.close()
+        }
+    }
+
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
         NSApp.setActivationPolicy(.accessory)
         return false
@@ -151,5 +189,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSApp.activate(ignoringOtherApps: true)
         }
         return true
+    }
+
+    /// 通过启动时收到的 AppleEvent 判断应用是否作为登录项被系统拉起
+    private static func isLaunchedAsLoginItem() -> Bool {
+        guard let event = NSAppleEventManager.shared().currentAppleEvent,
+              event.eventID == fourCharCode("oapp") // kAEOpenApplication
+        else { return false }
+        return event.paramDescriptor(forKeyword: fourCharCode("prdt"))?.enumCodeValue
+            == fourCharCode("lgik") // keyAELaunchedAsLogInItem
+    }
+
+    private static func fourCharCode(_ string: String) -> FourCharCode {
+        string.utf8.reduce(0) { ($0 << 8) | FourCharCode($1) }
     }
 }

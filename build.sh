@@ -116,8 +116,6 @@ BUILD_SETTINGS="$(
 )"
 
 PRODUCT_NAME="$(read_build_setting PRODUCT_NAME)"
-FULL_PRODUCT_NAME="$(read_build_setting FULL_PRODUCT_NAME)"
-WRAPPER_NAME="$(read_build_setting WRAPPER_NAME)"
 MARKETING_VERSION="$(read_build_setting MARKETING_VERSION)"
 CURRENT_PROJECT_VERSION="$(read_build_setting CURRENT_PROJECT_VERSION)"
 
@@ -134,13 +132,8 @@ if [[ -z "$CURRENT_PROJECT_VERSION" ]]; then
   CURRENT_PROJECT_VERSION="0"
 fi
 
-APP_NAME="$FULL_PRODUCT_NAME"
-if [[ -z "$APP_NAME" ]]; then
-  APP_NAME="$WRAPPER_NAME"
-fi
-if [[ -z "$APP_NAME" ]]; then
-  APP_NAME="${PRODUCT_NAME}.app"
-fi
+# 打包后的 App 固定命名为 MouseDance.app
+APP_NAME="MouseDance.app"
 
 APP_PATH="$DERIVED_DATA_PATH/Build/Products/$CONFIGURATION/$APP_NAME"
 DMG_NAME="${PRODUCT_NAME}-${MARKETING_VERSION}.dmg"
