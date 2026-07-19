@@ -26,7 +26,7 @@ export default defineUserConfig({
   ],
 
   theme: defaultTheme({
-    logo: withSiteBase('/images/AppIcon.png'),
+    logo: '/images/AppIcon.png',
 
     colorMode: 'dark',
     colorModeSwitch: false,
