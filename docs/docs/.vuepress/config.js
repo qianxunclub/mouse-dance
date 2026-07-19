@@ -3,6 +3,8 @@ import { defineUserConfig } from 'vuepress'
 import { viteBundler } from '@vuepress/bundler-vite'
 
 export default defineUserConfig({
+  base: '/mouse-dance/',
+
   lang: 'zh-CN',
 
   title: 'MouseDance',

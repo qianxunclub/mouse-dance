@@ -1,3 +1,7 @@
+<script setup>
+import { withBase } from 'vuepress/client'
+</script>
+
 <template>
   <section class="md-section shot" id="screenshot">
     <div class="md-container">
@@ -16,7 +20,7 @@
             <span class="shot-light shot-light--green"></span>
             <span class="shot-titlebar-text">MouseDance</span>
           </div>
-          <img src="/images/screenshot.png" alt="MouseDance 设置窗口截图" class="shot-image" />
+          <img :src="withBase('/images/screenshot.png')" alt="MouseDance 设置窗口截图" class="shot-image" />
         </div>
       </div>
     </div>

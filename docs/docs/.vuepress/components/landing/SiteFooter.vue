@@ -1,8 +1,12 @@
+<script setup>
+import { withBase } from 'vuepress/client'
+</script>
+
 <template>
   <footer class="site-footer">
     <div class="md-container site-footer-inner">
       <div class="site-footer-brand">
-        <img src="/images/AppIcon.png" alt="MouseDance 图标" class="site-footer-logo" />
+        <img :src="withBase('/images/AppIcon.png')" alt="MouseDance 图标" class="site-footer-logo" />
         <div>
           <p class="site-footer-name">MouseDance</p>
           <p class="site-footer-slogan">让鼠标在屏幕间起舞</p>

@@ -1,3 +1,7 @@
+<script setup>
+import { withBase } from 'vuepress/client'
+</script>
+
 <template>
   <section class="hero" id="top">
     <div class="hero-bg" aria-hidden="true">
@@ -19,7 +23,7 @@
       </div>
 
       <img
-        src="/images/AppIcon.png"
+        :src="withBase('/images/AppIcon.png')"
         alt="MouseDance 应用图标"
         class="hero-icon md-rise"
         style="animation-delay: 0.15s"

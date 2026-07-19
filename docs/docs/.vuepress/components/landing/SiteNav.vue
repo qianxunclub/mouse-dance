@@ -1,4 +1,5 @@
 <script setup>
+import { withBase } from 'vuepress/client'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 
 const scrolled = ref(false)
@@ -29,7 +30,7 @@ const links = [
   <header class="site-nav" :class="{ 'site-nav--scrolled': scrolled }">
     <div class="site-nav-inner">
       <a class="site-nav-brand" href="#top">
-        <img src="/images/AppIcon.png" alt="MouseDance 图标" class="site-nav-logo" />
+        <img :src="withBase('/images/AppIcon.png')" alt="MouseDance 图标" class="site-nav-logo" />
         <span class="site-nav-name">MouseDance</span>
       </a>
 
