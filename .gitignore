@@ -9,4 +9,8 @@
 build/
 dist/
 
+# VuePress generated files
+docs/docs/.vuepress/.cache/
+docs/docs/.vuepress/.temp/
+
 node_modules/

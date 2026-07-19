@@ -2,8 +2,11 @@ import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { viteBundler } from '@vuepress/bundler-vite'
 
+const siteBase = '/mouse-dance/'
+const withSiteBase = (path) => `${siteBase}${path.replace(/^\//, '')}`
+
 export default defineUserConfig({
-  base: '/mouse-dance/',
+  base: siteBase,
 
   lang: 'zh-CN',
 
@@ -11,7 +14,7 @@ export default defineUserConfig({
   description: '一款常驻菜单栏的 macOS 小工具：为多显示器用户的每一块屏幕配置独立快捷键，按下快捷键即可让鼠标瞬间跳到目标屏幕。',
 
   head: [
-    ['link', { rel: 'icon', href: '/images/AppIcon.png' }],
+    ['link', { rel: 'icon', href: withSiteBase('/images/AppIcon.png') }],
     ['link', { rel: 'preconnect', href: 'https://api.fontshare.com' }],
     [
       'link',
@@ -23,7 +26,7 @@ export default defineUserConfig({
   ],
 
   theme: defaultTheme({
-    logo: '/images/AppIcon.png',
+    logo: withSiteBase('/images/AppIcon.png'),
 
     colorMode: 'dark',
     colorModeSwitch: false,
