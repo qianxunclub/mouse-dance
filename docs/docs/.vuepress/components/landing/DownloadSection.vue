@@ -22,7 +22,7 @@ const copyCommand = async () => {
 const steps = [
   {
     title: '拖入应用程序',
-    desc: '下载并打开 MouseDance-x.x.x.dmg，将 MouseDance.app 拖入"应用程序"文件夹。',
+    desc: '下载并打开 MouseDance.dmg，将 MouseDance.app 拖入"应用程序"文件夹。',
   },
   {
     title: '解除 Gatekeeper 隔离',

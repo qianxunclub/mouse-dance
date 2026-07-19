@@ -9,7 +9,7 @@
 
 ## 1. 下载与安装
 
-1. 前往 [Gitee Releases](https://gitee.com/qianxunclub/mouse-dance/releases) 下载最新的 `MouseDance-x.x.x.dmg`。
+1. 前往 [Gitee Releases](https://gitee.com/qianxunclub/mouse-dance/releases) 下载最新的 `MouseDance.dmg`。
 2. 打开 dmg，将 `MouseDance.app` 拖入"应用程序"文件夹。
 
 ::: warning 未签名应用提示

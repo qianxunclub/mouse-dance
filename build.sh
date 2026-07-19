@@ -132,13 +132,13 @@ if [[ -z "$CURRENT_PROJECT_VERSION" ]]; then
   CURRENT_PROJECT_VERSION="0"
 fi
 
-# 打包后的 App 固定命名为 MouseDance.app
+# 打包后的 App 和 DMG 固定命名，避免产物名随版本变化
 APP_NAME="MouseDance.app"
+DMG_NAME="MouseDance.dmg"
 
 APP_PATH="$DERIVED_DATA_PATH/Build/Products/$CONFIGURATION/$APP_NAME"
-DMG_NAME="${PRODUCT_NAME}-${MARKETING_VERSION}.dmg"
 DMG_PATH="$DIST_DIR/$DMG_NAME"
-VOLUME_NAME="${DMG_VOLUME_NAME:-${PRODUCT_NAME} ${MARKETING_VERSION}}"
+VOLUME_NAME="${DMG_VOLUME_NAME:-MouseDance}"
 
 echo "Cleaning previous artifacts..."
 rm -rf "$DERIVED_DATA_PATH" "$STAGING_DIR"

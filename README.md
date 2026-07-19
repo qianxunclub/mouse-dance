@@ -27,7 +27,7 @@
 
 > 本应用未使用 Apple 开发者证书签名，首次打开时 macOS 可能提示"应用已损坏，无法打开"或"无法验证开发者"。这是未签名应用的正常提示，按以下任一方式处理即可。
 
-1. 下载并打开 `MouseDance-x.x.x.dmg`，将 `MouseDance.app` 拖入"应用程序"文件夹。
+1. 下载并打开 `MouseDance.dmg`，将 `MouseDance.app` 拖入"应用程序"文件夹。
 
 2. **解除 Gatekeeper 隔离：**
 
