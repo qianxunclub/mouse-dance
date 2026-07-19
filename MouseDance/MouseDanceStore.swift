@@ -11,7 +11,7 @@ struct ModifierMask: Codable, Hashable {
     var control: Bool
     var shift: Bool
 
-    static let recommended = ModifierMask(command: false, option: true, control: true, shift: false)
+    static let recommended = ModifierMask(command: true, option: true, control: false, shift: false)
     static let relevantCGFlags: CGEventFlags = [.maskCommand, .maskAlternate, .maskControl, .maskShift]
 
     var isEmpty: Bool {

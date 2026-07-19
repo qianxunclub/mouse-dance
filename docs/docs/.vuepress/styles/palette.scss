@@ -1,0 +1,16 @@
+// VuePress 默认主题调色板覆盖（主要作用于 /get-started 文档页）
+:root {
+  --vp-c-accent: #6366f1;
+  --vp-c-accent-bg: #6366f1;
+  --vp-c-accent-hover: #818cf8;
+  --vp-c-accent-soft: rgb(99 102 241 / 0.16);
+}
+
+html.dark {
+  --vp-c-bg: #0b0d14;
+  --vp-c-bg-elv: #11141f;
+  --vp-c-bg-soft: #141824;
+  --vp-c-border: rgba(255, 255, 255, 0.08);
+  --vp-c-text: #e7e9f2;
+  --vp-c-text-mute: #9ba1b5;
+}
