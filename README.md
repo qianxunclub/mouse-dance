@@ -21,19 +21,11 @@
 
 1. 下载并打开 `MouseDance-x.x.x.dmg`，将 `MouseDance.app` 拖入"应用程序"文件夹。
 
-2. **解除 Gatekeeper 隔离（二选一）：**
+2. **解除 Gatekeeper 隔离：**
 
-   **方式一：终端命令（推荐）**
-
-   ```bash
-   xattr -cr /Applications/MouseDance.app
-   ```
-
-   **方式二：图形界面**
-   - 在"应用程序"中找到 MouseDance，**右键 → 打开**
-   - 在弹出的对话框中点击"打开"
-
-   如果仍提示已损坏，请再执行方式一的命令。
+```bash
+xattr -cr /Applications/MouseDance.app
+```
 
 3. 正常双击打开 MouseDance，图标将出现在屏幕右上角菜单栏。
 
