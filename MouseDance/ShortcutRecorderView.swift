@@ -279,31 +279,32 @@ struct ShortcutEventRepresentable: NSViewRepresentable {
 struct KeyCapView: View {
     let text: String
     let isActive: Bool
-    
+
     var body: some View {
         Text(text)
             .font(.system(size: 14, weight: .semibold, design: .rounded))
-            .foregroundColor(isActive ? .accentColor : .primary)
+            .foregroundStyle(isActive ? Color.accentColor : .primary)
             .frame(minWidth: 26, minHeight: 26)
             .padding(.horizontal, 6)
+            .background(.thickMaterial, in: .rect(cornerRadius: 6, style: .continuous))
             .background(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .fill(isActive ? Color.accentColor.opacity(0.15) : Color(NSColor.controlBackgroundColor))
+                Color.accentColor.opacity(isActive ? 0.2 : 0),
+                in: .rect(cornerRadius: 6, style: .continuous)
             )
-            .overlay(
-                RoundedRectangle(cornerRadius: 6, style: .continuous)
-                    .strokeBorder(isActive ? Color.accentColor.opacity(0.5) : Color(NSColor.separatorColor).opacity(0.4), lineWidth: 1)
-            )
-            .shadow(color: Color.black.opacity(isActive ? 0 : 0.05), radius: 1, x: 0, y: 1)
     }
 }
 
 struct ShortcutRecorderView: View {
     @Binding var shortcut: ShortcutKey?
     @Binding var isRecording: Bool
-    
+
     @State private var currentModifiers: ModifierMask? = nil
-    @State private var isHovered = false
+
+    /// 录制时为玻璃着色 accent，交互态玻璃自带悬停反馈
+    private var wellGlass: Glass {
+        let base = Glass.regular.interactive()
+        return isRecording ? base.tint(Color.accentColor.opacity(0.35)) : base
+    }
 
     var body: some View {
         ZStack {
@@ -314,7 +315,7 @@ struct ShortcutRecorderView: View {
                 currentModifiers: $currentModifiers
             )
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
+
             // Visual overlay
             HStack(spacing: 4) {
                 if isRecording {
@@ -326,7 +327,7 @@ struct ShortcutRecorderView: View {
                     }
                     Text("按下按键...")
                         .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.accentColor)
+                        .foregroundStyle(Color.accentColor)
                         .padding(.horizontal, 4)
                         .opacity(0.8)
                 } else if let shortcut = shortcut {
@@ -337,30 +338,17 @@ struct ShortcutRecorderView: View {
                 } else {
                     Text("点击录制")
                         .font(.system(size: 13, weight: .medium))
-                        .foregroundColor(.secondary)
+                        .foregroundStyle(.secondary)
                         .padding(.horizontal, 4)
                 }
             }
             .padding(6)
             .frame(maxWidth: .infinity, minHeight: 40, alignment: .center)
-            .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .fill(isRecording ? Color.accentColor.opacity(0.1) : Color(NSColor.windowBackgroundColor).opacity(0.5))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
-                    .strokeBorder(isRecording ? Color.accentColor.opacity(0.8) : Color(NSColor.separatorColor).opacity(0.5), lineWidth: isRecording ? 2 : 1)
-            )
-            .shadow(color: isRecording ? Color.accentColor.opacity(0.3) : Color.black.opacity(0.05), radius: isRecording ? 4 : 2, x: 0, y: 1)
-            .scaleEffect(isHovered && !isRecording ? 1.02 : 1.0)
-            .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isHovered)
+            .glassEffect(wellGlass, in: .rect(cornerRadius: 10, style: .continuous))
             .animation(.easeInOut(duration: 0.2), value: isRecording)
             .animation(.easeInOut(duration: 0.2), value: currentModifiers)
             .animation(.easeInOut(duration: 0.2), value: shortcut)
             .allowsHitTesting(false) // Let clicks pass through to ShortcutEventRepresentable
-        }
-        .onHover { hovering in
-            isHovered = hovering
         }
     }
 }

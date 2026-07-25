@@ -19,7 +19,7 @@ import { withBase } from 'vuepress/client'
     <div class="md-container hero-content">
       <div class="hero-badge md-rise" style="animation-delay: 0.05s">
         <span class="hero-badge-dot"></span>
-        macOS 14+ · 常驻菜单栏 · 免费开源
+        macOS 26+ · 常驻菜单栏 · 免费开源
       </div>
 
       <img

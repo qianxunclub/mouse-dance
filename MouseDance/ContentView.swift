@@ -63,10 +63,14 @@ struct ContentView: View {
         .frame(width: 560)
         .fixedSize(horizontal: false, vertical: true)
         .toolbar {
+            ToolbarSpacer(.flexible, placement: .primaryAction)
             ToolbarItem(placement: .primaryAction) {
-                Button("标记屏幕") {
+                Button {
                     store.relabelScreens()
+                } label: {
+                    Label("标记屏幕", systemImage: "rectangle.grid.3x2")
                 }
+                .labelStyle(.titleAndIcon)
                 .help("在每一块屏幕上显示其编号与快捷键")
             }
         }
@@ -86,10 +90,15 @@ struct ContentView: View {
                 Label("已授权", systemImage: "checkmark.circle.fill")
                     .foregroundStyle(.green)
                     .labelStyle(.titleAndIcon)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 3)
+                    .background(.green.opacity(0.12), in: .capsule)
             } else {
                 Button("前往授权…") {
                     store.requestInputMonitoringAccess()
                 }
+                .buttonStyle(.glassProminent)
+                .controlSize(.small)
             }
         }
         .frame(height: 24)

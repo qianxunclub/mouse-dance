@@ -25,7 +25,7 @@ struct MouseDanceApp: App {
                 }
         }
         .defaultLaunchBehavior(appDelegate.launchedAsLoginItem ? .suppressed : .automatic)
-        .windowStyle(.titleBar)
+        .windowStyle(.hiddenTitleBar)
         .windowToolbarStyle(.unified)
         .windowResizability(.contentSize)
 
