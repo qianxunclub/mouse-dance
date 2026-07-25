@@ -2,7 +2,7 @@ import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { viteBundler } from '@vuepress/bundler-vite'
 
-const siteBase = '/mouse-dance/'
+const siteBase = '/'
 const withSiteBase = (path) => `${siteBase}${path.replace(/^\//, '')}`
 
 export default defineUserConfig({
