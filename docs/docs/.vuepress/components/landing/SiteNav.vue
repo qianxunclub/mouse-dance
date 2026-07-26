@@ -40,7 +40,10 @@ const links = [
         </a>
       </nav>
 
-      <RouterLink to="/get-started.html" class="site-nav-cta">快速上手</RouterLink>
+      <div class="site-nav-actions">
+        <StarButtons compact />
+        <RouterLink to="/get-started.html" class="site-nav-cta">快速上手</RouterLink>
+      </div>
     </div>
   </header>
 </template>
@@ -112,6 +115,12 @@ const links = [
   background: rgba(255, 255, 255, 0.06);
 }
 
+.site-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
 .site-nav-cta {
   padding: 8px 18px;
   border-radius: 999px;
@@ -132,6 +141,10 @@ const links = [
 
 @media (max-width: 768px) {
   .site-nav-links {
+    display: none;
+  }
+
+  .star-buttons {
     display: none;
   }
 }

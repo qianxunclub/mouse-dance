@@ -13,25 +13,20 @@ import { withBase } from 'vuepress/client'
         </div>
       </div>
 
-      <nav class="site-footer-links" aria-label="页脚导航">
-        <RouterLink to="/get-started.html" class="site-footer-link">快速上手</RouterLink>
-        <a
-          class="site-footer-link"
-          href="https://gitee.com/qianxunclub/mouse-dance"
-          target="_blank"
-          rel="noopener"
-        >
-          Gitee 仓库
-        </a>
-        <a
-          class="site-footer-link"
-          href="https://gitee.com/qianxunclub/mouse-dance/releases"
-          target="_blank"
-          rel="noopener"
-        >
-          版本发布
-        </a>
-      </nav>
+      <div class="site-footer-right">
+        <StarButtons />
+        <nav class="site-footer-links" aria-label="页脚导航">
+          <RouterLink to="/get-started.html" class="site-footer-link">快速上手</RouterLink>
+          <a
+            class="site-footer-link"
+            href="https://gitee.com/qianxunclub/mouse-dance/releases"
+            target="_blank"
+            rel="noopener"
+          >
+            版本发布
+          </a>
+        </nav>
+      </div>
     </div>
 
     <div class="md-container site-footer-bottom">
@@ -86,6 +81,13 @@ import { withBase } from 'vuepress/client'
   margin: 2px 0 0;
   font-size: 13px;
   color: var(--md-text-faint);
+}
+
+.site-footer-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 20px;
 }
 
 .site-footer-links {

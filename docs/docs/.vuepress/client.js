@@ -2,6 +2,7 @@
 import { defineClientConfig } from 'vuepress/client'
 import LandingLayout from './layouts/LandingLayout.vue'
 import HomeLanding from './components/HomeLanding.vue'
+import StarButtons from './components/landing/StarButtons.vue'
 
 const BUSUANZI_SCRIPT_URL = 'https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js'
 
@@ -17,6 +18,7 @@ const reloadBusuanzi = () => {
 export default defineClientConfig({
   enhance({ app, router }) {
     app.component('HomeLanding', HomeLanding)
+    app.component('StarButtons', StarButtons)
 
     if (typeof window === 'undefined') return
 
