@@ -15,6 +15,7 @@ export default defineUserConfig({
 
   head: [
     ['link', { rel: 'icon', href: withSiteBase('/images/AppIcon.png') }],
+    ['meta', { name: 'baidu-site-verification', content: 'codeva-Yb3mPk56pd' }],
     ['link', { rel: 'preconnect', href: 'https://api.fontshare.com' }],
     [
       'script',
@@ -22,6 +23,32 @@ export default defineUserConfig({
         async: true,
         src: 'https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js',
       },
+    ],
+    [
+      'script',
+      {
+        async: true,
+        src: 'https://www.googletagmanager.com/gtag/js?id=G-YCZ727X47D',
+      },
+    ],
+    [
+      'script',
+      {},
+      `window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-YCZ727X47D');`,
+    ],
+    [
+      'script',
+      {},
+      `var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "https://hm.baidu.com/hm.js?078b2a0718b368b90a08050d32d5f517";
+  var s = document.getElementsByTagName("script")[0];
+  s.parentNode.insertBefore(hm, s);
+})();`,
     ],
     [
       'link',
