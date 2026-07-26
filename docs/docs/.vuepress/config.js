@@ -17,6 +17,13 @@ export default defineUserConfig({
     ['link', { rel: 'icon', href: withSiteBase('/images/AppIcon.png') }],
     ['link', { rel: 'preconnect', href: 'https://api.fontshare.com' }],
     [
+      'script',
+      {
+        async: true,
+        src: 'https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js',
+      },
+    ],
+    [
       'link',
       {
         rel: 'stylesheet',

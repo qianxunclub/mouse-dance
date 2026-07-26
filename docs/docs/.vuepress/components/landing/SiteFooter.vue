@@ -36,6 +36,12 @@ import { withBase } from 'vuepress/client'
 
     <div class="md-container site-footer-bottom">
       <span>MIT Licensed</span>
+      <span id="busuanzi_container_site_pv" class="site-footer-busuanzi" style="display: none">
+        本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
+      </span>
+      <span id="busuanzi_container_site_uv" class="site-footer-busuanzi" style="display: none">
+        本站访客数 <span id="busuanzi_value_site_uv"></span> 人
+      </span>
       <span>Copyright © {{ new Date().getFullYear() }} MouseDance</span>
     </div>
   </footer>
