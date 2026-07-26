@@ -44,8 +44,10 @@ import { withBase } from 'vuepress/client'
 
 <style scoped>
 .site-footer {
-  border-top: 1px solid var(--md-border);
-  background: #090b11;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 30%);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
   padding: 48px 0 32px;
 }
 
@@ -67,7 +69,7 @@ import { withBase } from 'vuepress/client'
   width: 42px;
   height: 42px;
   border-radius: 11px;
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 4px 16px rgba(10, 132, 255, 0.4);
 }
 
 .site-footer-name {

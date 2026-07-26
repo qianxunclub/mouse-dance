@@ -1,23 +1,66 @@
 // MouseDance 落地页全局设计令牌与基础样式
+// 配色遵循 Apple HIG：深色外观使用系统语义色（label 层级 + 系统强调色深色变体）
 :root {
-  --md-bg: #0b0d14;
-  --md-bg-soft: #11141f;
-  --md-card: #141824;
-  --md-card-hover: #181d2c;
-  --md-border: rgba(255, 255, 255, 0.08);
-  --md-border-strong: rgba(255, 255, 255, 0.16);
-  --md-text: #e7e9f2;
-  --md-text-dim: #9ba1b5;
-  --md-text-faint: #6b7186;
-  --md-accent-1: #6366f1;
-  --md-accent-2: #a855f7;
-  --md-gradient: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
-  --md-glow: 0 0 60px rgba(139, 92, 246, 0.35);
+  // 背景：macOS 深色系统背景层级
+  --md-bg: #000000;
+  --md-bg-soft: #1c1c1e;
+  --md-card: rgba(28, 28, 30, 0.72);
+  --md-card-hover: rgba(44, 44, 46, 0.8);
+
+  // 文字：label / secondaryLabel / tertiaryLabel
+  --md-text: #ffffff;
+  --md-text-dim: rgba(235, 235, 245, 0.6);
+  --md-text-faint: rgba(235, 235, 245, 0.36);
+
+  // 分隔线
+  --md-border: rgba(255, 255, 255, 0.1);
+  --md-border-strong: rgba(255, 255, 255, 0.18);
+
+  // 系统强调色（深色变体）：青蓝体系，苹果官网经典配色
+  --md-accent-1: #0a84ff; // systemBlue
+  --md-accent-2: #64d2ff; // systemCyan
+  --md-accent-3: #63e6e2; // systemMint
+  --md-accent-green: #30d158; // systemGreen
+  --md-gradient: linear-gradient(135deg, #0a84ff 0%, #64d2ff 100%);
+  --md-glow: 0 0 60px rgba(100, 210, 255, 0.35);
   --md-font-display: 'Clash Display', 'Satoshi', -apple-system, 'PingFang SC', sans-serif;
   --md-font-body: 'Satoshi', -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
   --md-font-mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, monospace;
   --md-radius: 16px;
   --md-max-width: 1120px;
+
+  // Liquid Glass 材质令牌
+  --md-glass-bg: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.05) 38%,
+    rgba(255, 255, 255, 0.02) 100%
+  );
+  --md-glass-border: rgba(255, 255, 255, 0.16);
+  --md-glass-blur: blur(24px) saturate(180%);
+  --md-glass-specular: inset 0 1px 0 rgba(255, 255, 255, 0.28);
+  --md-glass-inner: inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+  --md-glass-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 24px 60px rgba(3, 5, 12, 0.45);
+}
+
+// Liquid Glass 通用材质：半透明染色 + 背景模糊 + 镜面高光
+.md-glass {
+  position: relative;
+  background: var(--md-glass-bg);
+  -webkit-backdrop-filter: var(--md-glass-blur);
+  backdrop-filter: var(--md-glass-blur);
+  border: 1px solid var(--md-glass-border);
+  box-shadow: var(--md-glass-shadow);
+}
+
+// 无 backdrop-filter 支持时退回更实的底色，保证可读性
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .md-glass {
+    background: linear-gradient(165deg, rgba(44, 44, 46, 0.96), rgba(28, 28, 30, 0.96));
+  }
 }
 
 // 落地页基础
@@ -30,7 +73,7 @@
   -webkit-font-smoothing: antialiased;
 
   ::selection {
-    background: rgba(139, 92, 246, 0.4);
+    background: rgba(10, 132, 255, 0.42);
     color: #fff;
   }
 
@@ -66,11 +109,14 @@
   align-items: center;
   gap: 8px;
   padding: 6px 14px;
-  border: 1px solid var(--md-border);
+  border: 1px solid var(--md-glass-border);
   border-radius: 999px;
   font-size: 13px;
   color: var(--md-text-dim);
-  background: rgba(255, 255, 255, 0.03);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+  -webkit-backdrop-filter: blur(14px) saturate(160%);
+  backdrop-filter: blur(14px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.18);
 
   &::before {
     content: '';
@@ -96,9 +142,9 @@
   color: var(--md-text-dim);
 }
 
-// 渐变文字
+// 渐变文字：青 → 蓝，克制清爽
 .md-gradient-text {
-  background: linear-gradient(120deg, #818cf8 0%, #c084fc 55%, #818cf8 100%);
+  background: linear-gradient(120deg, #64d2ff 0%, #0a84ff 100%);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -144,24 +190,29 @@
   background: var(--md-gradient);
   color: #fff;
   box-shadow:
-    0 8px 24px rgba(99, 102, 241, 0.35),
+    0 8px 24px rgba(10, 132, 255, 0.38),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 
   &:hover {
     transform: translateY(-2px);
     box-shadow:
-      0 12px 32px rgba(139, 92, 246, 0.45),
+      0 12px 32px rgba(100, 210, 255, 0.45),
       inset 0 1px 0 rgba(255, 255, 255, 0.2);
   }
 }
 
 .md-btn-ghost {
-  background: rgba(255, 255, 255, 0.04);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
   color: var(--md-text);
-  border: 1px solid var(--md-border-strong);
+  border: 1px solid var(--md-glass-border);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 8px 24px rgba(3, 5, 12, 0.35);
 
   &:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(165deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07));
     transform: translateY(-2px);
   }
 }

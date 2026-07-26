@@ -91,7 +91,7 @@ onMounted(async () => {
       title="Star on Gitee"
     >
       <svg class="star-btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path fill="currentColor" d="M11.984 0C5.337 0 0 5.402 0 12c0 5.302 3.438 9.8 8.207 11.387.599.112.793-.262.793-.581 0-.288-.012-1.05-.019-2.062-3.337.727-4.043-1.612-4.043-1.612-.544-1.394-1.332-1.765-1.332-1.765-1.09-.747.082-.732.082-.732 1.204.085 1.839 1.244 1.839 1.244 1.07 1.842 2.806 1.311 3.491 1.002.108-.78.419-1.312.762-1.613-2.666-.305-5.467-1.339-5.467-5.96 0-1.317.469-2.395 1.237-3.24-.124-.306-.536-1.532.117-3.194 0 0 1.008-.324 3.3 1.236a11.487 11.487 0 0 1 3.003-.406 11.49 11.49 0 0 1 3.003.406c2.29-1.56 3.297-1.236 3.297-1.236.655 1.662.243 2.888.119 3.194.77.845 1.235 1.923 1.235 3.24 0 4.636-2.806 5.652-5.477 5.95.431.373.814 1.105.814 2.225 0 1.607-.014 2.902-.014 3.298 0 .322.19.698.8.58C20.565 21.792 24 17.298 24 12c0-6.598-5.337-12-12.016-12z"/>
+        <path fill="currentColor" d="M11.984 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.016 0zm6.09 5.333c.328 0 .593.266.592.593v1.482a.594.594 0 0 1-.593.592H9.777c-.982 0-1.778.796-1.778 1.778v5.63c0 .327.266.592.593.592h5.63c.982 0 1.778-.796 1.778-1.778v-.296a.593.593 0 0 0-.592-.593h-4.15a.592.592 0 0 1-.592-.592v-1.482a.593.593 0 0 1 .593-.592h6.815c.327 0 .593.265.593.592v3.408a4 4 0 0 1-4 4H5.370a.593.593 0 0 1-.594-.592V9.778a4.444 4.444 0 0 1 4.445-4.444h8.852z"/>
       </svg>
       <span class="star-btn-label" v-if="!compact">Gitee</span>
       <span class="star-btn-count">{{ formatCount(giteeStars) }}</span>
@@ -113,8 +113,11 @@ onMounted(async () => {
   height: 36px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid var(--md-border);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--md-glass-border);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  backdrop-filter: blur(16px) saturate(160%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
   font-size: 13px;
   font-weight: 500;
   color: var(--md-text-dim);
@@ -127,8 +130,8 @@ onMounted(async () => {
 
 .star-btn:hover {
   color: var(--md-text);
-  background: rgba(255, 255, 255, 0.08);
-  border-color: var(--md-border-strong);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07));
+  border-color: rgba(255, 255, 255, 0.28);
   transform: translateY(-1px);
 }
 

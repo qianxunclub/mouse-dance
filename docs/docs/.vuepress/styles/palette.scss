@@ -1,16 +1,17 @@
 // VuePress 默认主题调色板覆盖（主要作用于 /get-started 文档页）
+// 配色遵循 Apple HIG 系统语义色（深色变体）
 :root {
-  --vp-c-accent: #6366f1;
-  --vp-c-accent-bg: #6366f1;
-  --vp-c-accent-hover: #818cf8;
-  --vp-c-accent-soft: rgb(99 102 241 / 0.16);
+  --vp-c-accent: #0a84ff;
+  --vp-c-accent-bg: #0a84ff;
+  --vp-c-accent-hover: #409cff;
+  --vp-c-accent-soft: rgb(10 132 255 / 0.16);
 }
 
 html.dark {
-  --vp-c-bg: #0b0d14;
-  --vp-c-bg-elv: #11141f;
-  --vp-c-bg-soft: #141824;
-  --vp-c-border: rgba(255, 255, 255, 0.08);
-  --vp-c-text: #e7e9f2;
-  --vp-c-text-mute: #9ba1b5;
+  --vp-c-bg: #000000;
+  --vp-c-bg-elv: #1c1c1e;
+  --vp-c-bg-soft: #2c2c2e;
+  --vp-c-border: rgba(255, 255, 255, 0.1);
+  --vp-c-text: #ffffff;
+  --vp-c-text-mute: rgba(235, 235, 245, 0.6);
 }

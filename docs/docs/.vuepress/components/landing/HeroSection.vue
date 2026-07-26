@@ -1,9 +1,76 @@
 <script setup>
 import { withBase } from 'vuepress/client'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { isReducedMotion, makeMagnetic, useGsap } from '../../composables/useGsap'
+
+const heroRef = ref(null)
+let ctx
+let cleanupMagnetic
+let cleanupParallax
+
+onMounted(() => {
+  if (isReducedMotion() || !heroRef.value) return
+  const { gsap } = useGsap()
+  const hero = heroRef.value
+
+  ctx = gsap.context(() => {
+    // 应用图标持续悬浮
+    gsap.to('.hero-icon', {
+      y: -10,
+      duration: 2.4,
+      ease: 'sine.inOut',
+      yoyo: true,
+      repeat: -1,
+    })
+
+    // 向下滚动时 Hero 内容渐隐下沉
+    gsap.to('.hero-content', {
+      autoAlpha: 0.1,
+      y: 90,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: hero,
+        start: 'top top',
+        end: 'bottom 40%',
+        scrub: 0.6,
+      },
+    })
+
+    // 鼠标视差：光晕与网格按深度分层跟随
+    const layers = [
+      { sel: '.hero-glow--left', depth: 34 },
+      { sel: '.hero-glow--right', depth: -28 },
+      { sel: '.hero-grid', depth: 12 },
+    ].map(({ sel, depth }) => ({
+      depth,
+      xTo: gsap.quickTo(sel, 'x', { duration: 0.9, ease: 'power3' }),
+      yTo: gsap.quickTo(sel, 'y', { duration: 0.9, ease: 'power3' }),
+    }))
+
+    const onMove = (e) => {
+      const nx = e.clientX / window.innerWidth - 0.5
+      const ny = e.clientY / window.innerHeight - 0.5
+      layers.forEach(({ depth, xTo, yTo }) => {
+        xTo(nx * depth)
+        yTo(ny * depth)
+      })
+    }
+    hero.addEventListener('mousemove', onMove)
+    cleanupParallax = () => hero.removeEventListener('mousemove', onMove)
+  }, hero)
+
+  cleanupMagnetic = makeMagnetic(hero.querySelector('.hero-cta-magnet'), 0.3)
+})
+
+onBeforeUnmount(() => {
+  ctx?.revert()
+  cleanupMagnetic?.()
+  cleanupParallax?.()
+})
 </script>
 
 <template>
-  <section class="hero" id="top">
+  <section class="hero" id="top" ref="heroRef">
     <div class="hero-bg" aria-hidden="true">
       <div class="hero-glow hero-glow--left"></div>
       <div class="hero-glow hero-glow--right"></div>
@@ -22,12 +89,13 @@ import { withBase } from 'vuepress/client'
         macOS 26+ · 常驻菜单栏 · 免费开源
       </div>
 
-      <img
-        :src="withBase('/images/AppIcon.png')"
-        alt="MouseDance 应用图标"
-        class="hero-icon md-rise"
-        style="animation-delay: 0.15s"
-      />
+      <div class="hero-icon-wrap md-rise" style="animation-delay: 0.15s">
+        <img
+          :src="withBase('/images/AppIcon.png')"
+          alt="MouseDance 应用图标"
+          class="hero-icon"
+        />
+      </div>
 
       <h1 class="hero-title md-rise" style="animation-delay: 0.25s">
         让鼠标在屏幕间
@@ -41,19 +109,21 @@ import { withBase } from 'vuepress/client'
       </p>
 
       <div class="hero-actions md-rise" style="animation-delay: 0.45s">
-        <a
-          class="md-btn md-btn-primary"
-          href="https://gitee.com/qianxunclub/mouse-dance/releases"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          立即下载
-        </a>
+        <span class="hero-cta-magnet">
+          <a
+            class="md-btn md-btn-primary"
+            href="https://gitee.com/qianxunclub/mouse-dance/releases"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            立即下载
+          </a>
+        </span>
         <RouterLink to="/get-started.html" class="md-btn md-btn-ghost">快速上手</RouterLink>
       </div>
 
@@ -111,13 +181,13 @@ import { withBase } from 'vuepress/client'
 .hero-glow--left {
   top: -200px;
   left: -120px;
-  background: radial-gradient(circle, rgba(99, 102, 241, 0.32), transparent 65%);
+  background: radial-gradient(circle, rgba(10, 132, 255, 0.32), transparent 65%);
 }
 
 .hero-glow--right {
   bottom: -260px;
   right: -140px;
-  background: radial-gradient(circle, rgba(168, 85, 247, 0.26), transparent 65%);
+  background: radial-gradient(circle, rgba(100, 210, 255, 0.24), transparent 65%);
 }
 
 .hero-grid {
@@ -134,7 +204,7 @@ import { withBase } from 'vuepress/client'
 .hero-cursor {
   position: absolute;
   color: rgba(255, 255, 255, 0.1);
-  filter: drop-shadow(0 0 14px rgba(139, 92, 246, 0.35));
+  filter: drop-shadow(0 0 14px rgba(100, 210, 255, 0.4));
 }
 
 .hero-cursor--a {
@@ -186,8 +256,13 @@ import { withBase } from 'vuepress/client'
   gap: 8px;
   padding: 7px 16px;
   border-radius: 999px;
-  border: 1px solid var(--md-border);
-  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--md-glass-border);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  backdrop-filter: blur(18px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    0 10px 30px rgba(3, 5, 12, 0.35);
   font-size: 13px;
   color: var(--md-text-dim);
 }
@@ -196,19 +271,26 @@ import { withBase } from 'vuepress/client'
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #34d399;
-  box-shadow: 0 0 8px rgba(52, 211, 153, 0.8);
+  background: #30d158;
+  box-shadow: 0 0 8px rgba(48, 209, 88, 0.8);
+}
+
+.hero-icon-wrap {
+  margin-top: 34px;
 }
 
 .hero-icon {
   width: 118px;
   height: 118px;
-  margin-top: 34px;
   border-radius: 27px;
   box-shadow:
     0 0 0 1px rgba(255, 255, 255, 0.12),
-    0 18px 50px rgba(99, 102, 241, 0.45),
-    0 0 90px rgba(139, 92, 246, 0.3);
+    0 18px 50px rgba(10, 132, 255, 0.45),
+    0 0 90px rgba(100, 210, 255, 0.28);
+}
+
+.hero-cta-magnet {
+  display: inline-flex;
 }
 
 .hero-title {
@@ -259,13 +341,16 @@ import { withBase } from 'vuepress/client'
   min-width: 24px;
   height: 24px;
   padding: 0 6px;
-  border-radius: 6px;
-  border: 1px solid var(--md-border-strong);
+  border-radius: 7px;
+  border: 1px solid var(--md-glass-border);
   border-bottom-width: 2px;
-  background: rgba(255, 255, 255, 0.05);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.28);
   font-family: var(--md-font-mono);
   font-size: 12px;
-  color: var(--md-text-dim);
+  color: var(--md-text);
 }
 
 .hero-meta-divider {
@@ -285,7 +370,11 @@ import { withBase } from 'vuepress/client'
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  border: 1px solid var(--md-border);
+  border: 1px solid var(--md-glass-border);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.22);
   color: var(--md-text-faint);
   animation: hero-bounce 2.2s ease-in-out infinite;
   transition: color 0.25s ease;

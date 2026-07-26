@@ -1,5 +1,20 @@
 <script setup>
 import { ref } from 'vue'
+import { revealSectionHeader, useGsapScope } from '../../composables/useGsap'
+
+const rootRef = ref(null)
+
+useGsapScope(() => rootRef.value, (gsap) => {
+  revealSectionHeader(gsap)
+  gsap.from('.faq-item', {
+    autoAlpha: 0,
+    y: 34,
+    duration: 0.75,
+    stagger: 0.1,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.faq-list', start: 'top 86%', once: true },
+  })
+})
 
 const faqs = [
   {
@@ -32,7 +47,7 @@ const toggle = (index) => {
 </script>
 
 <template>
-  <section class="md-section faq" id="faq">
+  <section class="md-section faq" id="faq" ref="rootRef">
     <div class="md-container faq-container">
       <span class="md-section-tag">常见问题</span>
       <h2 class="md-section-title">还有<span class="md-gradient-text">疑问</span>？</h2>
@@ -56,7 +71,7 @@ const toggle = (index) => {
 
 <style scoped>
 .faq {
-  background: var(--md-bg);
+  background: transparent;
 }
 
 .faq-container {
@@ -71,14 +86,19 @@ const toggle = (index) => {
 }
 
 .faq-item {
-  border: 1px solid var(--md-border);
-  border-radius: var(--md-radius);
-  background: var(--md-card);
+  border: 1px solid var(--md-glass-border);
+  border-radius: 18px;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  backdrop-filter: blur(20px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    0 14px 36px rgba(3, 5, 12, 0.35);
   transition: border-color 0.3s ease;
 }
 
 .faq-item--open {
-  border-color: rgba(139, 92, 246, 0.4);
+  border-color: rgba(255, 255, 255, 0.28);
 }
 
 .faq-question {

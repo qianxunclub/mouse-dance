@@ -51,27 +51,38 @@ const links = [
 <style scoped>
 .site-nav {
   position: fixed;
-  inset: 0 0 auto 0;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 100;
+  width: min(var(--md-max-width), calc(100% - 32px));
+  border-radius: 999px;
+  border: 1px solid var(--md-glass-border);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035));
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 16px 44px rgba(3, 5, 12, 0.4);
   transition:
     background 0.35s ease,
     border-color 0.35s ease,
-    backdrop-filter 0.35s ease;
-  border-bottom: 1px solid transparent;
+    box-shadow 0.35s ease;
 }
 
 .site-nav--scrolled {
-  background: rgba(11, 13, 20, 0.72);
-  backdrop-filter: blur(18px) saturate(1.4);
-  -webkit-backdrop-filter: blur(18px) saturate(1.4);
-  border-bottom-color: var(--md-border);
+  background: linear-gradient(165deg, rgba(24, 27, 43, 0.66), rgba(13, 16, 26, 0.55));
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 20px 52px rgba(3, 5, 12, 0.55);
 }
 
 .site-nav-inner {
-  max-width: var(--md-max-width);
-  margin: 0 auto;
-  padding: 0 24px;
-  height: 64px;
+  padding: 0 12px 0 22px;
+  height: 58px;
   display: flex;
   align-items: center;
   gap: 32px;
@@ -90,7 +101,7 @@ const links = [
   width: 30px;
   height: 30px;
   border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(99, 102, 241, 0.45);
+  box-shadow: 0 2px 10px rgba(10, 132, 255, 0.5);
 }
 
 .site-nav-links {
@@ -128,7 +139,7 @@ const links = [
   font-weight: 600;
   color: #fff;
   background: var(--md-gradient);
-  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.35);
+  box-shadow: 0 4px 16px rgba(10, 132, 255, 0.38);
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease;
@@ -136,7 +147,7 @@ const links = [
 
 .site-nav-cta:hover {
   transform: translateY(-1px);
-  box-shadow: 0 8px 22px rgba(139, 92, 246, 0.45);
+  box-shadow: 0 8px 22px rgba(100, 210, 255, 0.45);
 }
 
 @media (max-width: 768px) {

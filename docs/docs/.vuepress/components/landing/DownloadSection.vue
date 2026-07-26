@@ -1,5 +1,43 @@
 <script setup>
-import { ref } from 'vue'
+import { onBeforeUnmount, onMounted, ref } from 'vue'
+import { isReducedMotion, makeMagnetic, useGsapScope } from '../../composables/useGsap'
+
+const rootRef = ref(null)
+let cleanupMagnetic
+
+useGsapScope(() => rootRef.value, (gsap) => {
+  gsap.from('.download-panel', {
+    autoAlpha: 0,
+    y: 64,
+    duration: 0.95,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.download-panel', start: 'top 84%', once: true },
+  })
+  gsap.from('.download-step', {
+    autoAlpha: 0,
+    y: 32,
+    duration: 0.7,
+    stagger: 0.12,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.download-steps', start: 'top 88%', once: true },
+  })
+  gsap.from('.download-command', {
+    autoAlpha: 0,
+    y: 24,
+    duration: 0.7,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.download-command', start: 'top 92%', once: true },
+  })
+})
+
+onMounted(() => {
+  if (isReducedMotion() || !rootRef.value) return
+  cleanupMagnetic = makeMagnetic(rootRef.value.querySelector('.download-cta-magnet'), 0.3)
+})
+
+onBeforeUnmount(() => {
+  cleanupMagnetic?.()
+})
 
 const command = 'xattr -cr /Applications/MouseDance.app'
 const copied = ref(false)
@@ -26,7 +64,7 @@ const steps = [
   },
   {
     title: '解除 Gatekeeper 隔离',
-    desc: '应用未使用 Apple 开发者证书签名，首次打开前在终端执行右侧命令（一键复制）。',
+    desc: '应用未使用 Apple 开发者证书签名，首次打开前在终端执行下方命令（一键复制）。',
   },
   {
     title: '打开并授权',
@@ -36,7 +74,7 @@ const steps = [
 </script>
 
 <template>
-  <section class="md-section download" id="download">
+  <section class="md-section download" id="download" ref="rootRef">
     <div class="md-container">
       <div class="download-panel">
         <div class="download-glow" aria-hidden="true"></div>
@@ -47,19 +85,21 @@ const steps = [
           本应用未签名，首次打开 macOS 可能提示"应用已损坏"或"无法验证开发者"——属正常现象，按下方步骤处理即可。
         </p>
 
-        <a
-          class="md-btn md-btn-primary download-cta"
-          href="https://gitee.com/qianxunclub/mouse-dance/releases"
-          target="_blank"
-          rel="noopener"
-        >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" y1="15" x2="12" y2="3" />
-          </svg>
-          下载 MouseDance（dmg）
-        </a>
+        <span class="download-cta-magnet">
+          <a
+            class="md-btn md-btn-primary download-cta"
+            href="https://gitee.com/qianxunclub/mouse-dance/releases"
+            target="_blank"
+            rel="noopener"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+              <polyline points="7 10 12 15 17 10" />
+              <line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            下载 MouseDance（dmg）
+          </a>
+        </span>
 
         <div class="download-steps">
           <div v-for="(step, i) in steps" :key="step.title" class="download-step">
@@ -91,17 +131,21 @@ const steps = [
 
 <style scoped>
 .download {
-  background:
-    radial-gradient(ellipse 60% 50% at 50% 100%, rgba(99, 102, 241, 0.1), transparent 70%),
-    var(--md-bg);
+  background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(10, 132, 255, 0.12), transparent 70%);
 }
 
 .download-panel {
   position: relative;
   padding: 56px clamp(24px, 6vw, 72px);
-  border-radius: 24px;
-  border: 1px solid var(--md-border);
-  background: linear-gradient(180deg, rgba(20, 24, 36, 0.9), rgba(13, 16, 26, 0.9));
+  border-radius: 28px;
+  border: 1px solid var(--md-glass-border);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03) 45%, rgba(255, 255, 255, 0.015));
+  -webkit-backdrop-filter: blur(26px) saturate(180%);
+  backdrop-filter: blur(26px) saturate(180%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.26),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 30px 80px rgba(3, 5, 12, 0.55);
   overflow: hidden;
 }
 
@@ -112,7 +156,7 @@ const steps = [
   width: 420px;
   height: 420px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(139, 92, 246, 0.22), transparent 65%);
+  background: radial-gradient(circle, rgba(100, 210, 255, 0.2), transparent 65%);
   filter: blur(70px);
   pointer-events: none;
 }
@@ -123,6 +167,10 @@ const steps = [
   font-size: 14px;
   line-height: 1.7;
   color: var(--md-text-faint);
+}
+
+.download-cta-magnet {
+  display: inline-flex;
 }
 
 .download-cta {
@@ -141,8 +189,9 @@ const steps = [
   gap: 14px;
   padding: 20px;
   border-radius: var(--md-radius);
-  border: 1px solid var(--md-border);
-  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .download-step-num {
@@ -179,16 +228,17 @@ const steps = [
   gap: 12px;
   margin-top: 24px;
   padding: 14px 18px;
-  border-radius: 12px;
-  border: 1px solid var(--md-border);
-  background: #080a10;
+  border-radius: 14px;
+  border: 1px solid var(--md-glass-border);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
 }
 
 .download-command code {
   flex: 1;
   font-family: var(--md-font-mono);
   font-size: 14px;
-  color: #c7caff;
+  color: #64d2ff;
   overflow-x: auto;
   white-space: nowrap;
 }
@@ -198,9 +248,10 @@ const steps = [
   align-items: center;
   gap: 6px;
   padding: 7px 14px;
-  border-radius: 8px;
-  border: 1px solid var(--md-border-strong);
-  background: rgba(255, 255, 255, 0.05);
+  border-radius: 9px;
+  border: 1px solid var(--md-glass-border);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
   color: var(--md-text-dim);
   font-size: 13px;
   font-family: var(--md-font-body);
@@ -212,7 +263,7 @@ const steps = [
 
 .download-copy:hover {
   color: var(--md-text);
-  background: rgba(255, 255, 255, 0.1);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.07));
 }
 
 @media (max-width: 860px) {

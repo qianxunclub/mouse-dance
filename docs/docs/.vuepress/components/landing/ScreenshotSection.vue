@@ -1,9 +1,43 @@
 <script setup>
 import { withBase } from 'vuepress/client'
+import { ref } from 'vue'
+import { revealSectionHeader, useGsapScope } from '../../composables/useGsap'
+
+const rootRef = ref(null)
+
+useGsapScope(() => rootRef.value, (gsap) => {
+  revealSectionHeader(gsap)
+
+  // 窗口入场，完成后进入持续悬浮
+  gsap.from('.shot-window', {
+    autoAlpha: 0,
+    y: 72,
+    scale: 0.93,
+    duration: 1.05,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.shot-frame', start: 'top 82%', once: true },
+    onComplete: () => {
+      gsap.to('.shot-window', {
+        y: -10,
+        duration: 3.2,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+      })
+    },
+  })
+
+  // 光晕随滚动缓慢上移，营造纵深
+  gsap.to('.shot-glow', {
+    yPercent: -22,
+    ease: 'none',
+    scrollTrigger: { trigger: '.shot-frame', start: 'top bottom', end: 'bottom top', scrub: 1 },
+  })
+})
 </script>
 
 <template>
-  <section class="md-section shot" id="screenshot">
+  <section class="md-section shot" id="screenshot" ref="rootRef">
     <div class="md-container">
       <span class="md-section-tag">真实界面</span>
       <h2 class="md-section-title">深色原生，<span class="md-gradient-text">所见即所得</span></h2>
@@ -29,7 +63,7 @@ import { withBase } from 'vuepress/client'
 
 <style scoped>
 .shot {
-  background: var(--md-bg);
+  background: transparent;
 }
 
 .shot-frame {
@@ -41,21 +75,21 @@ import { withBase } from 'vuepress/client'
   position: absolute;
   inset: -8% -12%;
   background:
-    radial-gradient(ellipse 45% 55% at 30% 40%, rgba(99, 102, 241, 0.28), transparent 70%),
-    radial-gradient(ellipse 40% 50% at 72% 60%, rgba(168, 85, 247, 0.22), transparent 70%);
+    radial-gradient(ellipse 45% 55% at 30% 40%, rgba(10, 132, 255, 0.3), transparent 70%),
+    radial-gradient(ellipse 40% 50% at 72% 60%, rgba(100, 210, 255, 0.2), transparent 70%);
   filter: blur(60px);
   pointer-events: none;
 }
 
 .shot-window {
   position: relative;
-  border-radius: 14px;
-  border: 1px solid var(--md-border-strong);
-  background: #16181f;
+  border-radius: 18px;
+  border: 1px solid var(--md-glass-border);
+  background: rgba(255, 255, 255, 0.04);
   overflow: hidden;
   box-shadow:
-    0 30px 80px rgba(3, 4, 8, 0.7),
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset;
+    inset 0 1px 0 rgba(255, 255, 255, 0.24),
+    0 32px 90px rgba(3, 4, 8, 0.65);
 }
 
 .shot-titlebar {
@@ -64,8 +98,10 @@ import { withBase } from 'vuepress/client'
   gap: 8px;
   height: 38px;
   padding: 0 16px;
-  border-bottom: 1px solid var(--md-border);
-  background: rgba(255, 255, 255, 0.025);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03));
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  backdrop-filter: blur(18px) saturate(160%);
 }
 
 .shot-light {

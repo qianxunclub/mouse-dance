@@ -1,4 +1,29 @@
 <script setup>
+import { ref } from 'vue'
+import { revealSectionHeader, useGsapScope } from '../../composables/useGsap'
+
+const rootRef = ref(null)
+
+useGsapScope(() => rootRef.value, (gsap) => {
+  revealSectionHeader(gsap)
+  gsap.from('.feature-card', {
+    autoAlpha: 0,
+    y: 48,
+    duration: 0.85,
+    stagger: 0.09,
+    ease: 'power3.out',
+    scrollTrigger: { trigger: '.features-grid', start: 'top 84%', once: true },
+  })
+})
+
+// 卡片光斑跟随指针
+const onCardMove = (e) => {
+  const card = e.currentTarget
+  const r = card.getBoundingClientRect()
+  card.style.setProperty('--glow-x', `${e.clientX - r.left}px`)
+  card.style.setProperty('--glow-y', `${e.clientY - r.top}px`)
+}
+
 const features = [
   {
     title: '多屏快捷键跳转',
@@ -34,7 +59,7 @@ const features = [
 </script>
 
 <template>
-  <section class="md-section features" id="features">
+  <section class="md-section features" id="features" ref="rootRef">
     <div class="md-container">
       <span class="md-section-tag">功能特性</span>
       <h2 class="md-section-title">
@@ -45,7 +70,7 @@ const features = [
       </p>
 
       <div class="features-grid">
-        <article v-for="feature in features" :key="feature.title" class="feature-card">
+        <article v-for="feature in features" :key="feature.title" class="feature-card" @mousemove="onCardMove">
           <div class="feature-icon">
             <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
               <path v-for="(d, i) in feature.icon.split(' M')" :key="i" :d="i === 0 ? d : 'M' + d" />
@@ -61,9 +86,7 @@ const features = [
 
 <style scoped>
 .features {
-  background:
-    radial-gradient(ellipse 60% 40% at 85% 0%, rgba(99, 102, 241, 0.08), transparent 70%),
-    var(--md-bg);
+  background: radial-gradient(ellipse 60% 40% at 85% 0%, rgba(10, 132, 255, 0.1), transparent 70%);
 }
 
 .features-grid {
@@ -76,9 +99,15 @@ const features = [
 .feature-card {
   position: relative;
   padding: 28px;
-  border-radius: var(--md-radius);
-  border: 1px solid var(--md-border);
-  background: var(--md-card);
+  border-radius: 20px;
+  border: 1px solid var(--md-glass-border);
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035) 42%, rgba(255, 255, 255, 0.015));
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+  backdrop-filter: blur(22px) saturate(170%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.05),
+    0 20px 50px rgba(3, 5, 12, 0.4);
   transition:
     transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
     border-color 0.35s ease,
@@ -90,15 +119,18 @@ const features = [
   content: '';
   position: absolute;
   inset: 0;
-  background: radial-gradient(320px circle at var(--glow-x, 50%) 0%, rgba(139, 92, 246, 0.1), transparent 70%);
+  background: radial-gradient(320px circle at var(--glow-x, 50%) var(--glow-y, 0%), rgba(255, 255, 255, 0.14), transparent 70%);
   opacity: 0;
   transition: opacity 0.35s ease;
 }
 
 .feature-card:hover {
   transform: translateY(-6px);
-  border-color: rgba(139, 92, 246, 0.4);
-  box-shadow: 0 16px 40px rgba(5, 6, 10, 0.5);
+  border-color: rgba(255, 255, 255, 0.26);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06),
+    0 26px 60px rgba(3, 5, 12, 0.55);
 }
 
 .feature-card:hover::before {
@@ -111,10 +143,13 @@ const features = [
   justify-content: center;
   width: 46px;
   height: 46px;
-  border-radius: 12px;
-  color: #c7caff;
-  background: linear-gradient(135deg, rgba(99, 102, 241, 0.22), rgba(168, 85, 247, 0.22));
-  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 13px;
+  color: #64d2ff;
+  background: linear-gradient(165deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.05));
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.3),
+    0 6px 18px rgba(10, 132, 255, 0.28);
 }
 
 .feature-title {
