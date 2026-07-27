@@ -395,14 +395,87 @@ onBeforeUnmount(() => {
 }
 
 @media (max-width: 640px) {
+  .hero {
+    padding: 80px 0 48px;
+    min-height: 100svh;
+  }
+
   .hero-br {
     display: none;
   }
 
   .hero-icon {
-    width: 96px;
-    height: 96px;
-    border-radius: 22px;
+    width: 88px;
+    height: 88px;
+    border-radius: 20px;
+  }
+
+  .hero-icon-wrap {
+    margin-top: 24px;
+  }
+
+  .hero-title {
+    margin-top: 22px;
+    font-size: clamp(32px, 9vw, 42px);
+  }
+
+  .hero-subtitle {
+    margin-top: 16px;
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  .hero-actions {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-top: 28px;
+    width: 100%;
+    padding: 0 12px;
+  }
+
+  .hero-actions .md-btn {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .hero-meta {
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 26px;
+  }
+
+  .hero-meta-divider {
+    display: none;
+  }
+
+  .hero-glow {
+    width: 320px;
+    height: 320px;
+  }
+
+  .hero-glow--left {
+    top: -100px;
+    left: -60px;
+  }
+
+  .hero-glow--right {
+    bottom: -130px;
+    right: -70px;
+  }
+
+  .hero-cursor--a {
+    width: 30px;
+    left: 6%;
+  }
+
+  .hero-cursor--b {
+    width: 22px;
+    right: 6%;
+  }
+
+  .hero-scroll {
+    bottom: 16px;
   }
 }
 </style>

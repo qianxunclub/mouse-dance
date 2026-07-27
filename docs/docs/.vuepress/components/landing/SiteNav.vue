@@ -151,12 +151,32 @@ const links = [
 }
 
 @media (max-width: 768px) {
+  .site-nav {
+    top: 8px;
+    width: calc(100% - 16px);
+  }
+
+  .site-nav-inner {
+    height: 50px;
+    padding: 0 8px 0 14px;
+    gap: 12px;
+  }
+
   .site-nav-links {
     display: none;
   }
 
   .star-buttons {
     display: none;
+  }
+
+  .site-nav-name {
+    display: none;
+  }
+
+  .site-nav-cta {
+    padding: 7px 14px;
+    font-size: 13px;
   }
 }
 </style>

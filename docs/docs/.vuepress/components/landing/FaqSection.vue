@@ -116,6 +116,10 @@ const toggle = (index) => {
   font-family: var(--md-font-body);
   text-align: left;
   cursor: pointer;
+
+  > span {
+    min-width: 0;
+  }
 }
 
 .faq-chevron {
@@ -151,5 +155,31 @@ const toggle = (index) => {
 
 .faq-item--open .faq-answer-text {
   padding-bottom: 22px;
+}
+
+@media (max-width: 640px) {
+  .faq-question {
+    padding: 16px 18px;
+    font-size: 14px;
+    gap: 12px;
+  }
+
+  .faq-answer-text {
+    padding: 0 18px;
+    font-size: 13px;
+  }
+
+  .faq-item--open .faq-answer-text {
+    padding-bottom: 18px;
+  }
+
+  .faq-item {
+    border-radius: 14px;
+  }
+
+  .faq-list {
+    gap: 10px;
+    margin-top: 32px;
+  }
 }
 </style>

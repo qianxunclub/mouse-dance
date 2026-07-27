@@ -73,7 +73,7 @@ useGsapScope(() => rootRef.value, (gsap) => {
 
 .shot-glow {
   position: absolute;
-  inset: -8% -12%;
+  inset: 0;
   background:
     radial-gradient(ellipse 45% 55% at 30% 40%, rgba(10, 132, 255, 0.3), transparent 70%),
     radial-gradient(ellipse 40% 50% at 72% 60%, rgba(100, 210, 255, 0.2), transparent 70%);
@@ -134,5 +134,30 @@ useGsapScope(() => rootRef.value, (gsap) => {
   display: block;
   width: 100%;
   height: auto;
+}
+
+@media (max-width: 640px) {
+  .shot-frame {
+    margin-top: 36px;
+  }
+
+  .shot-window {
+    border-radius: 12px;
+  }
+
+  .shot-titlebar {
+    height: 30px;
+    padding: 0 12px;
+    gap: 6px;
+  }
+
+  .shot-light {
+    width: 10px;
+    height: 10px;
+  }
+
+  .shot-titlebar-text {
+    font-size: 12px;
+  }
 }
 </style>

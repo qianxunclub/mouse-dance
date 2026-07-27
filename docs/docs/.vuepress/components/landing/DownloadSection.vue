@@ -171,6 +171,8 @@ const steps = [
 
 .download-cta-magnet {
   display: inline-flex;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .download-cta {
@@ -192,6 +194,7 @@ const steps = [
   border: 1px solid rgba(255, 255, 255, 0.12);
   background: linear-gradient(165deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  min-width: 0;
 }
 
 .download-step-num {
@@ -220,6 +223,8 @@ const steps = [
   font-size: 13px;
   line-height: 1.7;
   color: var(--md-text-dim);
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .download-command {
@@ -232,10 +237,12 @@ const steps = [
   border: 1px solid var(--md-glass-border);
   background: linear-gradient(165deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.02));
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  min-width: 0;
 }
 
 .download-command code {
   flex: 1;
+  min-width: 0;
   font-family: var(--md-font-mono);
   font-size: 14px;
   color: #64d2ff;
@@ -269,6 +276,71 @@ const steps = [
 @media (max-width: 860px) {
   .download-steps {
     grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 640px) {
+  .download-panel {
+    padding: 32px 16px;
+    border-radius: 20px;
+  }
+
+  .download-hint {
+    font-size: 13px;
+  }
+
+  .download-cta-magnet {
+    display: block;
+    width: 100%;
+  }
+
+  .download-cta {
+    width: 100%;
+    margin-top: 22px;
+  }
+
+  .download-steps {
+    gap: 14px;
+    margin-top: 32px;
+  }
+
+  .download-step {
+    padding: 16px;
+    border-radius: 14px;
+  }
+
+  .download-step-title {
+    font-size: 14px;
+  }
+
+  .download-step-desc {
+    font-size: 12px;
+    margin-top: 6px;
+  }
+
+  .download-command {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+
+  .download-command code {
+    font-size: 12px;
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  .download-copy {
+    align-self: flex-end;
+  }
+
+  .download-glow {
+    width: 220px;
+    height: 220px;
+    top: -80px;
+    right: -60px;
   }
 }
 </style>

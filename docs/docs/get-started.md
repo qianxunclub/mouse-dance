@@ -1,3 +1,12 @@
+---
+title: 快速上手 - MouseDance 安装与使用指南
+description: MouseDance 快速上手教程：下载安装、授权输入监控权限、录制屏幕快捷键、配置快捷切换、标记屏幕、开机自启动。几分钟内完成 macOS 多显示器鼠标跳转工具配置。
+head:
+  - - meta
+    - name: keywords
+      content: MouseDance,安装教程,快速上手,使用指南,macOS,鼠标跳转,多显示器,快捷键配置,输入监控授权
+---
+
 # 快速上手
 
 本指南帮助你在几分钟内完成 MouseDance 的安装、授权与快捷键配置。

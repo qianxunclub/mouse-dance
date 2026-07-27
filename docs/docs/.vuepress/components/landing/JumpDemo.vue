@@ -461,13 +461,66 @@ onBeforeUnmount(() => {
 
 @media (max-width: 640px) {
   .demo-stage {
-    gap: 14px;
-    padding: 18px;
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 14px;
+    margin-top: 32px;
+    border-radius: 18px;
+  }
+
+  .demo-screen {
+    aspect-ratio: 16 / 9;
+    min-width: 0;
+    border-radius: 10px;
+  }
+
+  .demo-menubar {
+    height: 14px;
+    border-radius: 10px 10px 0 0;
+    padding: 0 8px;
+  }
+
+  .demo-menubar-apple,
+  .demo-menubar-icon {
+    width: 6px;
+    height: 6px;
+  }
+
+  .demo-screen-name {
+    font-size: 12px;
+  }
+
+  .demo-controls {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .demo-key {
+    justify-content: center;
+    padding: 10px 14px;
+    min-width: 0;
+    font-size: 13px;
+    border-radius: 12px;
+  }
+
+  .demo-key kbd {
+    min-width: 24px;
+    height: 24px;
+    font-size: 12px;
   }
 
   .demo-status {
     width: 100%;
     margin-left: 0;
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  .demo-inline-kbd {
+    font-size: 12px;
+    padding: 1px 5px;
   }
 }
 </style>

@@ -174,6 +174,29 @@ const features = [
 @media (max-width: 640px) {
   .features-grid {
     grid-template-columns: 1fr;
+    gap: 14px;
+    margin-top: 36px;
+  }
+
+  .feature-card {
+    padding: 20px;
+    border-radius: 16px;
+  }
+
+  .feature-title {
+    font-size: 16px;
+    margin-top: 14px;
+  }
+
+  .feature-desc {
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  .feature-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
   }
 }
 </style>

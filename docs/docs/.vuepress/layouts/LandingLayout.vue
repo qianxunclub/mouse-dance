@@ -44,6 +44,8 @@ useGsapScope(() => landingRef.value, (gsap) => {
 .md-landing-content {
   position: relative;
   z-index: 1;
+  width: 100%;
+  overflow-x: hidden;
 }
 
 .md-aurora {

@@ -119,4 +119,36 @@ import { withBase } from 'vuepress/client'
   font-size: 13px;
   color: var(--md-text-faint);
 }
+
+@media (max-width: 640px) {
+  .site-footer {
+    padding: 36px 0 24px;
+  }
+
+  .site-footer-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 20px;
+  }
+
+  .site-footer-right {
+    align-items: center;
+    gap: 16px;
+  }
+
+  .site-footer-links {
+    justify-content: center;
+    gap: 18px;
+  }
+
+  .site-footer-bottom {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 6px;
+    margin-top: 28px;
+    padding-top: 20px;
+  }
+}
 </style>
