@@ -1,4 +1,5 @@
 import { sitemapPlugin } from '@vuepress/plugin-sitemap'
+import { commentPlugin } from '@vuepress/plugin-comment'
 import { defaultTheme } from '@vuepress/theme-default'
 import { defineUserConfig } from 'vuepress'
 import { viteBundler } from '@vuepress/bundler-vite'
@@ -122,6 +123,21 @@ gtag('config', 'G-YCZ727X47D');`,
       hostname: SITE_URL,
       extraUrls: [],
       devServer: true,
+    }),
+    commentPlugin({
+      provider: 'Giscus',
+      repo: 'qianxunclub/mouse-dance',
+      repoId: 'R_kgDOTdKXlQ',
+      category: 'Announcements',
+      categoryId: 'DIC_kwDOTdKXlc4DCEZF',
+      strict: 0,
+      mapping: 'pathname',
+      lang: 'zh-CN',
+      reactionsEnabled: true,
+      emitMetadata: 0,
+      inputPosition: 'top',
+      lazyLoading: true,
+      darkTheme: 'dark',
     }),
   ],
 

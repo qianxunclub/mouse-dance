@@ -1,5 +1,6 @@
 // 组件注册与自定义布局
 import { defineClientConfig } from 'vuepress/client'
+import Layout from './layouts/Layout.vue'
 import LandingLayout from './layouts/LandingLayout.vue'
 import HomeLanding from './components/HomeLanding.vue'
 import StarButtons from './components/landing/StarButtons.vue'
@@ -32,6 +33,7 @@ export default defineClientConfig({
     })
   },
   layouts: {
+    Layout,
     LandingLayout,
   },
 })
