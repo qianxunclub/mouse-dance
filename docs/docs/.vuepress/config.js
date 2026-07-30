@@ -108,6 +108,33 @@ gtag('config', 'G-YCZ727X47D');`,
 })();`,
     ],
 
+    // ── 阿里云 RUM 实时监控 ──
+    [
+      'script',
+      { async: true, src: '//sdk.rum.aliyuncs.com/v2/browser-sdk.js' },
+    ],
+    [
+      'script',
+      {},
+      `(function(c,b,d,a){c[a]||(c[a]={});c[a]={
+endpoint: 'https://proj-xtrace-f71b91c21abfa0e8796aa7622594955f-cn-shenzhen.cn-shenzhen.log.aliyuncs.com/rum/web/v2?workspace=default-cms-1123321151308280-cn-shenzhen&service_id=b26mm272ew%4024cbec73fe3b35b92d800',
+env: 'prod',
+spaMode: 'history',
+collectors: {
+perf: true,
+webVitals: true,
+api: true,
+staticResource: true,
+jsError: true,
+consoleError: true,
+action: true,
+},
+tracing: false,
+}
+with(b)with(body)with(insertBefore(createElement("script"),firstChild))setAttribute("crossorigin","",src=d)
+})(window, document, "//sdk.rum.aliyuncs.com/v2/browser-sdk.js", "__rum");`,
+    ],
+
     // ── 字体 ──
     [
       'link',
