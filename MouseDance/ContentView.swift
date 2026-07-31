@@ -10,34 +10,69 @@ struct ContentView: View {
             Section {
                 permissionRow
 
-                HStack {
-                    Label("快捷切换", systemImage: "keyboard")
-                        .lineLimit(1)
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Label("快捷切换", systemImage: "keyboard")
+                            .lineLimit(1)
 
-                    Spacer(minLength: 12)
+                        Spacer(minLength: 12)
 
-                    ShortcutRecorderView(
-                        shortcut: $store.toggleShortcut,
-                        isRecording: $isRecordingToggle
-                    )
-                    .frame(width: 180, height: 24)
+                        ShortcutRecorderView(
+                            shortcut: $store.toggleShortcut,
+                            isRecording: $isRecordingToggle
+                        )
+                        .frame(width: 180, height: 24)
+                    }
+                    .frame(height: 24)
+
+                    HStack(spacing: 3) {
+                        Text("当前屏幕与上一个活跃屏幕之间切换，支持双击")
+                        Image(systemName: "command")
+                        Text(" 、")
+                        Image(systemName: "control")
+                        Text(" 、")
+                        Image(systemName: "option")
+                        Text("。")
+                    }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 }
-                .frame(height: 24)
 
-                HStack {
-                    Label("开机自启动", systemImage: "power")
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Label("开机自启动", systemImage: "power")
 
-                    Spacer(minLength: 12)
+                        Spacer(minLength: 12)
 
-                    Toggle("开机自启动", isOn: store.launchAtLoginBinding)
-                        .labelsHidden()
-                        .toggleStyle(.switch)
+                        Toggle("开机自启动", isOn: store.launchAtLoginBinding)
+                            .labelsHidden()
+                            .toggleStyle(.switch)
+                    }
+                    .frame(height: 24)
+
+                    Text("开启后登录系统即自动运行，仅显示菜单栏图标，程序坞不显示图标。")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
-                .frame(height: 24)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Label("启动默认在程序坞隐藏", systemImage: "dock.rectangle")
+
+                        Spacer(minLength: 12)
+
+                        Toggle("启动默认在程序坞隐藏", isOn: store.hideInDockAtLaunchBinding)
+                            .labelsHidden()
+                            .toggleStyle(.switch)
+                    }
+                    .frame(height: 24)
+
+                    Text("开启后应用启动时不显示程序坞图标，主窗口仍会正常打开。")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
             } header: {
                 Text("全局配置")
-            } footer: {
-                Text("快捷切换用于在当前屏幕与上一个活跃屏幕之间快速移动鼠标，支持录入双击 Command / Control / Option。开机自启动后仅常驻菜单栏，程序坞不显示图标。")
             }
 
             Section {
@@ -73,10 +108,6 @@ struct ContentView: View {
                 .labelStyle(.titleAndIcon)
                 .help("在每一块屏幕上显示其编号与快捷键")
             }
-        }
-        .onReceive(NotificationCenter.default.publisher(for: NSApplication.didBecomeActiveNotification)) { _ in
-            store.refreshInputMonitoringState()
-            store.refreshLaunchAtLoginState()
         }
     }
 

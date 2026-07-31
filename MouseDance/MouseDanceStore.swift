@@ -514,6 +514,7 @@ final class MouseDanceStore: ObservableObject {
     @Published private(set) var hasMarkedScreens = false
     @Published private(set) var lastMarkedAt: Date?
     @Published private(set) var launchAtLoginEnabled = false
+    @Published private(set) var hideInDockAtLaunchEnabled = false
 
     @Published var screenShortcuts: [CGDirectDisplayID: ShortcutKey] = [:] {
         didSet {
@@ -548,6 +549,8 @@ final class MouseDanceStore: ObservableObject {
 
     private var screenObserver: NSObjectProtocol?
     private var windowCloseObserver: NSObjectProtocol?
+    private var activationObserver: NSObjectProtocol?
+    private var approvalPollTask: Task<Void, Never>?
     private var hasStarted = false
     private let previewMode: Bool
     private var shouldAutoRestartAfterPermissionGrant = false
@@ -555,12 +558,14 @@ final class MouseDanceStore: ObservableObject {
 
     private static let shortcutsStorageKey = "mouseDance.screenShortcuts"
     private static let toggleShortcutStorageKey = "mouseDance.toggleShortcut"
+    static let hideInDockAtLaunchStorageKey = "mouseDance.hideInDockAtLaunch"
 
     init(previewMode: Bool = false) {
         self.previewMode = previewMode
         self.screenShortcuts = Self.loadScreenShortcuts()
         self.toggleShortcut = Self.loadToggleShortcut() ?? Self.defaultToggleShortcut
         self.launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
+        self.hideInDockAtLaunchEnabled = UserDefaults.standard.bool(forKey: Self.hideInDockAtLaunchStorageKey)
 
         if previewMode {
             displays = Self.previewDisplays
@@ -609,6 +614,25 @@ final class MouseDanceStore: ObservableObject {
         refreshLaunchAtLoginState()
     }
 
+    /// 启动默认在程序坞隐藏开关绑定
+    var hideInDockAtLaunchBinding: Binding<Bool> {
+        Binding(
+            get: { self.hideInDockAtLaunchEnabled },
+            set: { self.setHideInDockAtLaunch($0) }
+        )
+    }
+
+    func setHideInDockAtLaunch(_ enabled: Bool) {
+        guard !previewMode else { return }
+        hideInDockAtLaunchEnabled = enabled
+        UserDefaults.standard.set(enabled, forKey: Self.hideInDockAtLaunchStorageKey)
+        // 立即切换激活策略，让本次运行也生效；下次启动时会按偏好隐藏程序坞图标
+        NSApp.setActivationPolicy(enabled ? .accessory : .regular)
+        statusMessage = enabled
+            ? "已开启启动默认在程序坞隐藏，下次启动将不显示程序坞图标，主窗口仍会正常打开。"
+            : "已关闭启动默认在程序坞隐藏，下次启动将恢复显示程序坞图标。"
+    }
+
     func start() {
         guard !previewMode else { return }
         guard !hasStarted else { return }
@@ -616,6 +640,10 @@ final class MouseDanceStore: ObservableObject {
 
         refreshScreens(updateStatus: false)
         refreshPermissionState(startMonitor: true)
+        if !inputMonitoringGranted {
+            // 新版本安装后系统会重置输入监控授权，启动时给出明确引导
+            statusMessage = "尚未获得输入监控权限（升级新版后系统会重置授权）。请点击菜单栏图标 →「前往授权…」重新开启，后台全局快捷键才能生效。"
+        }
 
         screenObserver = NotificationCenter.default.addObserver(
             forName: NSApplication.didChangeScreenParametersNotification,
@@ -626,6 +654,18 @@ final class MouseDanceStore: ObservableObject {
             Task { @MainActor [self] in
                 self.refreshScreens(updateStatus: false)
                 self.statusMessage = "检测到显示器变化，可点击「重新标记屏幕」同步最新编号。"
+            }
+        }
+
+        // 全局监听应用激活：从系统设置授权返回时，即使主窗口未打开也能自动重检权限
+        activationObserver = NotificationCenter.default.addObserver(
+            forName: NSApplication.didBecomeActiveNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.refreshInputMonitoringState()
+                self?.refreshLaunchAtLoginState()
             }
         }
 
@@ -672,11 +712,7 @@ final class MouseDanceStore: ObservableObject {
         statusMessage = didOpenSettings
             ? "系统已打开“隐私与安全性 > 输入监控”，请勾选 MouseDance，授权成功后应用会自动重启。"
             : "系统已发起输入监控授权请求，请手动前往“隐私与安全性 > 输入监控”允许本应用。"
-
-        Task { @MainActor in
-            try? await Task.sleep(for: .seconds(1))
-            self.refreshPermissionState(startMonitor: true)
-        }
+        startApprovalPolling()
     }
 
     func refreshInputMonitoringState() {
@@ -692,6 +728,31 @@ final class MouseDanceStore: ObservableObject {
         } else {
             statusMessage = "尚未获得输入监控权限，后台全局快捷键暂不可用。"
         }
+    }
+
+    /// 授权等待期间轮询检测授权状态，避免用户授权后应用无法感知
+    private func startApprovalPolling() {
+        stopApprovalPolling()
+        approvalPollTask = Task { @MainActor [weak self] in
+            // 最多轮询约 90 秒，每 1.5 秒检测一次
+            for _ in 0..<60 {
+                try? await Task.sleep(for: .seconds(1.5))
+                guard let self, !Task.isCancelled else { return }
+                if GlobalHotKeyMonitor.hasPermission() {
+                    self.refreshPermissionState(startMonitor: true)
+                    if self.inputMonitoringGranted {
+                        self.statusMessage = "输入监控权限已可用，全局快捷键已恢复。"
+                    }
+                    return
+                }
+            }
+            self?.stopApprovalPolling()
+        }
+    }
+
+    private func stopApprovalPolling() {
+        approvalPollTask?.cancel()
+        approvalPollTask = nil
     }
 
     func showMainWindow() {
@@ -847,6 +908,7 @@ final class MouseDanceStore: ObservableObject {
         inputMonitoringGranted = GlobalHotKeyMonitor.hasPermission()
         inputMonitoringStatus = resolvedInputMonitoringStatus()
         if inputMonitoringGranted {
+            stopApprovalPolling()
             if !wasGranted && shouldAutoRestartAfterPermissionGrant {
                 shouldAutoRestartAfterPermissionGrant = false
                 relaunchApplication()

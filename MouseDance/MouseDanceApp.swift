@@ -24,6 +24,7 @@ struct MouseDanceApp: App {
                     }
                 }
         }
+        // 仅登录自启动时抑制主窗口；普通打开（含程序坞隐藏模式）应正常显示主窗口
         .defaultLaunchBehavior(appDelegate.launchedAsLoginItem ? .suppressed : .automatic)
         .windowStyle(.hiddenTitleBar)
         .windowToolbarStyle(.unified)
@@ -161,10 +162,16 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// 是否为系统登录时自动拉起
     private(set) var launchedAsLoginItem = false
 
+    /// 是否应以“程序坞隐藏”的菜单栏模式启动
+    /// （登录自启动，或用户开启了「启动默认在程序坞隐藏」）
+    var shouldLaunchAsAccessory: Bool {
+        launchedAsLoginItem || UserDefaults.standard.bool(forKey: MouseDanceStore.hideInDockAtLaunchStorageKey)
+    }
+
     func applicationWillFinishLaunching(_ notification: Notification) {
         launchedAsLoginItem = Self.isLaunchedAsLoginItem()
-        if launchedAsLoginItem {
-            // 登录自启动时以 accessory 模式运行，程序坞不显示图标
+        if shouldLaunchAsAccessory {
+            // 以 accessory 模式运行，程序坞不显示图标
             NSApp.setActivationPolicy(.accessory)
         }
     }
@@ -172,7 +179,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         guard launchedAsLoginItem else { return }
         NSApp.setActivationPolicy(.accessory)
-        // 兜底：若主窗口仍被创建则直接关闭
+        // 兜底：登录自启动时若主窗口仍被创建则直接关闭
         for window in NSApp.windows where window.styleMask.contains(.titled) && !(window is NSPanel) {
             window.close()
         }

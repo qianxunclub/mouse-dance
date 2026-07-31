@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-
+#
+# MouseDance 打包脚本：构建 App 并生成 DMG。
+#
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,6 +13,7 @@ elif [[ -d "$SCRIPT_DIR/../MouseDance.xcodeproj" ]]; then
 else
   ROOT_DIR="$SCRIPT_DIR"
 fi
+
 PROJECT_PATH="${PROJECT_PATH:-$ROOT_DIR/MouseDance.xcodeproj}"
 SCHEME="${SCHEME:-MouseDance}"
 CONFIGURATION="${CONFIGURATION:-Release}"
@@ -18,8 +21,13 @@ BUILD_ROOT="${BUILD_ROOT:-$ROOT_DIR/build}"
 DERIVED_DATA_PATH="${DERIVED_DATA_PATH:-$BUILD_ROOT/DerivedData}"
 DIST_DIR="${DIST_DIR:-$ROOT_DIR/dist}"
 STAGING_DIR="$BUILD_ROOT/dmg-staging"
-TEMP_DMG_PATH="$BUILD_ROOT/${SCHEME}-temp.dmg"
 CODE_SIGNING_ALLOWED="${CODE_SIGNING_ALLOWED:-NO}"
+
+# 脚本退出（含失败/中断）时清理临时目录，避免残留
+cleanup() {
+  rm -rf "$STAGING_DIR"
+}
+trap cleanup EXIT
 
 require_command() {
   if ! command -v "$1" >/dev/null 2>&1; then
@@ -31,11 +39,11 @@ require_command() {
 validate_xcode_environment() {
   local developer_dir=""
   local detected_xcode_dir=""
-  local candidate=""
 
   if [[ -d "/Applications/Xcode.app/Contents/Developer" ]]; then
     detected_xcode_dir="/Applications/Xcode.app/Contents/Developer"
   else
+    local candidate=""
     for candidate in /Applications/Xcode*.app/Contents/Developer; do
       if [[ -d "$candidate" ]]; then
         detected_xcode_dir="$candidate"
@@ -44,11 +52,7 @@ validate_xcode_environment() {
     done
   fi
 
-  if [[ -n "${DEVELOPER_DIR:-}" ]]; then
-    developer_dir="$DEVELOPER_DIR"
-  else
-    developer_dir="$(xcode-select -p 2>/dev/null || true)"
-  fi
+  developer_dir="${DEVELOPER_DIR:-$(xcode-select -p 2>/dev/null || true)}"
 
   if [[ -z "$developer_dir" ]]; then
     echo "Unable to determine the active Xcode developer directory." >&2
@@ -60,7 +64,6 @@ validate_xcode_environment() {
     if [[ -n "$detected_xcode_dir" ]]; then
       echo "Active developer directory points to CommandLineTools; using Xcode instead:" >&2
       echo "  $detected_xcode_dir" >&2
-      export DEVELOPER_DIR="$detected_xcode_dir"
       developer_dir="$detected_xcode_dir"
     else
       echo "This script requires the full Xcode app, but the active developer directory is:" >&2
@@ -73,6 +76,9 @@ validate_xcode_environment() {
       exit 1
     fi
   fi
+
+  # 统一导出，确保后续所有 xcodebuild 调用使用同一套工具链
+  export DEVELOPER_DIR="$developer_dir"
 
   if ! xcodebuild -version >/dev/null 2>&1; then
     echo "xcodebuild is installed but not usable with the current developer directory:" >&2
@@ -141,18 +147,19 @@ DMG_PATH="$DIST_DIR/$DMG_NAME"
 VOLUME_NAME="${DMG_VOLUME_NAME:-MouseDance}"
 
 echo "Cleaning previous artifacts..."
-rm -rf "$DERIVED_DATA_PATH" "$STAGING_DIR"
-rm -f "$TEMP_DMG_PATH" "$DMG_PATH"
+rm -rf "$DERIVED_DATA_PATH"
+rm -f "$DMG_PATH"
 mkdir -p "$DIST_DIR" "$STAGING_DIR"
 
 echo "Building $APP_NAME ($CONFIGURATION)..."
+# 派生数据目录已整体清空，无需再执行 xcodebuild clean
 xcodebuild \
   -project "$PROJECT_PATH" \
   -scheme "$SCHEME" \
   -configuration "$CONFIGURATION" \
   -derivedDataPath "$DERIVED_DATA_PATH" \
   CODE_SIGNING_ALLOWED="$CODE_SIGNING_ALLOWED" \
-  clean build
+  build
 
 if [[ ! -d "$APP_PATH" ]]; then
   echo "Build succeeded but app was not found: $APP_PATH" >&2
@@ -163,24 +170,15 @@ echo "Preparing DMG contents..."
 cp -R "$APP_PATH" "$STAGING_DIR/"
 ln -s /Applications "$STAGING_DIR/Applications"
 
-echo "Creating writable DMG..."
+echo "Creating DMG..."
+# 直接从目录生成 UDZO 压缩镜像，省略中间可写镜像与二次转换
 hdiutil create \
   -volname "$VOLUME_NAME" \
   -srcfolder "$STAGING_DIR" \
   -ov \
-  -format UDRW \
-  "$TEMP_DMG_PATH"
-
-echo "Compressing DMG..."
-hdiutil convert \
-  "$TEMP_DMG_PATH" \
-  -ov \
   -format UDZO \
   -imagekey zlib-level=9 \
   -o "$DMG_PATH"
-
-rm -f "$TEMP_DMG_PATH"
-rm -rf "$STAGING_DIR"
 
 echo
 echo "DMG created successfully."
