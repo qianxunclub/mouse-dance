@@ -162,23 +162,51 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// 是否为系统登录时自动拉起
     private(set) var launchedAsLoginItem = false
 
+    /// macOS 26 中控制中心会把菜单栏图标可见性写进应用 UserDefaults，
+    /// 键形如 "NSStatusItem Visible Item-N" / "NSStatusItem VisibleCC Item-N"
+    private static let statusItemVisibilityKeyPrefix = "NSStatusItem Visible"
+
+    /// 运行时轮询图标可见性变化（系统可能在运行期间随时改写）
+    private var accessoryWatchdog: Timer?
+
+    /// 菜单栏图标是否被系统隐藏
+    static var menuBarItemHiddenBySystem: Bool {
+        let defaults = UserDefaults.standard
+        return defaults.dictionaryRepresentation().keys.contains { key in
+            key.hasPrefix(statusItemVisibilityKeyPrefix)
+                && (defaults.object(forKey: key) as? NSNumber)?.boolValue == false
+        }
+    }
+
     /// 是否应以“程序坞隐藏”的菜单栏模式启动
     /// （登录自启动，或用户开启了「启动默认在程序坞隐藏」）
     var shouldLaunchAsAccessory: Bool {
         launchedAsLoginItem || UserDefaults.standard.bool(forKey: MouseDanceStore.hideInDockAtLaunchStorageKey)
     }
 
+    /// macOS 26 已知缺陷：MenuBarExtra + accessory 激活策略 + 菜单栏图标被系统隐藏
+    /// 三者叠加时，SwiftUI 找不到可维持生命周期的有效 scene，进程会在启动瞬间被
+    /// 优雅回收（exit 0、无崩溃日志）。因此仅当菜单栏图标可见时才允许切到 accessory，
+    /// 否则回退 regular 保留程序坞图标，确保始终有可见锚点维持进程存活。
+    static func applyAccessoryPreference(_ wantsAccessory: Bool) {
+        let policy: NSApplication.ActivationPolicy =
+            wantsAccessory && !menuBarItemHiddenBySystem ? .accessory : .regular
+        NSApp.setActivationPolicy(policy)
+    }
+
     func applicationWillFinishLaunching(_ notification: Notification) {
         launchedAsLoginItem = Self.isLaunchedAsLoginItem()
         if shouldLaunchAsAccessory {
             // 以 accessory 模式运行，程序坞不显示图标
-            NSApp.setActivationPolicy(.accessory)
+            // （菜单栏图标被系统隐藏时自动回退 regular，避免启动即被回收）
+            Self.applyAccessoryPreference(true)
         }
     }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
+        startAccessoryWatchdog()
         guard launchedAsLoginItem else { return }
-        NSApp.setActivationPolicy(.accessory)
+        Self.applyAccessoryPreference(true)
         // 兜底：登录自启动时若主窗口仍被创建则直接关闭
         for window in NSApp.windows where window.styleMask.contains(.titled) && !(window is NSPanel) {
             window.close()
@@ -186,7 +214,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
-        NSApp.setActivationPolicy(.accessory)
+        Self.applyAccessoryPreference(true)
         return false
     }
 
@@ -196,6 +224,20 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             NSApp.activate(ignoringOtherApps: true)
         }
         return true
+    }
+
+    /// accessory 模式运行期间，系统仍可能随时隐藏菜单栏图标（控制中心改写可见性）。
+    /// 每秒重评一次：图标被隐藏就切回 regular；恢复可见则重新应用隐藏程序坞偏好。
+    private func startAccessoryWatchdog() {
+        accessoryWatchdog?.invalidate()
+        accessoryWatchdog = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            Task { @MainActor in
+                guard let self else { return }
+                let wantsAccessory = self.shouldLaunchAsAccessory
+                    || NSApp.activationPolicy() == .accessory
+                Self.applyAccessoryPreference(wantsAccessory)
+            }
+        }
     }
 
     /// 通过启动时收到的 AppleEvent 判断应用是否作为登录项被系统拉起

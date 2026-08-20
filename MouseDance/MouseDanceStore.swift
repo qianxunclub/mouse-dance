@@ -308,8 +308,19 @@ final class GlobalHotKeyMonitor {
 
 enum ScreenJumpService {
     @discardableResult
-    static func jumpCursor(to target: DisplayShortcut, among displays: [DisplayShortcut]) -> (error: CGError, targetPoint: CGPoint) {
-        let targetPoint = CGPoint(x: target.frame.midX, y: target.frame.midY)
+    static func jumpCursor(to target: DisplayShortcut, from source: DisplayShortcut?, currentLocation: CGPoint) -> (error: CGError, targetPoint: CGPoint) {
+        let targetPoint: CGPoint
+        if let source, source.frame.width > 0, source.frame.height > 0 {
+            // 按鼠标在当前屏幕内的 xy 百分比位置，等比定位到目标屏幕
+            let ratioX = min(max((currentLocation.x - source.frame.minX) / source.frame.width, 0), 1)
+            let ratioY = min(max((currentLocation.y - source.frame.minY) / source.frame.height, 0), 1)
+            targetPoint = CGPoint(
+                x: target.frame.minX + ratioX * target.frame.width,
+                y: target.frame.minY + ratioY * target.frame.height
+            )
+        } else {
+            targetPoint = CGPoint(x: target.frame.midX, y: target.frame.midY)
+        }
         return (CGWarpMouseCursorPosition(targetPoint), targetPoint)
     }
 }
@@ -318,6 +329,9 @@ enum ScreenJumpService {
 final class ScreenOverlayManager {
     private var windows: [CGDirectDisplayID: NSPanel] = [:]
     private var cursorIndicatorPanel: NSPanel?
+    private var cursorRestoreTask: Task<Void, Never>?
+    private var hiddenCursorDisplayID: CGDirectDisplayID?
+    private var pointerStyleIndex = 0
     private var hideTask: Task<Void, Never>?
 
     func showLabels(for displays: [DisplayShortcut], shortcuts: [CGDirectDisplayID: ShortcutKey]) {
@@ -344,12 +358,29 @@ final class ScreenOverlayManager {
         windows.removeAll()
     }
 
-    func showCursorIndicator(on display: DisplayShortcut) {
-        cursorIndicatorPanel?.orderOut(nil)
-        cursorIndicatorPanel = nil
+    func showCursorIndicator(on display: DisplayShortcut, at point: CGPoint) {
+        dismissCursorIndicator()
+
+        // 每次切换屏幕轮换一种指针样式，让变化更显眼
+        pointerStyleIndex = (pointerStyleIndex + 1) % CursorPointerStyle.allCases.count
+        let style = CursorPointerStyle.allCases[pointerStyleIndex]
+
+        // 隐藏系统指针，用自定义图片指针替代，方便看清落点位置
+        CGDisplayHideCursor(display.displayID)
+        hiddenCursorDisplayID = display.displayID
+
+        let panelSize = CGSize(width: 160, height: 160)
+
+        // CGEvent 使用左上角原点（Y 向下），AppKit 使用左下角原点（Y 向上），需转换
+        let primaryScreenHeight = NSScreen.main?.frame.height ?? display.frame.height
+        let appKitPoint = CGPoint(x: point.x, y: primaryScreenHeight - point.y)
+
+        var origin = CGPoint(x: appKitPoint.x - panelSize.width / 2, y: appKitPoint.y - panelSize.height / 2)
+        origin.x = min(max(origin.x, display.frame.minX), max(display.frame.minX, display.frame.maxX - panelSize.width))
+        origin.y = min(max(origin.y, display.frame.minY), max(display.frame.minY, display.frame.maxY - panelSize.height))
 
         let panel = NSPanel(
-            contentRect: display.frame,
+            contentRect: CGRect(origin: origin, size: panelSize),
             styleMask: [.borderless, .nonactivatingPanel],
             backing: .buffered,
             defer: false
@@ -362,22 +393,40 @@ final class ScreenOverlayManager {
         panel.ignoresMouseEvents = true
         panel.hidesOnDeactivate = false
         panel.isFloatingPanel = true
-        panel.contentView = NSHostingView(rootView: CursorIndicatorView())
-        panel.setFrame(display.frame, display: true)
 
-        DispatchQueue.main.async { [weak self] in
-            panel.orderFrontRegardless()
-            self?.cursorIndicatorPanel = panel
-        }
+        // anchor 是相对于 panel contentView 的 SwiftUI 坐标（左上角原点，Y 向下）
+        let anchor = CGPoint(
+            x: appKitPoint.x - origin.x,
+            y: panelSize.height - (appKitPoint.y - origin.y)
+        )
+        panel.contentView = NSHostingView(rootView: CursorIndicatorView(style: style, anchor: anchor))
+        panel.orderFrontRegardless()
+        cursorIndicatorPanel = panel
 
-        Task { [weak self] in
-            try? await Task.sleep(for: .seconds(0.55))
-            await MainActor.run { [weak self] in
-                panel.orderOut(nil)
-                if self?.cursorIndicatorPanel === panel {
-                    self?.cursorIndicatorPanel = nil
+        // 鼠标一旦移动即移除图片指针；若未移动，1 秒后自动恢复系统指针
+        cursorRestoreTask = Task { [weak self] in
+            let deadline = Date().addingTimeInterval(1)
+            while !Task.isCancelled {
+                try? await Task.sleep(for: .milliseconds(33))
+                if Task.isCancelled { break }
+                let location = CGEvent(source: nil)?.location ?? .zero
+                let moved = abs(location.x - point.x) > 2 || abs(location.y - point.y) > 2
+                if moved || Date() >= deadline {
+                    break
                 }
             }
+            self?.dismissCursorIndicator()
+        }
+    }
+
+    private func dismissCursorIndicator() {
+        cursorRestoreTask?.cancel()
+        cursorRestoreTask = nil
+        cursorIndicatorPanel?.orderOut(nil)
+        cursorIndicatorPanel = nil
+        if let displayID = hiddenCursorDisplayID {
+            CGDisplayShowCursor(displayID)
+            hiddenCursorDisplayID = nil
         }
     }
 
@@ -404,9 +453,39 @@ final class ScreenOverlayManager {
 
 private enum CursorIndicatorMetrics {
     static let pointerSize = CGSize(width: 54, height: 72)
-    static let pointerPadding = CGSize(width: 4, height: 4)
     static let initialScale: CGFloat = 0.88
     static let visibleScale: CGFloat = 1.28
+    /// 指针尖端在 MousePointerShape 内的比例位置（与 path 起点一致）
+    static let tipRatio = CGPoint(x: 0.16, y: 0.06)
+}
+
+/// 切换屏幕时使用的图片指针样式，每次跳转轮换
+private enum CursorPointerStyle: CaseIterable {
+    case highlightYellow
+    case oceanBlue
+    case mintGreen
+    case coralPink
+
+    var fill: Color {
+        switch self {
+        case .highlightYellow:
+            return Color(red: 1.0, green: 0.84, blue: 0.2)
+        case .oceanBlue:
+            return Color(red: 0.35, green: 0.78, blue: 1.0)
+        case .mintGreen:
+            return Color(red: 0.42, green: 0.9, blue: 0.62)
+        case .coralPink:
+            return Color(red: 1.0, green: 0.51, blue: 0.55)
+        }
+    }
+
+    var stroke: Color {
+        .black.opacity(0.45)
+    }
+
+    var halo: Color {
+        fill.opacity(0.9)
+    }
 }
 
 private struct ScreenOverlayView: View {
@@ -453,39 +532,57 @@ private struct ScreenOverlayView: View {
 }
 
 private struct CursorIndicatorView: View {
-    @State private var scale: CGFloat = CursorIndicatorMetrics.initialScale
-    @State private var opacity: Double = 0
+    let style: CursorPointerStyle
+    let anchor: CGPoint
+
+    @State private var pointerScale: CGFloat = CursorIndicatorMetrics.initialScale
+    @State private var pointerOpacity: Double = 0
+    @State private var haloScale: CGFloat = 0.4
+    @State private var haloOpacity: Double = 0.9
 
     var body: some View {
-        Color.clear
-            .overlay {
-                MousePointerShape()
-                    .fill(.white)
-                    .overlay {
-                        MousePointerShape()
-                            .stroke(.black.opacity(0.35), lineWidth: 3)
-                    }
-                    .shadow(color: .black.opacity(0.28), radius: 12, x: 0, y: 8)
-                    .frame(width: CursorIndicatorMetrics.pointerSize.width, height: CursorIndicatorMetrics.pointerSize.height)
-                    .padding(.horizontal, CursorIndicatorMetrics.pointerPadding.width)
-                    .padding(.vertical, CursorIndicatorMetrics.pointerPadding.height)
-                    .scaleEffect(scale)
-                    .opacity(opacity)
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .onAppear {
-            withAnimation(.spring(response: 0.2, dampingFraction: 0.72)) {
-                scale = CursorIndicatorMetrics.visibleScale
-                opacity = 1
-            }
+        let tipLocal = CGPoint(
+            x: CursorIndicatorMetrics.pointerSize.width * CursorIndicatorMetrics.tipRatio.x,
+            y: CursorIndicatorMetrics.pointerSize.height * CursorIndicatorMetrics.tipRatio.y
+        )
 
-            Task { @MainActor in
-                try? await Task.sleep(for: .seconds(0.18))
-                withAnimation(.easeOut(duration: 0.22)) {
-                    opacity = 0
+        ZStack {
+            // 落点位置的高亮圆圈，扩散后淡出，方便定位
+            Circle()
+                .stroke(style.halo, lineWidth: 3)
+                .frame(width: 48, height: 48)
+                .scaleEffect(haloScale)
+                .opacity(haloOpacity)
+                .position(anchor)
+
+            MousePointerShape()
+                .fill(style.fill)
+                .overlay {
+                    MousePointerShape()
+                        .stroke(style.stroke, lineWidth: 3)
+                }
+                .shadow(color: style.fill.opacity(0.55), radius: 10, x: 0, y: 4)
+                .frame(width: CursorIndicatorMetrics.pointerSize.width, height: CursorIndicatorMetrics.pointerSize.height)
+                .scaleEffect(pointerScale, anchor: .topLeading)
+                .opacity(pointerOpacity)
+                // 让指针尖端精确对准真实光标落点
+                .offset(x: anchor.x - tipLocal.x, y: anchor.y - tipLocal.y)
+                .frame(
+                    maxWidth: .infinity,
+                    maxHeight: .infinity,
+                    alignment: .topLeading
+                )
+        }
+        .onAppear {
+                withAnimation(.spring(response: 0.22, dampingFraction: 0.7)) {
+                    pointerScale = CursorIndicatorMetrics.visibleScale
+                    pointerOpacity = 1
+                }
+                withAnimation(.easeOut(duration: 0.5)) {
+                    haloScale = 1.8
+                    haloOpacity = 0
                 }
             }
-        }
     }
 }
 
@@ -627,10 +724,15 @@ final class MouseDanceStore: ObservableObject {
         hideInDockAtLaunchEnabled = enabled
         UserDefaults.standard.set(enabled, forKey: Self.hideInDockAtLaunchStorageKey)
         // 立即切换激活策略，让本次运行也生效；下次启动时会按偏好隐藏程序坞图标
-        NSApp.setActivationPolicy(enabled ? .accessory : .regular)
-        statusMessage = enabled
-            ? "已开启启动默认在程序坞隐藏，下次启动将不显示程序坞图标，主窗口仍会正常打开。"
-            : "已关闭启动默认在程序坞隐藏，下次启动将恢复显示程序坞图标。"
+        // （菜单栏图标被系统隐藏时会回退 regular，避免 macOS 26 的进程回收缺陷）
+        AppDelegate.applyAccessoryPreference(enabled)
+        if enabled && AppDelegate.menuBarItemHiddenBySystem {
+            statusMessage = "菜单栏图标当前被系统隐藏，为保持应用稳定运行已暂时保留程序坞图标；图标恢复可见后将自动应用隐藏程序坞偏好。"
+        } else {
+            statusMessage = enabled
+                ? "已开启启动默认在程序坞隐藏，下次启动将不显示程序坞图标，主窗口仍会正常打开。"
+                : "已关闭启动默认在程序坞隐藏，下次启动将恢复显示程序坞图标。"
+        }
     }
 
     func start() {
@@ -678,7 +780,7 @@ final class MouseDanceStore: ObservableObject {
                 window.styleMask.contains(.titled) && !(window is NSPanel)
             }
             if normalWindows.isEmpty {
-                NSApp.setActivationPolicy(.accessory)
+                AppDelegate.applyAccessoryPreference(true)
             }
         }
     }
@@ -770,20 +872,20 @@ final class MouseDanceStore: ObservableObject {
 
     func jumpToDisplay(_ display: DisplayShortcut) {
         let currentLocation = CGEvent(source: nil)?.location ?? .zero
-        let currentDisplayID = displays.first(where: { $0.frame.contains(currentLocation) })?.displayID
+        let sourceDisplay = displays.first(where: { $0.frame.contains(currentLocation) })
 
-        if currentDisplayID == display.displayID {
+        if sourceDisplay?.displayID == display.displayID {
             statusMessage = "鼠标已在当前屏幕：\(display.name)。"
             return
         }
 
-        if let current = currentDisplayID, current != display.displayID {
-            lastActiveDisplayID = current
+        if let sourceDisplay {
+            lastActiveDisplayID = sourceDisplay.displayID
         }
 
-        let jumpResult = ScreenJumpService.jumpCursor(to: display, among: displays)
+        let jumpResult = ScreenJumpService.jumpCursor(to: display, from: sourceDisplay, currentLocation: currentLocation)
         if jumpResult.error == .success {
-            overlayManager.showCursorIndicator(on: display)
+            overlayManager.showCursorIndicator(on: display, at: jumpResult.targetPoint)
             statusMessage = "鼠标已跳转到屏幕：\(display.name)。"
         } else {
             statusMessage = "鼠标跳转失败，系统返回：\(jumpResult.error.rawValue)。"
