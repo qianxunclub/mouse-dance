@@ -3,6 +3,8 @@ import SwiftUI
 // MARK: - Main Content View
 struct ContentView: View {
     @EnvironmentObject private var store: MouseDanceStore
+    @EnvironmentObject private var updateManager: UpdateManager
+    @Environment(\.openWindow) private var openWindow
     @State private var isRecordingToggle = false
 
     var body: some View {
@@ -92,6 +94,37 @@ struct ContentView: View {
                 Text("屏幕配置（当前识别 \(max(store.totalScreenCount, store.displays.count)) 块屏幕）")
             } footer: {
                 Text("为每块屏幕录制独立快捷键，按下后鼠标跳转到对应屏幕。")
+            }
+
+            Section {
+                HStack {
+                    Label("当前版本", systemImage: "tag")
+                    Spacer(minLength: 12)
+                    Text(updateManager.currentVersion)
+                        .foregroundStyle(.secondary)
+                }
+                .frame(height: 24)
+
+                HStack {
+                    Label("软件更新", systemImage: "arrow.triangle.2.circlepath")
+                    Spacer(minLength: 12)
+
+                    if case .available(let update) = updateManager.status {
+                        Text("可更新到 \(update.version)")
+                            .foregroundStyle(.tint)
+                    }
+
+                    Button("检查更新…") {
+                        Task {
+                            await updateManager.checkForUpdates()
+                            openWindow(id: MouseDanceWindowIdentifier.update)
+                        }
+                    }
+                    .controlSize(.small)
+                }
+                .frame(height: 24)
+            } header: {
+                Text("版本与更新")
             }
         }
         .formStyle(.grouped)

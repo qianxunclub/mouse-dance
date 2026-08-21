@@ -1,19 +1,22 @@
 import SwiftUI
 
+enum MouseDanceWindowIdentifier {
+    static let main = "main"
+    static let update = "update"
+}
+
 @main
 struct MouseDanceApp: App {
     @Environment(\.openWindow) private var openWindow
     @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @StateObject private var store = MouseDanceStore()
-
-    private enum WindowIdentifier {
-        static let main = "main"
-    }
+    @StateObject private var updateManager = UpdateManager()
 
     var body: some Scene {
-        Window("MouseDance", id: WindowIdentifier.main) {
+        Window("MouseDance", id: MouseDanceWindowIdentifier.main) {
             ContentView()
                 .environmentObject(store)
+                .environmentObject(updateManager)
                 .task {
                     store.start()
                 }
@@ -38,8 +41,16 @@ struct MouseDanceApp: App {
                 // 在这里保证快捷键监听照常启动（start 内部幂等）。
                 .task {
                     store.start()
+                    // 静默检查一次更新，让主窗口「版本与更新」区能直接显示可更新目标版本
+                    await updateManager.checkForUpdates()
                 }
         }
+
+        Window("MouseDance 更新", id: MouseDanceWindowIdentifier.update) {
+            UpdateView(manager: updateManager)
+        }
+        .defaultLaunchBehavior(.suppressed)
+        .windowResizability(.contentSize)
     }
 
     @ViewBuilder
@@ -133,6 +144,16 @@ struct MouseDanceApp: App {
                 .padding(.vertical, 4)
 
             Button {
+                Task { await updateManager.checkForUpdates() }
+                openWindow(id: MouseDanceWindowIdentifier.update)
+            } label: {
+                Label("检查更新…", systemImage: "arrow.triangle.2.circlepath")
+            }
+
+            Divider()
+                .padding(.vertical, 4)
+
+            Button {
                 NSApp.terminate(nil)
             } label: {
                 Label("退出 MouseDance", systemImage: "xmark.square")
@@ -153,7 +174,7 @@ struct MouseDanceApp: App {
 
     private func openMainWindow() {
         NSApp.setActivationPolicy(.regular)
-        openWindow(id: WindowIdentifier.main)
+        openWindow(id: MouseDanceWindowIdentifier.main)
         NSApp.activate(ignoringOtherApps: true)
     }
 }
