@@ -199,10 +199,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
 
-    /// 是否应以“程序坞隐藏”的菜单栏模式启动
-    /// （登录自启动，或用户开启了「启动默认在程序坞隐藏」）
+    /// 是否应以程序坞隐藏的菜单栏模式启动
     var shouldLaunchAsAccessory: Bool {
-        launchedAsLoginItem || UserDefaults.standard.bool(forKey: MouseDanceStore.hideInDockAtLaunchStorageKey)
+        launchedAsLoginItem
     }
 
     /// macOS 26 已知缺陷：MenuBarExtra + accessory 激活策略 + 菜单栏图标被系统隐藏
@@ -219,7 +218,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         launchedAsLoginItem = Self.isLaunchedAsLoginItem()
         if shouldLaunchAsAccessory {
             // 以 accessory 模式运行，程序坞不显示图标
-            // （菜单栏图标被系统隐藏时自动回退 regular，避免启动即被回收）
             Self.applyAccessoryPreference(true)
         }
     }
@@ -248,14 +246,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     }
 
     /// accessory 模式运行期间，系统仍可能随时隐藏菜单栏图标（控制中心改写可见性）。
-    /// 每秒重评一次：图标被隐藏就切回 regular；恢复可见则重新应用隐藏程序坞偏好。
+    /// 每秒重评一次：图标被隐藏就切回 regular。
     private func startAccessoryWatchdog() {
         accessoryWatchdog?.invalidate()
         accessoryWatchdog = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
             Task { @MainActor in
                 guard let self else { return }
-                let wantsAccessory = self.shouldLaunchAsAccessory
-                    || NSApp.activationPolicy() == .accessory
+                let hasVisibleMainWindow = NSApp.windows.contains { window in
+                    window.isVisible
+                        && window.styleMask.contains(.titled)
+                        && !(window is NSPanel)
+                }
+                let wantsAccessory = !hasVisibleMainWindow
+                    && (self.shouldLaunchAsAccessory || NSApp.activationPolicy() == .accessory)
                 Self.applyAccessoryPreference(wantsAccessory)
             }
         }

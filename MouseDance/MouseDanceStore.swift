@@ -611,7 +611,6 @@ final class MouseDanceStore: ObservableObject {
     @Published private(set) var hasMarkedScreens = false
     @Published private(set) var lastMarkedAt: Date?
     @Published private(set) var launchAtLoginEnabled = false
-    @Published private(set) var hideInDockAtLaunchEnabled = false
 
     @Published var screenShortcuts: [CGDirectDisplayID: ShortcutKey] = [:] {
         didSet {
@@ -655,14 +654,12 @@ final class MouseDanceStore: ObservableObject {
 
     private static let shortcutsStorageKey = "mouseDance.screenShortcuts"
     private static let toggleShortcutStorageKey = "mouseDance.toggleShortcut"
-    static let hideInDockAtLaunchStorageKey = "mouseDance.hideInDockAtLaunch"
 
     init(previewMode: Bool = false) {
         self.previewMode = previewMode
         self.screenShortcuts = Self.loadScreenShortcuts()
         self.toggleShortcut = Self.loadToggleShortcut() ?? Self.defaultToggleShortcut
         self.launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
-        self.hideInDockAtLaunchEnabled = UserDefaults.standard.bool(forKey: Self.hideInDockAtLaunchStorageKey)
 
         if previewMode {
             displays = Self.previewDisplays
@@ -709,30 +706,6 @@ final class MouseDanceStore: ObservableObject {
             statusMessage = (enabled ? "开启" : "关闭") + "开机自启动失败：\(error.localizedDescription)"
         }
         refreshLaunchAtLoginState()
-    }
-
-    /// 启动默认在程序坞隐藏开关绑定
-    var hideInDockAtLaunchBinding: Binding<Bool> {
-        Binding(
-            get: { self.hideInDockAtLaunchEnabled },
-            set: { self.setHideInDockAtLaunch($0) }
-        )
-    }
-
-    func setHideInDockAtLaunch(_ enabled: Bool) {
-        guard !previewMode else { return }
-        hideInDockAtLaunchEnabled = enabled
-        UserDefaults.standard.set(enabled, forKey: Self.hideInDockAtLaunchStorageKey)
-        // 立即切换激活策略，让本次运行也生效；下次启动时会按偏好隐藏程序坞图标
-        // （菜单栏图标被系统隐藏时会回退 regular，避免 macOS 26 的进程回收缺陷）
-        AppDelegate.applyAccessoryPreference(enabled)
-        if enabled && AppDelegate.menuBarItemHiddenBySystem {
-            statusMessage = "菜单栏图标当前被系统隐藏，为保持应用稳定运行已暂时保留程序坞图标；图标恢复可见后将自动应用隐藏程序坞偏好。"
-        } else {
-            statusMessage = enabled
-                ? "已开启启动默认在程序坞隐藏，下次启动将不显示程序坞图标，主窗口仍会正常打开。"
-                : "已关闭启动默认在程序坞隐藏，下次启动将恢复显示程序坞图标。"
-        }
     }
 
     func start() {

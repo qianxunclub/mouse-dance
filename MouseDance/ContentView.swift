@@ -57,22 +57,6 @@ struct ContentView: View {
                         .foregroundStyle(.secondary)
                 }
 
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Label("启动默认在程序坞隐藏", systemImage: "dock.rectangle")
-
-                        Spacer(minLength: 12)
-
-                        Toggle("启动默认在程序坞隐藏", isOn: store.hideInDockAtLaunchBinding)
-                            .labelsHidden()
-                            .toggleStyle(.switch)
-                    }
-                    .frame(height: 24)
-
-                    Text("开启后应用启动时不显示程序坞图标，主窗口仍会正常打开。")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
             } header: {
                 Text("全局配置")
             }
