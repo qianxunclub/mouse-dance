@@ -1,7 +1,7 @@
 # MouseDance
 
 <p align="center">
-  <img src="docs/docs/.vuepress/public/images/AppIcon.png" width="128" alt="MouseDance 图标">
+  <img src="docs/app-icon.svg" width="128" alt="MouseDance 图标">
 </p>
 
 一款常驻菜单栏的 macOS 小工具：为多显示器用户的每一块屏幕配置独立快捷键，按下快捷键即可让鼠标瞬间"跳舞"到目标屏幕中央。
@@ -24,7 +24,7 @@
 
 ## 截图示例
 
-![MouseDance 截图](docs/docs/.vuepress/public/images/screenshot.png)
+![MouseDance 截图](screenshot.png)
 
 ## 下载与安装
 
