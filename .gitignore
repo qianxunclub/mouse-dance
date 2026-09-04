@@ -15,3 +15,4 @@ docs/docs/.vuepress/.temp/
 
 node_modules/
 pnpm-lock.yaml
+.trae/

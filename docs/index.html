@@ -1,38 +1,42 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MouseDance —— 让鼠标在多显示器之间「跳舞」的 macOS 菜单栏神器</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MouseDance —— 让鼠标在多显示器之间「跳舞」的 macOS 菜单栏神器</title>
 
-<!-- ============ SEO ============ -->
-<meta name="description" content="MouseDance 是一款常驻 macOS 菜单栏的多显示器鼠标跳转工具。默认双击 Command 快捷切换屏幕，Command+Option+1 / Command+Option+2 直达指定显示器，鼠标位置等比映射、落点高亮提示。支持 macOS 26 Tahoe 液态玻璃界面，开源免费。">
-<meta name="keywords" content="MouseDance,macOS 多显示器,鼠标跳转,切换屏幕快捷键,双击 Command,Command+Option+1,菜单栏工具,多屏效率工具,macOS Tahoe,液态玻璃,鼠标瞬移,显示器切换,Mac 效率软件,开源 Mac 工具">
-<meta name="author" content="qianxunclub">
-<meta name="robots" content="index, follow, max-image-preview:large">
-<meta name="theme-color" content="#0a0714">
-<meta name="apple-mobile-web-app-title" content="MouseDance">
-<link rel="canonical" href="https://mouse-dance.com/">
-<meta name="format-detection" content="telephone=no">
+  <!-- ============ SEO ============ -->
+  <meta name="description"
+    content="MouseDance 是一款常驻 macOS 菜单栏的多显示器鼠标跳转工具。默认双击 Command 快捷切换屏幕，Command+Option+1 / Command+Option+2 直达指定显示器，鼠标位置等比映射、落点高亮提示。支持 macOS 26 Tahoe 液态玻璃界面，开源免费。">
+  <meta name="keywords"
+    content="MouseDance,macOS 多显示器,鼠标跳转,切换屏幕快捷键,双击 Command,Command+Option+1,菜单栏工具,多屏效率工具,macOS Tahoe,液态玻璃,鼠标瞬移,显示器切换,Mac 效率软件,开源 Mac 工具">
+  <meta name="author" content="qianxunclub">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="theme-color" content="#0a0714">
+  <meta name="apple-mobile-web-app-title" content="MouseDance">
+  <link rel="canonical" href="https://mouse-dance.com/">
+  <meta name="format-detection" content="telephone=no">
 
-<!-- Open Graph -->
-<meta property="og:type" content="website">
-<meta property="og:locale" content="zh_CN">
-<meta property="og:site_name" content="MouseDance">
-<meta property="og:url" content="https://mouse-dance.com/">
-<meta property="og:title" content="MouseDance —— 让鼠标在多显示器之间「跳舞」的 macOS 菜单栏神器">
-<meta property="og:description" content="双击 Command 在两块屏幕间来回跳，Command+Option+数字键直达任意显示器。为多屏 Mac 用户打造的开源鼠标跳转工具。">
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="zh_CN">
+  <meta property="og:site_name" content="MouseDance">
+  <meta property="og:url" content="https://mouse-dance.com/">
+  <meta property="og:title" content="MouseDance —— 让鼠标在多显示器之间「跳舞」的 macOS 菜单栏神器">
+  <meta property="og:description" content="双击 Command 在两块屏幕间来回跳，Command+Option+数字键直达任意显示器。为多屏 Mac 用户打造的开源鼠标跳转工具。">
 
-<!-- Twitter -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MouseDance —— macOS 多显示器鼠标跳转工具">
-<meta name="twitter:description" content="双击 Command 快捷切换屏幕，⌘⌥1 / ⌘⌥2 直达指定显示器。开源免费，支持 macOS 26 Tahoe。">
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MouseDance —— macOS 多显示器鼠标跳转工具">
+  <meta name="twitter:description" content="双击 Command 快捷切换屏幕，⌘⌥1 / ⌘⌥2 直达指定显示器。开源免费，支持 macOS 26 Tahoe。">
 
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Crect width='1024' height='1024' rx='230' fill='%237b5cfa'/%3E%3Cg transform='translate(210,205) scale(1.55)'%3E%3Cpath d='M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z' fill='%23fff' stroke='%23fff' stroke-width='16' stroke-linejoin='round'/%3E%3C/g%3E%3Cg fill='%23fff' opacity='.9'%3E%3Crect x='600' y='300' width='190' height='46' rx='23'/%3E%3Crect x='650' y='400' width='190' height='46' rx='23'/%3E%3Crect x='700' y='500' width='190' height='46' rx='23'/%3E%3C/g%3E%3C/svg%3E">
-<link rel="preconnect" href="https://gitee.com">
+  <link rel="icon"
+    href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Crect width='1024' height='1024' rx='230' fill='%237b5cfa'/%3E%3Cg transform='translate(210,205) scale(1.55)'%3E%3Cpath d='M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z' fill='%23fff' stroke='%23fff' stroke-width='16' stroke-linejoin='round'/%3E%3C/g%3E%3Cg fill='%23fff' opacity='.9'%3E%3Crect x='600' y='300' width='190' height='46' rx='23'/%3E%3Crect x='650' y='400' width='190' height='46' rx='23'/%3E%3Crect x='700' y='500' width='190' height='46' rx='23'/%3E%3C/g%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://gitee.com">
 
-<!-- 结构化数据 -->
-<script type="application/ld+json">
+  <!-- 结构化数据 -->
+  <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@graph": [
@@ -105,911 +109,2108 @@
 }
 </script>
 
-<!-- ── 统计分析 ── -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-YCZ727X47D"></script>
-<script>
-window.dataLayer = window.dataLayer || [];
-function gtag(){dataLayer.push(arguments);}
-gtag('js', new Date());
-gtag('config', 'G-YCZ727X47D');
-</script>
-<script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "https://hm.baidu.com/hm.js?078b2a0718b368b90a08050d32d5f517";
-  var s = document.getElementsByTagName("script")[0];
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
+  <!-- ── 统计分析 ── -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-YCZ727X47D"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+    gtag('config', 'G-YCZ727X47D');
+  </script>
+  <script>
+    var _hmt = _hmt || [];
+    (function () {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?078b2a0718b368b90a08050d32d5f517";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
 
-<!-- ── 阿里云 RUM 实时监控 ── -->
-<script async src="//sdk.rum.aliyuncs.com/v2/browser-sdk.js"></script>
-<script>
-(function(c,b,d,a){c[a]||(c[a]={});c[a]={
-endpoint: 'https://proj-xtrace-f71b91c21abfa0e8796aa7622594955f-cn-shenzhen.cn-shenzhen.log.aliyuncs.com/rum/web/v2?workspace=default-cms-1123321151308280-cn-shenzhen&service_id=b26mm272ew%4024cbec73fe3b35b92d800',
-env: 'prod',
-spaMode: 'history',
-collectors: {
-perf: true,
-webVitals: true,
-api: true,
-staticResource: true,
-jsError: true,
-consoleError: true,
-action: true,
-},
-tracing: false,
-}
-with(b)with(body)with(insertBefore(createElement("script"),firstChild))setAttribute("crossorigin","",src=d)
-})(window, document, "//sdk.rum.aliyuncs.com/v2/browser-sdk.js", "__rum");
-</script>
+  <style>
+    /* ================= 基础 ================= */
+    :root {
+      --bg: #07050f;
+      --bg-2: #0b0818;
+      --purple: #7b5cfa;
+      --purple-l: #a78bff;
+      --cyan: #3ddcff;
+      --mint: #4dffc3;
+      --pink: #ff6f9c;
+      --yellow: #ffd44d;
+      --txt: #f4f2ff;
+      --dim: rgba(238, 235, 255, .62);
+      --dimmer: rgba(238, 235, 255, .4);
+      --line: rgba(160, 140, 255, .16);
+      --glass: rgba(255, 255, 255, .045);
+      --radius: 22px;
+      --ff: -apple-system, BlinkMacSystemFont, "SF Pro SC", "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+      --mono: "SF Mono", ui-monospace, "JetBrains Mono", Menlo, Consolas, monospace;
+    }
 
-<style>
-/* ================= 基础 ================= */
-:root{
-  --bg:#07050f;
-  --bg-2:#0b0818;
-  --purple:#7b5cfa;
-  --purple-l:#a78bff;
-  --cyan:#3ddcff;
-  --mint:#4dffc3;
-  --pink:#ff6f9c;
-  --yellow:#ffd44d;
-  --txt:#f4f2ff;
-  --dim:rgba(238,235,255,.62);
-  --dimmer:rgba(238,235,255,.4);
-  --line:rgba(160,140,255,.16);
-  --glass:rgba(255,255,255,.045);
-  --radius:22px;
-  --ff:-apple-system,BlinkMacSystemFont,"SF Pro SC","PingFang SC","Helvetica Neue","Microsoft YaHei",sans-serif;
-  --mono:"SF Mono",ui-monospace,"JetBrains Mono",Menlo,Consolas,monospace;
-}
-*{margin:0;padding:0;box-sizing:border-box}
-html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-body{
-  background:var(--bg);color:var(--txt);font-family:var(--ff);
-  line-height:1.7;overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-  letter-spacing:.01em;
-}
-body::selection,::selection{background:rgba(123,92,250,.45);color:#fff}
-a{color:inherit;text-decoration:none}
-img,svg{display:block;max-width:100%}
-button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box
+    }
 
-/* ================= 背景层 ================= */
-.bg-layer{position:fixed;inset:0;z-index:-3;overflow:hidden;background:
-  radial-gradient(1200px 700px at 15% -5%,rgba(123,92,250,.35),transparent 60%),
-  radial-gradient(900px 600px at 88% 8%,rgba(61,220,255,.18),transparent 60%),
-  radial-gradient(1000px 800px at 50% 100%,rgba(255,111,156,.14),transparent 65%),
-  var(--bg);
-}
-.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.5;mix-blend-mode:screen;will-change:transform}
-.blob.b1{width:46vw;height:46vw;left:-8vw;top:-10vw;background:radial-gradient(circle,#7b5cfa,transparent 70%);animation:drift1 26s ease-in-out infinite}
-.blob.b2{width:38vw;height:38vw;right:-6vw;top:12vh;background:radial-gradient(circle,#3ddcff,transparent 70%);animation:drift2 32s ease-in-out infinite}
-.blob.b3{width:42vw;height:42vw;left:28vw;bottom:-16vw;background:radial-gradient(circle,#ff6f9c,transparent 70%);animation:drift3 38s ease-in-out infinite}
-@keyframes drift1{50%{transform:translate3d(12vw,10vh,0) scale(1.2)}}
-@keyframes drift2{50%{transform:translate3d(-14vw,16vh,0) scale(1.15)}}
-@keyframes drift3{50%{transform:translate3d(10vw,-14vh,0) scale(1.25)}}
-.grid-layer{position:fixed;inset:0;z-index:-2;pointer-events:none;
-  background-image:linear-gradient(rgba(160,140,255,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(160,140,255,.06) 1px,transparent 1px);
-  background-size:64px 64px;
-  mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
-  -webkit-mask-image:radial-gradient(circle at 50% 30%,#000 0%,transparent 78%);
-  animation:gridpan 40s linear infinite;
-}
-@keyframes gridpan{to{background-position:64px 64px,64px 64px}}
-.noise{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.035;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")}
-#trail{position:fixed;inset:0;z-index:1;pointer-events:none}
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%
+    }
 
-/* ================= 导航 ================= */
-.progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:100;
-  background:linear-gradient(90deg,var(--purple),var(--cyan),var(--mint));box-shadow:0 0 14px rgba(123,92,250,.8)}
-header{position:fixed;top:0;left:0;right:0;z-index:90;transition:.45s cubic-bezier(.16,1,.3,1)}
-header.solid{background:rgba(10,7,22,.62);backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);border-bottom:1px solid var(--line)}
-nav{max-width:1180px;margin:0 auto;padding:16px 24px;display:flex;align-items:center;gap:28px}
-.brand{display:flex;align-items:center;gap:11px;font-weight:700;letter-spacing:.02em;font-size:17px}
-.brand .mark{width:34px;height:34px;border-radius:10px;background:linear-gradient(140deg,#9a7cff,#6544e8 60%,#4a2fd0);
-  display:grid;place-items:center;box-shadow:0 6px 22px rgba(101,68,232,.5),inset 0 1px 0 rgba(255,255,255,.35);position:relative;overflow:hidden}
-.brand .mark svg{width:19px;height:19px}
-.brand .mark::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 35%,rgba(255,255,255,.55),transparent 65%);transform:translateX(-120%);animation:sheen 5s ease-in-out infinite}
-@keyframes sheen{0%,72%{transform:translateX(-120%)}88%,100%{transform:translateX(120%)}}
-.nav-links{display:flex;gap:4px;margin-left:auto}
-.nav-links a{padding:8px 14px;border-radius:99px;font-size:14px;color:var(--dim);transition:.3s}
-.nav-links a:hover{color:#fff;background:rgba(255,255,255,.07)}
-.nav-cta{padding:9px 20px;border-radius:99px;font-size:14px;font-weight:600;
-  background:linear-gradient(135deg,var(--purple),#5a3ce0);box-shadow:0 6px 24px rgba(123,92,250,.45);transition:.3s}
-.nav-cta:hover{transform:translateY(-2px);box-shadow:0 12px 34px rgba(123,92,250,.65)}
-.nav-stars{display:flex;gap:10px;align-items:center}
-.star{display:inline-flex;align-items:center;border-radius:6px;transition:.3s;line-height:0}
-.star img{display:block;height:20px;width:auto;border-radius:6px}
-.star:hover{transform:translateY(-2px);filter:brightness(1.18) drop-shadow(0 8px 18px rgba(255,212,77,.3))}
-.burger{display:none;margin-left:auto;font-size:22px;padding:6px 10px}
-@media(max-width:860px){
-  .nav-links{position:fixed;top:64px;left:16px;right:16px;flex-direction:column;gap:2px;padding:12px;
-    background:rgba(14,10,28,.92);backdrop-filter:blur(24px);border:1px solid var(--line);border-radius:18px;
-    opacity:0;pointer-events:none;transform:translateY(-12px);transition:.35s}
-  .nav-links.open{opacity:1;pointer-events:auto;transform:none}
-  .burger{display:block}
-  .nav-cta{display:none}
-  .nav-stars{display:none}
-}
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: var(--ff);
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      letter-spacing: .01em;
+    }
 
-/* ================= 通用 ================= */
-.wrap{max-width:1180px;margin:0 auto;padding:0 24px}
-section{position:relative;padding:110px 0}
-.eyebrow{display:inline-flex;align-items:center;gap:9px;padding:6px 15px;border-radius:99px;
-  border:1px solid var(--line);background:var(--glass);font-size:13px;color:var(--purple-l);
-  backdrop-filter:blur(12px);letter-spacing:.06em}
-.eyebrow .dot{width:6px;height:6px;border-radius:50%;background:var(--mint);box-shadow:0 0 10px var(--mint);animation:blink 2s ease-in-out infinite}
-@keyframes blink{50%{opacity:.25}}
-h2.title{font-size:clamp(30px,4.4vw,50px);line-height:1.18;font-weight:800;letter-spacing:-.02em;margin:18px 0 14px}
-.sub{color:var(--dim);font-size:clamp(15px,1.6vw,17.5px);max-width:640px}
-.grad{background:linear-gradient(100deg,#b9a5ff,#7b5cfa 30%,#3ddcff 62%,#4dffc3);-webkit-background-clip:text;background-clip:text;color:transparent;
-  background-size:220% 100%;animation:gradmove 9s ease infinite}
-@keyframes gradmove{50%{background-position:100% 0}}
-.center{text-align:center}
-.center .sub{margin-inline:auto}
-.reveal{opacity:0;transform:translateY(34px);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
-.reveal.in{opacity:1;transform:none}
-.card{background:var(--glass);border:1px solid var(--line);border-radius:var(--radius);
-  backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);position:relative;overflow:hidden}
-.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;
-  background:radial-gradient(340px circle at var(--mx,50%) var(--my,0%),rgba(167,139,255,.16),transparent 70%);opacity:0;transition:opacity .45s}
-.card:hover::before{opacity:1}
+    body::selection,
+    ::selection {
+      background: rgba(123, 92, 250, .45);
+      color: #fff
+    }
 
-/* keycap 键帽 */
-.kbd{display:inline-flex;align-items:center;justify-content:center;min-width:34px;height:34px;padding:0 10px;
-  font-family:var(--mono);font-size:14px;font-weight:600;border-radius:9px;color:#fff;
-  background:linear-gradient(180deg,rgba(255,255,255,.16),rgba(255,255,255,.05));
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:0 3px 0 rgba(0,0,0,.45),0 6px 16px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.35);
-  transition:transform .09s,box-shadow .09s}
-.kbd.tap,.kbd:active{transform:translateY(3px);box-shadow:0 0 0 rgba(0,0,0,.4),0 2px 8px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.2)}
-.kbd.hot{background:linear-gradient(180deg,#a78bff,#6a49e8);border-color:rgba(200,180,255,.6);box-shadow:0 3px 0 #3d2699,0 8px 24px rgba(123,92,250,.6)}
-.plus{color:var(--dimmer);font-size:13px;margin:0 2px}
+    a {
+      color: inherit;
+      text-decoration: none
+    }
 
-/* ================= HERO ================= */
-.hero{min-height:100vh;display:flex;align-items:center;padding:130px 0 70px}
-.hero-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:56px;align-items:center}
-@media(max-width:980px){.hero-grid{grid-template-columns:1fr;gap:44px}}
-h1{font-size:clamp(42px,6.6vw,84px);line-height:1.03;font-weight:850;letter-spacing:-.035em;margin:22px 0 20px}
-h1 .line{display:block;overflow:hidden}
-h1 .line>span{display:block;animation:riseIn 1.1s cubic-bezier(.16,1,.3,1) both}
-h1 .line:nth-child(2)>span{animation-delay:.12s}
-h1 .line:nth-child(3)>span{animation-delay:.24s}
-@keyframes riseIn{from{transform:translateY(110%);opacity:0}}
-.hero p.lead{font-size:clamp(16px,1.8vw,19px);color:var(--dim);max-width:540px;animation:fadeUp 1s .42s both}
-@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}}
-.hero-eyebrow{animation:fadeUp .9s .1s both}
-.cta-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px;animation:fadeUp 1s .56s both}
-.btn{position:relative;display:inline-flex;align-items:center;gap:10px;padding:15px 28px;border-radius:99px;
-  font-weight:650;font-size:15.5px;overflow:hidden;transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s}
-.btn-p{background:linear-gradient(135deg,#8f70ff,#5c39e6);box-shadow:0 10px 34px rgba(110,74,240,.5),inset 0 1px 0 rgba(255,255,255,.3)}
-.btn-p::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.5),transparent 70%);transform:translateX(-130%);transition:transform .8s}
-.btn-p:hover::after{transform:translateX(130%)}
-.btn-p:hover{transform:translateY(-3px) scale(1.02);box-shadow:0 18px 46px rgba(110,74,240,.68)}
-.btn-g{border:1px solid var(--line);background:var(--glass);backdrop-filter:blur(16px)}
-.btn-g:hover{transform:translateY(-3px);border-color:rgba(167,139,255,.5);background:rgba(255,255,255,.09)}
-.btn small{display:block;font-size:11.5px;font-weight:400;opacity:.7;letter-spacing:.02em}
-.meta-row{display:flex;flex-wrap:wrap;gap:8px 22px;margin-top:24px;font-size:13px;color:var(--dimmer);animation:fadeUp 1s .7s both}
-.meta-row span{display:flex;align-items:center;gap:7px}
-.meta-row i{width:5px;height:5px;border-radius:50%;background:var(--purple-l);font-style:normal}
+    img,
+    svg {
+      display: block;
+      max-width: 100%
+    }
 
-/* Hero 视觉：图标 + 屏幕 */
-.hero-art{position:relative;height:440px;animation:fadeUp 1.2s .3s both}
-.app-icon{position:absolute;left:50%;top:6%;transform:translateX(-50%);width:150px;height:150px;border-radius:36px;
-  background:linear-gradient(150deg,#b6a0ff,#7b5cfa 45%,#4a2ad4);
-  box-shadow:0 30px 70px rgba(70,40,190,.55),inset 0 2px 0 rgba(255,255,255,.5),inset 0 -20px 40px rgba(20,0,60,.35);
-  display:grid;place-items:center;animation:floaty 6.5s ease-in-out infinite;z-index:3}
-@keyframes floaty{50%{transform:translateX(-50%) translateY(-16px) rotate(-2deg)}}
-.app-icon::after{content:"";position:absolute;inset:0;border-radius:inherit;
-  background:linear-gradient(125deg,rgba(255,255,255,.55) 0%,transparent 45%);opacity:.55}
-.app-icon svg{width:96px;height:96px;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35));position:relative;z-index:2}
-.halo{position:absolute;left:50%;top:6%;transform:translateX(-50%);width:150px;height:150px;border-radius:36px;
-  box-shadow:0 0 0 0 rgba(123,92,250,.55);animation:halo 3s ease-out infinite;z-index:2}
-@keyframes halo{to{box-shadow:0 0 0 90px rgba(123,92,250,0)}}
-.mini-screens{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:center;align-items:flex-end;gap:16px}
-.mini{flex:1;max-width:190px;aspect-ratio:16/10;border-radius:12px;border:1px solid rgba(167,139,255,.28);
-  background:linear-gradient(160deg,rgba(255,255,255,.09),rgba(255,255,255,.02));position:relative;overflow:hidden;
-  box-shadow:0 18px 40px rgba(0,0,0,.45)}
-.mini::after{content:"";position:absolute;inset:0;background:linear-gradient(115deg,transparent 40%,rgba(255,255,255,.12),transparent 60%);
-  transform:translateX(-110%);animation:scan 4.5s ease-in-out infinite}
-.mini:nth-child(2)::after{animation-delay:1.5s}
-.mini:nth-child(3)::after{animation-delay:3s}
-@keyframes scan{0%,60%{transform:translateX(-110%)}80%,100%{transform:translateX(110%)}}
-.mini span{position:absolute;left:8px;top:6px;font-family:var(--mono);font-size:10.5px;color:var(--purple-l);letter-spacing:.06em}
-.hero-cursor{position:absolute;width:26px;height:26px;z-index:5;transition:left .55s cubic-bezier(.34,1.56,.44,1),top .55s cubic-bezier(.34,1.56,.44,1);
-  filter:drop-shadow(0 4px 10px rgba(0,0,0,.6))}
-.ring{position:absolute;width:26px;height:26px;border-radius:50%;border:2px solid var(--mint);z-index:4;opacity:0;pointer-events:none}
-.ring.go{animation:ringout .75s ease-out}
-@keyframes ringout{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(4.2)}}
+    button {
+      font-family: inherit;
+      cursor: pointer;
+      border: 0;
+      background: none;
+      color: inherit
+    }
 
-/* ================= 演示 ================= */
-.demo-shell{margin-top:44px;padding:30px;border-radius:28px}
-.stage{position:relative;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;min-height:250px}
-@media(max-width:760px){.stage{grid-template-columns:1fr;gap:14px}}
-.screen{position:relative;border-radius:16px;padding:16px;aspect-ratio:16/10;
-  background:linear-gradient(165deg,rgba(255,255,255,.07),rgba(255,255,255,.015));
-  border:1px solid var(--line);transition:.45s cubic-bezier(.16,1,.3,1);cursor:pointer;overflow:hidden}
-.screen:hover{border-color:rgba(167,139,255,.45);transform:translateY(-4px)}
-.screen.active{border-color:var(--purple-l);box-shadow:0 0 0 1px rgba(167,139,255,.5),0 24px 60px rgba(123,92,250,.35);
-  background:linear-gradient(165deg,rgba(123,92,250,.2),rgba(123,92,250,.04))}
-.screen .no{font-family:var(--mono);font-size:12px;color:var(--dimmer);letter-spacing:.1em}
-.screen .nm{font-weight:650;font-size:15px;margin-top:2px}
-.screen .keys{display:flex;align-items:center;gap:4px;margin-top:12px;flex-wrap:wrap}
-.screen .keys .kbd{min-width:28px;height:28px;font-size:12px;border-radius:7px}
-.screen .badge{position:absolute;right:12px;top:12px;font-size:11px;padding:3px 9px;border-radius:99px;
-  background:rgba(77,255,195,.14);color:var(--mint);border:1px solid rgba(77,255,195,.3);opacity:0;transition:.3s}
-.screen.active .badge{opacity:1}
-.screen .bar{position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--purple),var(--cyan));transform:scaleX(0);transform-origin:left;transition:transform .5s}
-.screen.active .bar{transform:scaleX(1)}
-#demoCursor{position:absolute;width:30px;height:30px;z-index:9;pointer-events:none;
-  transition:left .5s cubic-bezier(.34,1.4,.4,1),top .5s cubic-bezier(.34,1.4,.4,1);filter:drop-shadow(0 5px 12px rgba(0,0,0,.65))}
-#demoRing{position:absolute;width:30px;height:30px;border-radius:50%;border:2px solid var(--yellow);z-index:8;opacity:0;pointer-events:none}
-.demo-bar{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:24px;padding-top:22px;border-top:1px solid var(--line)}
-.demo-hint{font-size:13.5px;color:var(--dimmer);flex:1;min-width:240px}
-.demo-hint b{color:var(--purple-l);font-weight:600}
-.sim{padding:9px 16px;border-radius:99px;border:1px solid var(--line);background:var(--glass);font-size:13px;transition:.3s;font-family:var(--mono)}
-.sim:hover{border-color:var(--purple-l);background:rgba(123,92,250,.16);transform:translateY(-2px)}
-.log{margin-top:16px;font-family:var(--mono);font-size:12.5px;color:var(--mint);min-height:20px;letter-spacing:.02em}
+    /* ================= 背景层 ================= */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+      overflow: hidden;
+      background:
+        radial-gradient(1200px 700px at 15% -5%, rgba(123, 92, 250, .35), transparent 60%),
+        radial-gradient(900px 600px at 88% 8%, rgba(61, 220, 255, .18), transparent 60%),
+        radial-gradient(1000px 800px at 50% 100%, rgba(255, 111, 156, .14), transparent 65%),
+        var(--bg);
+    }
 
-/* ================= 特性 ================= */
-.feat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(292px,1fr));gap:20px;margin-top:52px}
-.feat{padding:28px;transition:transform .5s cubic-bezier(.16,1,.3,1),border-color .4s}
-.feat:hover{transform:translateY(-7px);border-color:rgba(167,139,255,.42)}
-.feat .ico{width:50px;height:50px;border-radius:15px;display:grid;place-items:center;font-size:23px;margin-bottom:18px;
-  background:linear-gradient(150deg,rgba(123,92,250,.32),rgba(123,92,250,.08));border:1px solid rgba(167,139,255,.25);
-  transition:transform .5s cubic-bezier(.34,1.5,.4,1)}
-.feat:hover .ico{transform:rotate(-8deg) scale(1.12)}
-.feat h3{font-size:17.5px;font-weight:700;margin-bottom:9px;letter-spacing:-.01em}
-.feat p{font-size:14.4px;color:var(--dim);line-height:1.75}
-.feat.wide{grid-column:span 2}
-@media(max-width:760px){.feat.wide{grid-column:span 1}}
+    .blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: .5;
+      mix-blend-mode: screen;
+      will-change: transform
+    }
 
-/* 数据条 */
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-top:56px}
-@media(max-width:760px){.stats{grid-template-columns:repeat(2,1fr)}}
-.stat{padding:24px 20px;text-align:center}
-.stat b{display:block;font-size:clamp(26px,3.4vw,38px);font-weight:800;letter-spacing:-.02em;
-  background:linear-gradient(120deg,#fff,#a78bff);-webkit-background-clip:text;background-clip:text;color:transparent}
-.stat span{font-size:13px;color:var(--dimmer)}
+    .blob.b1 {
+      width: 46vw;
+      height: 46vw;
+      left: -8vw;
+      top: -10vw;
+      background: radial-gradient(circle, #7b5cfa, transparent 70%);
+      animation: drift1 26s ease-in-out infinite
+    }
 
-/* ================= 快捷键 ================= */
-.short-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px;margin-top:50px}
-.srow{padding:24px 26px;display:flex;align-items:center;gap:18px;flex-wrap:wrap}
-.srow .k{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.srow .t strong{display:block;font-size:15.5px;font-weight:680}
-.srow .t em{font-style:normal;font-size:13.4px;color:var(--dim)}
-.tips{margin-top:24px;padding:20px 24px;border-radius:16px;border:1px dashed rgba(167,139,255,.3);background:rgba(123,92,250,.06);font-size:14px;color:var(--dim)}
-.tips b{color:var(--txt)}
+    .blob.b2 {
+      width: 38vw;
+      height: 38vw;
+      right: -6vw;
+      top: 12vh;
+      background: radial-gradient(circle, #3ddcff, transparent 70%);
+      animation: drift2 32s ease-in-out infinite
+    }
 
-/* ================= 步骤 ================= */
-.steps{position:relative;margin-top:56px;display:grid;gap:20px}
-.step{display:grid;grid-template-columns:64px 1fr;gap:22px;align-items:start;padding:26px;border-radius:20px;
-  background:var(--glass);border:1px solid var(--line);backdrop-filter:blur(18px);transition:.45s}
-.step:hover{border-color:rgba(167,139,255,.4);transform:translateX(6px)}
-.step .n{width:52px;height:52px;border-radius:16px;display:grid;place-items:center;font-family:var(--mono);font-size:19px;font-weight:700;
-  background:linear-gradient(150deg,#8f70ff,#5230d8);box-shadow:0 8px 24px rgba(90,58,224,.45),inset 0 1px 0 rgba(255,255,255,.35)}
-.step h3{font-size:17.5px;margin-bottom:8px}
-.step p{font-size:14.5px;color:var(--dim)}
-.code{margin-top:14px;display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:13px;
-  background:rgba(0,0,0,.45);border:1px solid var(--line);font-family:var(--mono);font-size:13.4px;overflow-x:auto}
-.code span{color:var(--mint);white-space:nowrap}
-.code .cp{margin-left:auto;padding:5px 12px;border-radius:8px;font-size:12px;border:1px solid var(--line);color:var(--dim);transition:.25s;flex-shrink:0}
-.code .cp:hover{color:#fff;border-color:var(--purple-l);background:rgba(123,92,250,.2)}
-.warn{margin-top:12px;font-size:13.4px;color:var(--yellow);opacity:.9}
+    .blob.b3 {
+      width: 42vw;
+      height: 42vw;
+      left: 28vw;
+      bottom: -16vw;
+      background: radial-gradient(circle, #ff6f9c, transparent 70%);
+      animation: drift3 38s ease-in-out infinite
+    }
 
-/* ================= FAQ ================= */
-.faq{margin-top:48px;display:grid;gap:12px}
-.q{border-radius:16px;border:1px solid var(--line);background:var(--glass);overflow:hidden;transition:.4s}
-.q.open{border-color:rgba(167,139,255,.42);background:rgba(123,92,250,.09)}
-.q>button{width:100%;display:flex;align-items:center;gap:14px;padding:20px 24px;text-align:left;font-size:16px;font-weight:620}
-.q>button .ar{margin-left:auto;font-size:20px;color:var(--purple-l);transition:transform .4s cubic-bezier(.16,1,.3,1);flex-shrink:0}
-.q.open>button .ar{transform:rotate(45deg)}
-.q .a{max-height:0;overflow:hidden;transition:max-height .5s cubic-bezier(.16,1,.3,1)}
-.q .a p{padding:0 24px 22px;font-size:14.6px;color:var(--dim)}
-.q .a code{font-family:var(--mono);font-size:13px;background:rgba(0,0,0,.4);padding:2px 7px;border-radius:6px;color:var(--mint)}
+    @keyframes drift1 {
+      50% {
+        transform: translate3d(12vw, 10vh, 0) scale(1.2)
+      }
+    }
 
-/* ================= 结尾 CTA ================= */
-.final{text-align:center;padding:64px 32px;border-radius:32px;margin:0 0 20px;
-  background:linear-gradient(150deg,rgba(123,92,250,.24),rgba(61,220,255,.08) 60%,rgba(255,111,156,.1));
-  border:1px solid rgba(167,139,255,.28);position:relative;overflow:hidden}
-.final::before{content:"";position:absolute;width:600px;height:600px;left:50%;top:-60%;transform:translateX(-50%);
-  background:radial-gradient(circle,rgba(123,92,250,.4),transparent 65%);filter:blur(20px);animation:pulse 6s ease-in-out infinite}
-@keyframes pulse{50%{opacity:.5;transform:translateX(-50%) scale(1.2)}}
-.final h2{position:relative;font-size:clamp(28px,4.4vw,46px);font-weight:850;letter-spacing:-.025em}
-.final p{position:relative;color:var(--dim);margin:16px auto 32px;max-width:520px}
-.final .cta-row{justify-content:center;position:relative;animation:none}
+    @keyframes drift2 {
+      50% {
+        transform: translate3d(-14vw, 16vh, 0) scale(1.15)
+      }
+    }
 
-/* 跑马灯 */
-.marquee{overflow:hidden;border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 0;
-  background:rgba(255,255,255,.02);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
-.mq-track{display:flex;gap:44px;width:max-content;animation:mq 32s linear infinite}
-.mq-track span{font-size:14px;color:var(--dimmer);display:flex;align-items:center;gap:12px;white-space:nowrap;font-family:var(--mono)}
-@keyframes mq{to{transform:translateX(-50%)}}
+    @keyframes drift3 {
+      50% {
+        transform: translate3d(10vw, -14vh, 0) scale(1.25)
+      }
+    }
 
-footer{padding:58px 0 44px;border-top:1px solid var(--line);margin-top:60px}
-.f-grid{display:flex;flex-wrap:wrap;gap:26px;align-items:center;justify-content:space-between;font-size:13.5px;color:var(--dimmer)}
-.f-links{display:flex;gap:22px;flex-wrap:wrap}
-.f-links a{transition:.25s}
-.f-links a:hover{color:var(--purple-l)}
-.f-stats{margin-top:26px;padding-top:18px;border-top:1px solid var(--line);display:flex;flex-wrap:wrap;gap:8px 22px;justify-content:center;font-size:12.5px;color:var(--dimmer)}
-.f-stats b{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums}
-.f-stats a{transition:.25s}
-.f-stats a:hover{color:var(--purple-l)}
+    .grid-layer {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background-image: linear-gradient(rgba(160, 140, 255, .06) 1px, transparent 1px), linear-gradient(90deg, rgba(160, 140, 255, .06) 1px, transparent 1px);
+      background-size: 64px 64px;
+      mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 78%);
+      -webkit-mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 78%);
+      animation: gridpan 40s linear infinite;
+    }
 
-@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.reveal{opacity:1;transform:none}}
-</style>
+    @keyframes gridpan {
+      to {
+        background-position: 64px 64px, 64px 64px
+      }
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: .035;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='120' height='120' filter='url(%23n)'/%3E%3C/svg%3E")
+    }
+
+    #trail {
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none
+    }
+
+    /* ================= 导航 ================= */
+    .progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 2px;
+      width: 0;
+      z-index: 100;
+      background: linear-gradient(90deg, var(--purple), var(--cyan), var(--mint));
+      box-shadow: 0 0 14px rgba(123, 92, 250, .8)
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 90;
+      transition: .45s cubic-bezier(.16, 1, .3, 1)
+    }
+
+    header.solid {
+      background: rgba(10, 7, 22, .62);
+      backdrop-filter: blur(24px) saturate(160%);
+      -webkit-backdrop-filter: blur(24px) saturate(160%);
+      border-bottom: 1px solid var(--line)
+    }
+
+    nav {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      gap: 28px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-weight: 700;
+      letter-spacing: .02em;
+      font-size: 17px
+    }
+
+    .brand .mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: linear-gradient(140deg, #9a7cff, #6544e8 60%, #4a2fd0);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 6px 22px rgba(101, 68, 232, .5), inset 0 1px 0 rgba(255, 255, 255, .35);
+      position: relative;
+      overflow: hidden
+    }
+
+    .brand .mark svg {
+      width: 19px;
+      height: 19px
+    }
+
+    .brand .mark::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 35%, rgba(255, 255, 255, .55), transparent 65%);
+      transform: translateX(-120%);
+      animation: sheen 5s ease-in-out infinite
+    }
+
+    @keyframes sheen {
+
+      0%,
+      72% {
+        transform: translateX(-120%)
+      }
+
+      88%,
+      100% {
+        transform: translateX(120%)
+      }
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 4px;
+      margin-left: auto
+    }
+
+    .nav-links a {
+      padding: 8px 14px;
+      border-radius: 99px;
+      font-size: 14px;
+      color: var(--dim);
+      transition: .3s
+    }
+
+    .nav-links a:hover {
+      color: #fff;
+      background: rgba(255, 255, 255, .07)
+    }
+
+    .nav-cta {
+      padding: 9px 20px;
+      border-radius: 99px;
+      font-size: 14px;
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--purple), #5a3ce0);
+      box-shadow: 0 6px 24px rgba(123, 92, 250, .45);
+      transition: .3s
+    }
+
+    .nav-cta:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 34px rgba(123, 92, 250, .65)
+    }
+
+    .nav-stars {
+      display: flex;
+      gap: 10px;
+      align-items: center
+    }
+
+    .star {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 6px;
+      transition: .3s;
+      line-height: 0
+    }
+
+    .star img {
+      display: block;
+      height: 20px;
+      width: auto;
+      border-radius: 6px
+    }
+
+    .star:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.18) drop-shadow(0 8px 18px rgba(255, 212, 77, .3))
+    }
+
+    .burger {
+      display: none;
+      margin-left: auto;
+      font-size: 22px;
+      padding: 6px 10px
+    }
+
+    @media(max-width:860px) {
+      .nav-links {
+        position: fixed;
+        top: 64px;
+        left: 16px;
+        right: 16px;
+        flex-direction: column;
+        gap: 2px;
+        padding: 12px;
+        background: rgba(14, 10, 28, .92);
+        backdrop-filter: blur(24px);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-12px);
+        transition: .35s
+      }
+
+      .nav-links.open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: none
+      }
+
+      .burger {
+        display: block
+      }
+
+      .nav-cta {
+        display: none
+      }
+
+      .nav-stars {
+        display: none
+      }
+    }
+
+    /* ================= 通用 ================= */
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 0 24px
+    }
+
+    section {
+      position: relative;
+      padding: 110px 0
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      padding: 6px 15px;
+      border-radius: 99px;
+      border: 1px solid var(--line);
+      background: var(--glass);
+      font-size: 13px;
+      color: var(--purple-l);
+      backdrop-filter: blur(12px);
+      letter-spacing: .06em
+    }
+
+    .eyebrow .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--mint);
+      box-shadow: 0 0 10px var(--mint);
+      animation: blink 2s ease-in-out infinite
+    }
+
+    @keyframes blink {
+      50% {
+        opacity: .25
+      }
+    }
+
+    h2.title {
+      font-size: clamp(30px, 4.4vw, 50px);
+      line-height: 1.18;
+      font-weight: 800;
+      letter-spacing: -.02em;
+      margin: 18px 0 14px
+    }
+
+    .sub {
+      color: var(--dim);
+      font-size: clamp(15px, 1.6vw, 17.5px);
+      max-width: 640px
+    }
+
+    .grad {
+      background: linear-gradient(100deg, #b9a5ff, #7b5cfa 30%, #3ddcff 62%, #4dffc3);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      background-size: 220% 100%;
+      animation: gradmove 9s ease infinite
+    }
+
+    @keyframes gradmove {
+      50% {
+        background-position: 100% 0
+      }
+    }
+
+    .center {
+      text-align: center
+    }
+
+    .center .sub {
+      margin-inline: auto
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(34px);
+      transition: opacity .9s cubic-bezier(.16, 1, .3, 1), transform .9s cubic-bezier(.16, 1, .3, 1)
+    }
+
+    .reveal.in {
+      opacity: 1;
+      transform: none
+    }
+
+    .card {
+      background: var(--glass);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      position: relative;
+      overflow: hidden
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      background: radial-gradient(340px circle at var(--mx, 50%) var(--my, 0%), rgba(167, 139, 255, .16), transparent 70%);
+      opacity: 0;
+      transition: opacity .45s
+    }
+
+    .card:hover::before {
+      opacity: 1
+    }
+
+    /* keycap 键帽 */
+    .kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 34px;
+      height: 34px;
+      padding: 0 10px;
+      font-family: var(--mono);
+      font-size: 14px;
+      font-weight: 600;
+      border-radius: 9px;
+      color: #fff;
+      background: linear-gradient(180deg, rgba(255, 255, 255, .16), rgba(255, 255, 255, .05));
+      border: 1px solid rgba(255, 255, 255, .18);
+      box-shadow: 0 3px 0 rgba(0, 0, 0, .45), 0 6px 16px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .35);
+      transition: transform .09s, box-shadow .09s
+    }
+
+    .kbd.tap,
+    .kbd:active {
+      transform: translateY(3px);
+      box-shadow: 0 0 0 rgba(0, 0, 0, .4), 0 2px 8px rgba(0, 0, 0, .4), inset 0 1px 0 rgba(255, 255, 255, .2)
+    }
+
+    .kbd.hot {
+      background: linear-gradient(180deg, #a78bff, #6a49e8);
+      border-color: rgba(200, 180, 255, .6);
+      box-shadow: 0 3px 0 #3d2699, 0 8px 24px rgba(123, 92, 250, .6)
+    }
+
+    .plus {
+      color: var(--dimmer);
+      font-size: 13px;
+      margin: 0 2px
+    }
+
+    /* ================= HERO ================= */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 130px 0 70px
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.02fr .98fr;
+      gap: 56px;
+      align-items: center
+    }
+
+    @media(max-width:980px) {
+      .hero-grid {
+        grid-template-columns: 1fr;
+        gap: 44px
+      }
+    }
+
+    h1 {
+      font-size: clamp(42px, 6.6vw, 84px);
+      line-height: 1.03;
+      font-weight: 850;
+      letter-spacing: -.035em;
+      margin: 22px 0 20px
+    }
+
+    h1 .line {
+      display: block;
+      overflow: hidden
+    }
+
+    h1 .line>span {
+      display: block;
+      animation: riseIn 1.1s cubic-bezier(.16, 1, .3, 1) both
+    }
+
+    h1 .line:nth-child(2)>span {
+      animation-delay: .12s
+    }
+
+    h1 .line:nth-child(3)>span {
+      animation-delay: .24s
+    }
+
+    @keyframes riseIn {
+      from {
+        transform: translateY(110%);
+        opacity: 0
+      }
+    }
+
+    .hero p.lead {
+      font-size: clamp(16px, 1.8vw, 19px);
+      color: var(--dim);
+      max-width: 540px;
+      animation: fadeUp 1s .42s both
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px)
+      }
+    }
+
+    .hero-eyebrow {
+      animation: fadeUp .9s .1s both
+    }
+
+    .cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+      animation: fadeUp 1s .56s both
+    }
+
+    .btn {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 15px 28px;
+      border-radius: 99px;
+      font-weight: 650;
+      font-size: 15.5px;
+      overflow: hidden;
+      transition: transform .35s cubic-bezier(.16, 1, .3, 1), box-shadow .35s
+    }
+
+    .btn-p {
+      background: linear-gradient(135deg, #8f70ff, #5c39e6);
+      box-shadow: 0 10px 34px rgba(110, 74, 240, .5), inset 0 1px 0 rgba(255, 255, 255, .3)
+    }
+
+    .btn-p::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, transparent 30%, rgba(255, 255, 255, .5), transparent 70%);
+      transform: translateX(-130%);
+      transition: transform .8s
+    }
+
+    .btn-p:hover::after {
+      transform: translateX(130%)
+    }
+
+    .btn-p:hover {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 18px 46px rgba(110, 74, 240, .68)
+    }
+
+    .btn-g {
+      border: 1px solid var(--line);
+      background: var(--glass);
+      backdrop-filter: blur(16px)
+    }
+
+    .btn-g:hover {
+      transform: translateY(-3px);
+      border-color: rgba(167, 139, 255, .5);
+      background: rgba(255, 255, 255, .09)
+    }
+
+    .btn small {
+      display: block;
+      font-size: 11.5px;
+      font-weight: 400;
+      opacity: .7;
+      letter-spacing: .02em
+    }
+
+    .meta-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 22px;
+      margin-top: 24px;
+      font-size: 13px;
+      color: var(--dimmer);
+      animation: fadeUp 1s .7s both
+    }
+
+    .meta-row span {
+      display: flex;
+      align-items: center;
+      gap: 7px
+    }
+
+    .meta-row i {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: var(--purple-l);
+      font-style: normal
+    }
+
+    /* Hero 视觉：图标 + 屏幕 */
+    .hero-art {
+      position: relative;
+      height: 440px;
+      animation: fadeUp 1.2s .3s both
+    }
+
+    .app-icon {
+      position: absolute;
+      left: 50%;
+      top: 6%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 150px;
+      border-radius: 36px;
+      background: linear-gradient(150deg, #b6a0ff, #7b5cfa 45%, #4a2ad4);
+      box-shadow: 0 30px 70px rgba(70, 40, 190, .55), inset 0 2px 0 rgba(255, 255, 255, .5), inset 0 -20px 40px rgba(20, 0, 60, .35);
+      display: grid;
+      place-items: center;
+      animation: floaty 6.5s ease-in-out infinite;
+      z-index: 3
+    }
+
+    @keyframes floaty {
+      50% {
+        transform: translateX(-50%) translateY(-16px) rotate(-2deg)
+      }
+    }
+
+    .app-icon::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: linear-gradient(125deg, rgba(255, 255, 255, .55) 0%, transparent 45%);
+      opacity: .55
+    }
+
+    .app-icon svg {
+      width: 96px;
+      height: 96px;
+      filter: drop-shadow(0 6px 14px rgba(0, 0, 0, .35));
+      position: relative;
+      z-index: 2
+    }
+
+    .halo {
+      position: absolute;
+      left: 50%;
+      top: 6%;
+      transform: translateX(-50%);
+      width: 150px;
+      height: 150px;
+      border-radius: 36px;
+      box-shadow: 0 0 0 0 rgba(123, 92, 250, .55);
+      animation: halo 3s ease-out infinite;
+      z-index: 2
+    }
+
+    @keyframes halo {
+      to {
+        box-shadow: 0 0 0 90px rgba(123, 92, 250, 0)
+      }
+    }
+
+    .mini-screens {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      gap: 16px
+    }
+
+    .mini {
+      flex: 1;
+      max-width: 190px;
+      aspect-ratio: 16/10;
+      border-radius: 12px;
+      border: 1px solid rgba(167, 139, 255, .28);
+      background: linear-gradient(160deg, rgba(255, 255, 255, .09), rgba(255, 255, 255, .02));
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, .45)
+    }
+
+    .mini::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(115deg, transparent 40%, rgba(255, 255, 255, .12), transparent 60%);
+      transform: translateX(-110%);
+      animation: scan 4.5s ease-in-out infinite
+    }
+
+    .mini:nth-child(2)::after {
+      animation-delay: 1.5s
+    }
+
+    .mini:nth-child(3)::after {
+      animation-delay: 3s
+    }
+
+    @keyframes scan {
+
+      0%,
+      60% {
+        transform: translateX(-110%)
+      }
+
+      80%,
+      100% {
+        transform: translateX(110%)
+      }
+    }
+
+    .mini span {
+      position: absolute;
+      left: 8px;
+      top: 6px;
+      font-family: var(--mono);
+      font-size: 10.5px;
+      color: var(--purple-l);
+      letter-spacing: .06em
+    }
+
+    .hero-cursor {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      z-index: 5;
+      transition: left .55s cubic-bezier(.34, 1.56, .44, 1), top .55s cubic-bezier(.34, 1.56, .44, 1);
+      filter: drop-shadow(0 4px 10px rgba(0, 0, 0, .6))
+    }
+
+    .ring {
+      position: absolute;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--mint);
+      z-index: 4;
+      opacity: 0;
+      pointer-events: none
+    }
+
+    .ring.go {
+      animation: ringout .75s ease-out
+    }
+
+    @keyframes ringout {
+      0% {
+        opacity: .9;
+        transform: scale(.4)
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(4.2)
+      }
+    }
+
+    /* ================= 演示 ================= */
+    .demo-shell {
+      margin-top: 44px;
+      padding: 30px;
+      border-radius: 28px
+    }
+
+    .stage {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      min-height: 250px
+    }
+
+    @media(max-width:760px) {
+      .stage {
+        grid-template-columns: 1fr;
+        gap: 14px
+      }
+    }
+
+    .screen {
+      position: relative;
+      border-radius: 16px;
+      padding: 16px;
+      aspect-ratio: 16/10;
+      background: linear-gradient(165deg, rgba(255, 255, 255, .07), rgba(255, 255, 255, .015));
+      border: 1px solid var(--line);
+      transition: .45s cubic-bezier(.16, 1, .3, 1);
+      cursor: pointer;
+      overflow: hidden
+    }
+
+    .screen:hover {
+      border-color: rgba(167, 139, 255, .45);
+      transform: translateY(-4px)
+    }
+
+    .screen.active {
+      border-color: var(--purple-l);
+      box-shadow: 0 0 0 1px rgba(167, 139, 255, .5), 0 24px 60px rgba(123, 92, 250, .35);
+      background: linear-gradient(165deg, rgba(123, 92, 250, .2), rgba(123, 92, 250, .04))
+    }
+
+    .screen .no {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--dimmer);
+      letter-spacing: .1em
+    }
+
+    .screen .nm {
+      font-weight: 650;
+      font-size: 15px;
+      margin-top: 2px
+    }
+
+    .screen .keys {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 12px;
+      flex-wrap: wrap
+    }
+
+    .screen .keys .kbd {
+      min-width: 28px;
+      height: 28px;
+      font-size: 12px;
+      border-radius: 7px
+    }
+
+    .screen .badge {
+      position: absolute;
+      right: 12px;
+      top: 12px;
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 99px;
+      background: rgba(77, 255, 195, .14);
+      color: var(--mint);
+      border: 1px solid rgba(77, 255, 195, .3);
+      opacity: 0;
+      transition: .3s
+    }
+
+    .screen.active .badge {
+      opacity: 1
+    }
+
+    .screen .bar {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--purple), var(--cyan));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform .5s
+    }
+
+    .screen.active .bar {
+      transform: scaleX(1)
+    }
+
+    #demoCursor {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      z-index: 9;
+      pointer-events: none;
+      transition: left .5s cubic-bezier(.34, 1.4, .4, 1), top .5s cubic-bezier(.34, 1.4, .4, 1);
+      filter: drop-shadow(0 5px 12px rgba(0, 0, 0, .65))
+    }
+
+    #demoRing {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 2px solid var(--yellow);
+      z-index: 8;
+      opacity: 0;
+      pointer-events: none
+    }
+
+    .demo-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-top: 24px;
+      padding-top: 22px;
+      border-top: 1px solid var(--line)
+    }
+
+    .demo-hint {
+      font-size: 13.5px;
+      color: var(--dimmer);
+      flex: 1;
+      min-width: 240px
+    }
+
+    .demo-hint b {
+      color: var(--purple-l);
+      font-weight: 600
+    }
+
+    .sim {
+      padding: 9px 16px;
+      border-radius: 99px;
+      border: 1px solid var(--line);
+      background: var(--glass);
+      font-size: 13px;
+      transition: .3s;
+      font-family: var(--mono)
+    }
+
+    .sim:hover {
+      border-color: var(--purple-l);
+      background: rgba(123, 92, 250, .16);
+      transform: translateY(-2px)
+    }
+
+    .log {
+      margin-top: 16px;
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--mint);
+      min-height: 20px;
+      letter-spacing: .02em
+    }
+
+    /* ================= 特性 ================= */
+    .feat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(292px, 1fr));
+      gap: 20px;
+      margin-top: 52px
+    }
+
+    .feat {
+      padding: 28px;
+      transition: transform .5s cubic-bezier(.16, 1, .3, 1), border-color .4s
+    }
+
+    .feat:hover {
+      transform: translateY(-7px);
+      border-color: rgba(167, 139, 255, .42)
+    }
+
+    .feat .ico {
+      width: 50px;
+      height: 50px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      font-size: 23px;
+      margin-bottom: 18px;
+      background: linear-gradient(150deg, rgba(123, 92, 250, .32), rgba(123, 92, 250, .08));
+      border: 1px solid rgba(167, 139, 255, .25);
+      transition: transform .5s cubic-bezier(.34, 1.5, .4, 1)
+    }
+
+    .feat:hover .ico {
+      transform: rotate(-8deg) scale(1.12)
+    }
+
+    .feat h3 {
+      font-size: 17.5px;
+      font-weight: 700;
+      margin-bottom: 9px;
+      letter-spacing: -.01em
+    }
+
+    .feat p {
+      font-size: 14.4px;
+      color: var(--dim);
+      line-height: 1.75
+    }
+
+    .feat.wide {
+      grid-column: span 2
+    }
+
+    @media(max-width:760px) {
+      .feat.wide {
+        grid-column: span 1
+      }
+    }
+
+    /* 数据条 */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-top: 56px
+    }
+
+    @media(max-width:760px) {
+      .stats {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    .stat {
+      padding: 24px 20px;
+      text-align: center
+    }
+
+    .stat b {
+      display: block;
+      font-size: clamp(26px, 3.4vw, 38px);
+      font-weight: 800;
+      letter-spacing: -.02em;
+      background: linear-gradient(120deg, #fff, #a78bff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent
+    }
+
+    .stat span {
+      font-size: 13px;
+      color: var(--dimmer)
+    }
+
+    /* ================= 快捷键 ================= */
+    .short-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 50px
+    }
+
+    .srow {
+      padding: 24px 26px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap
+    }
+
+    .srow .k {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0
+    }
+
+    .srow .t strong {
+      display: block;
+      font-size: 15.5px;
+      font-weight: 680
+    }
+
+    .srow .t em {
+      font-style: normal;
+      font-size: 13.4px;
+      color: var(--dim)
+    }
+
+    .tips {
+      margin-top: 24px;
+      padding: 20px 24px;
+      border-radius: 16px;
+      border: 1px dashed rgba(167, 139, 255, .3);
+      background: rgba(123, 92, 250, .06);
+      font-size: 14px;
+      color: var(--dim)
+    }
+
+    .tips b {
+      color: var(--txt)
+    }
+
+    /* ================= 步骤 ================= */
+    .steps {
+      position: relative;
+      margin-top: 56px;
+      display: grid;
+      gap: 20px
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 64px 1fr;
+      gap: 22px;
+      align-items: start;
+      padding: 26px;
+      border-radius: 20px;
+      background: var(--glass);
+      border: 1px solid var(--line);
+      backdrop-filter: blur(18px);
+      transition: .45s
+    }
+
+    .step:hover {
+      border-color: rgba(167, 139, 255, .4);
+      transform: translateX(6px)
+    }
+
+    .step .n {
+      width: 52px;
+      height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-family: var(--mono);
+      font-size: 19px;
+      font-weight: 700;
+      background: linear-gradient(150deg, #8f70ff, #5230d8);
+      box-shadow: 0 8px 24px rgba(90, 58, 224, .45), inset 0 1px 0 rgba(255, 255, 255, .35)
+    }
+
+    .step h3 {
+      font-size: 17.5px;
+      margin-bottom: 8px
+    }
+
+    .step p {
+      font-size: 14.5px;
+      color: var(--dim)
+    }
+
+    .code {
+      margin-top: 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 16px;
+      border-radius: 13px;
+      background: rgba(0, 0, 0, .45);
+      border: 1px solid var(--line);
+      font-family: var(--mono);
+      font-size: 13.4px;
+      overflow-x: auto
+    }
+
+    .code span {
+      color: var(--mint);
+      white-space: nowrap
+    }
+
+    .code .cp {
+      margin-left: auto;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      border: 1px solid var(--line);
+      color: var(--dim);
+      transition: .25s;
+      flex-shrink: 0
+    }
+
+    .code .cp:hover {
+      color: #fff;
+      border-color: var(--purple-l);
+      background: rgba(123, 92, 250, .2)
+    }
+
+    .warn {
+      margin-top: 12px;
+      font-size: 13.4px;
+      color: var(--yellow);
+      opacity: .9
+    }
+
+    /* ================= FAQ ================= */
+    .faq {
+      margin-top: 48px;
+      display: grid;
+      gap: 12px
+    }
+
+    .q {
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--glass);
+      overflow: hidden;
+      transition: .4s
+    }
+
+    .q.open {
+      border-color: rgba(167, 139, 255, .42);
+      background: rgba(123, 92, 250, .09)
+    }
+
+    .q>button {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 20px 24px;
+      text-align: left;
+      font-size: 16px;
+      font-weight: 620
+    }
+
+    .q>button .ar {
+      margin-left: auto;
+      font-size: 20px;
+      color: var(--purple-l);
+      transition: transform .4s cubic-bezier(.16, 1, .3, 1);
+      flex-shrink: 0
+    }
+
+    .q.open>button .ar {
+      transform: rotate(45deg)
+    }
+
+    .q .a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .5s cubic-bezier(.16, 1, .3, 1)
+    }
+
+    .q .a p {
+      padding: 0 24px 22px;
+      font-size: 14.6px;
+      color: var(--dim)
+    }
+
+    .q .a code {
+      font-family: var(--mono);
+      font-size: 13px;
+      background: rgba(0, 0, 0, .4);
+      padding: 2px 7px;
+      border-radius: 6px;
+      color: var(--mint)
+    }
+
+    /* ================= 结尾 CTA ================= */
+    .final {
+      text-align: center;
+      padding: 64px 32px;
+      border-radius: 32px;
+      margin: 0 0 20px;
+      background: linear-gradient(150deg, rgba(123, 92, 250, .24), rgba(61, 220, 255, .08) 60%, rgba(255, 111, 156, .1));
+      border: 1px solid rgba(167, 139, 255, .28);
+      position: relative;
+      overflow: hidden
+    }
+
+    .final::before {
+      content: "";
+      position: absolute;
+      width: 600px;
+      height: 600px;
+      left: 50%;
+      top: -60%;
+      transform: translateX(-50%);
+      background: radial-gradient(circle, rgba(123, 92, 250, .4), transparent 65%);
+      filter: blur(20px);
+      animation: pulse 6s ease-in-out infinite
+    }
+
+    @keyframes pulse {
+      50% {
+        opacity: .5;
+        transform: translateX(-50%) scale(1.2)
+      }
+    }
+
+    .final h2 {
+      position: relative;
+      font-size: clamp(28px, 4.4vw, 46px);
+      font-weight: 850;
+      letter-spacing: -.025em
+    }
+
+    .final p {
+      position: relative;
+      color: var(--dim);
+      margin: 16px auto 32px;
+      max-width: 520px
+    }
+
+    .final .cta-row {
+      justify-content: center;
+      position: relative;
+      animation: none
+    }
+
+    /* 跑马灯 */
+    .marquee {
+      overflow: hidden;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      padding: 18px 0;
+      background: rgba(255, 255, 255, .02);
+      mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent);
+      -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent)
+    }
+
+    .mq-track {
+      display: flex;
+      gap: 44px;
+      width: max-content;
+      animation: mq 32s linear infinite
+    }
+
+    .mq-track span {
+      font-size: 14px;
+      color: var(--dimmer);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      white-space: nowrap;
+      font-family: var(--mono)
+    }
+
+    @keyframes mq {
+      to {
+        transform: translateX(-50%)
+      }
+    }
+
+    footer {
+      padding: 58px 0 44px;
+      border-top: 1px solid var(--line);
+      margin-top: 60px
+    }
+
+    .f-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 26px;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13.5px;
+      color: var(--dimmer)
+    }
+
+    .f-links {
+      display: flex;
+      gap: 22px;
+      flex-wrap: wrap
+    }
+
+    .f-links a {
+      transition: .25s
+    }
+
+    .f-links a:hover {
+      color: var(--purple-l)
+    }
+
+    .f-stats {
+      margin-top: 26px;
+      padding-top: 18px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 22px;
+      justify-content: center;
+      font-size: 12.5px;
+      color: var(--dimmer)
+    }
+
+    .f-stats b {
+      color: var(--text);
+      font-weight: 600;
+      font-variant-numeric: tabular-nums
+    }
+
+    .f-stats a {
+      transition: .25s
+    }
+
+    .f-stats a:hover {
+      color: var(--purple-l)
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      * {
+        animation: none !important;
+        transition: none !important
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="bg-layer"><div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div></div>
-<div class="grid-layer"></div>
-<div class="noise"></div>
-<canvas id="trail"></canvas>
-<div class="progress" id="prog"></div>
-
-<header id="hdr">
-  <nav>
-    <a class="brand" href="#top" aria-label="MouseDance 首页">
-      <span class="mark">
-        <svg viewBox="0 0 216 276" aria-hidden="true"><path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#fff"/></svg>
-      </span>
-      MouseDance
-    </a>
-    <button class="burger" id="burger" aria-label="打开菜单">☰</button>
-    <div class="nav-links" id="navlinks">
-      <a href="#demo">交互演示</a>
-      <a href="#features">功能特性</a>
-      <a href="#shortcuts">快捷键</a>
-      <a href="#install">安装</a>
-      <a href="#faq">常见问题</a>
-    </div>
-    <div class="nav-stars">
-      <a class="star" href="https://gitee.com/qianxunclub/mouse-dance" target="_blank" rel="noopener" aria-label="在 Gitee 给 MouseDance 点个 Star">
-        <img src="https://gitee.com/qianxunclub/mouse-dance/badge/star.svg?theme=white" alt="Gitee Star" loading="lazy">
-      </a>
-      <a class="star" href="https://github.com/qianxunclub/mouse-dance" target="_blank" rel="noopener" aria-label="在 GitHub 给 MouseDance 点个 Star">
-        <img src="https://img.shields.io/github/stars/qianxunclub/mouse-dance" alt="GitHub Stars" loading="lazy">
-      </a>
-    </div>
-    <a class="nav-cta" href="https://gitee.com/qianxunclub/mouse-dance/releases/latest" target="_blank" rel="noopener">免费下载</a>
-  </nav>
-</header>
-
-<main id="top">
-
-<!-- ================= HERO ================= -->
-<section class="hero">
-  <div class="wrap hero-grid">
-    <div>
-      <span class="eyebrow hero-eyebrow"><span class="dot"></span>macOS 26 Tahoe · 液态玻璃 · 开源免费</span>
-      <h1>
-        <span class="line"><span>让鼠标在屏幕</span></span>
-        <span class="line"><span class="grad">之间跳舞</span></span>
-      </h1>
-      <p class="lead">
-        双击 Command</b> 就在两块屏幕之间来回瞬移，<b>⌘⌥1 / ⌘⌥2</b> 直达任意一块屏幕 ——
-        位置等比映射，落点还有彩色光环告诉你「鼠标在这儿」。
-      </p>
-      <div class="cta-row">
-        <a class="btn btn-p" href="https://gitee.com/qianxunclub/mouse-dance/releases/latest" target="_blank" rel="noopener">
-          <span>⬇︎ 下载 MouseDance.dmg<small>Apple Silicon &amp; Intel</small></span>
-        </a>
-        <a class="btn btn-g" href="#demo"><span>▶︎ 先玩玩演示<small>无需安装，键盘直接试</small></span></a>
-      </div>
-      <div class="meta-row">
-        <span><i></i>需 macOS 26 (Tahoe) 或更高</span>
-        <span><i></i>Apache-2.0 开源</span>
-        <span><i></i>零第三方依赖</span>
-        <span><i></i>约 2 MB 体积</span>
-      </div>
-    </div>
-
-    <div class="hero-art" id="heroArt">
-      <div class="halo"></div>
-      <div class="app-icon">
-        <svg viewBox="0 0 1024 1024" aria-hidden="true">
-          <g transform="translate(240,250) scale(1.6)"><path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#fff" stroke="#fff" stroke-width="16" stroke-linejoin="round"/></g>
-          <g fill="#fff" opacity=".92">
-            <rect x="600" y="310" width="200" height="46" rx="23"/>
-            <rect x="650" y="412" width="200" height="46" rx="23"/>
-            <rect x="700" y="514" width="200" height="46" rx="23"/>
-          </g>
-        </svg>
-      </div>
-      <div class="mini-screens">
-        <div class="mini"><span>⌘⌥1</span></div>
-        <div class="mini"><span>⌘⌥2</span></div>
-        <div class="mini"><span>⌘⌥3</span></div>
-      </div>
-      <svg class="hero-cursor" id="heroCursor" viewBox="0 0 216 276" aria-hidden="true">
-        <path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#ffd44d" stroke="#1a1030" stroke-width="14" stroke-linejoin="round"/>
-      </svg>
-      <div class="ring" id="heroRing"></div>
-    </div>
+  <div class="bg-layer">
+    <div class="blob b1"></div>
+    <div class="blob b2"></div>
+    <div class="blob b3"></div>
   </div>
-</section>
+  <div class="grid-layer"></div>
+  <div class="noise"></div>
+  <canvas id="trail"></canvas>
+  <div class="progress" id="prog"></div>
 
-<div class="marquee" aria-hidden="true">
-  <div class="mq-track">
-    <span>◆ 双击 ⌘ 快捷切换</span><span>◆ ⌘⌥1 直达屏幕一</span><span>◆ ⌘⌥2 直达屏幕二</span><span>◆ 位置等比映射</span>
-    <span>◆ 落点光环提示</span><span>◆ 屏幕标记 3 秒</span><span>◆ 开机自启动</span><span>◆ 菜单栏常驻</span>
-  </div>
-</div>
-
-<!-- ================= 交互演示 ================= -->
-<section id="demo">
-  <div class="wrap">
-    <div class="center reveal">
-      <span class="eyebrow"><span class="dot"></span>真·可交互 · 直接按你的键盘</span>
-      <h2 class="title">在这里就能<span class="grad">按一下试试</span></h2>
-      <p class="sub">下面模拟了一套三屏工作台。按 <b>⌘⌥1 / ⌘⌥2 / ⌘⌥3</b> 让鼠标直达对应屏幕，
-        或者<b>连按两次 Command</b>，在最近两块屏幕之间来回跳。这正是 MouseDance 在你真实桌面上的行为。</p>
-    </div>
-
-    <div class="card demo-shell reveal">
-      <div class="stage" id="stage">
-        <div class="screen active" data-i="0" tabindex="0" role="button" aria-label="跳转到屏幕 1">
-          <div class="no">SCREEN 01</div>
-          <div class="nm">左侧竖屏 · 文档</div>
-          <div class="keys"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span class="plus">+</span><span class="kbd">1</span></div>
-          <div class="badge">鼠标在此</div><div class="bar"></div>
-        </div>
-        <div class="screen" data-i="1" tabindex="0" role="button" aria-label="跳转到屏幕 2">
-          <div class="no">SCREEN 02</div>
-          <div class="nm">中央主屏 · 编码</div>
-          <div class="keys"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span class="plus">+</span><span class="kbd">2</span></div>
-          <div class="badge">鼠标在此</div><div class="bar"></div>
-        </div>
-        <div class="screen" data-i="2" tabindex="0" role="button" aria-label="跳转到屏幕 3">
-          <div class="no">SCREEN 03</div>
-          <div class="nm">右侧 MacBook · 沟通</div>
-          <div class="keys"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span class="plus">+</span><span class="kbd">3</span></div>
-          <div class="badge">鼠标在此</div><div class="bar"></div>
-        </div>
-        <svg id="demoCursor" viewBox="0 0 216 276" aria-hidden="true">
-          <path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#4dffc3" stroke="#0d0820" stroke-width="14" stroke-linejoin="round"/>
-        </svg>
-        <div id="demoRing"></div>
-      </div>
-
-      <div class="demo-bar">
-        <div class="demo-hint">提示：浏览器可能会先吃掉部分系统级组合键，若无反应就点下面的按钮，或直接点屏幕卡片。真实的 MouseDance 工作在系统层，<b>永远不会被浏览器抢走</b>。</div>
-        <button class="sim" data-sim="toggle">双击 ⌘</button>
-        <button class="sim" data-sim="0">⌘⌥1</button>
-        <button class="sim" data-sim="1">⌘⌥2</button>
-        <button class="sim" data-sim="2">⌘⌥3</button>
-      </div>
-      <div class="log" id="log">› 等待输入…</div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 功能特性 ================= -->
-<section id="features">
-  <div class="wrap">
-    <div class="center reveal">
-      <span class="eyebrow"><span class="dot"></span>小工具，做到极致</span>
-      <h2 class="title">不只是「把鼠标扔过去」</h2>
-      <p class="sub">从跳转算法到落点提示，MouseDance 把多屏用户每天要重复几十次的动作，压缩成一次按键。</p>
-    </div>
-
-    <div class="feat-grid">
-      <article class="feat card reveal">
-        <div class="ico">⌘</div>
-        <h3>每块屏幕，一个专属快捷键</h3>
-        <p>接入新显示器时自动分配 ⌘⌥1、⌘⌥2、⌘⌥3……按下即到，不需要先找鼠标在哪。所有键位都可以在设置里重新录制。</p>
-      </article>
-      <article class="feat card reveal">
-        <div class="ico">⇄</div>
-        <h3>双击 Command 来回跳</h3>
-        <p>默认的「快捷切换」是连按两次 Command（0.35 秒内），在当前屏幕与上一个活跃屏幕之间往返。也可以换成双击 Control / Option 或任意组合键。</p>
-      </article>
-      <article class="feat card reveal">
-        <div class="ico">◱</div>
-        <h3>位置等比映射，不打断肌肉记忆</h3>
-        <p>鼠标不是粗暴地丢到屏幕正中，而是按它在源屏幕内的横纵百分比，落到目标屏幕的相同相对位置 —— 右下角的鼠标，跳过去还在右下角。</p>
-      </article>
-      <article class="feat card reveal">
-        <div class="ico">◎</div>
-        <h3>落点彩色光环，一眼锁定</h3>
-        <p>跳转瞬间隐藏系统指针，用自绘的彩色指针配合扩散光环提示落点，四套配色轮换出现；鼠标一动或一秒后自动恢复原生指针，不留痕迹。</p>
-      </article>
-      <article class="feat card reveal">
-        <div class="ico">▦</div>
-        <h3>屏幕标记，3 秒看清编号</h3>
-        <p>一键在所有显示器上叠加显示屏幕编号、名称与已绑定的快捷键，还会标出哪块是主屏幕，3 秒后自动淡出，配键位再也不用猜。</p>
-      </article>
-      <article class="feat card reveal">
-        <div class="ico">☰</div>
-        <h3>菜单栏即操作台</h3>
-        <p>菜单栏图标点开即可查看权限状态（绿点／红点）、直接点选任意屏幕跳转、开关开机自启、检查更新。设置窗口可完全隐藏，程序坞保持干净。</p>
-      </article>
-      <article class="feat card reveal wide">
-        <div class="ico">✦</div>
-        <h3>原生液态玻璃，与 Tahoe 同呼吸</h3>
-        <p>设置窗口、快捷键录制器与菜单全部遵循 macOS 26 Liquid Glass 设计规范，图标由 Icon Composer 分层构建，随系统外观呈现玻璃立体质感；开启「降低透明度」辅助功能时自动优雅降级。纯 SwiftUI + AppKit，零第三方依赖，安装包仅约 2 MB，常驻内存占用几乎可以忽略。</p>
-      </article>
-      <article class="feat card reveal">
-        <div class="ico">⟳</div>
-        <h3>自动检查更新</h3>
-        <p>内置更新器直接对接发布仓库，检测到新版本可一键下载并自动替换重启，跳过预发布版本，不用每次手动去翻下载页。</p>
-      </article>
-    </div>
-
-    <div class="stats">
-      <div class="stat card reveal"><b data-count="0.35" data-suffix=" 秒">0</b><span>双击判定阈值</span></div>
-      <div class="stat card reveal"><b data-count="10" data-suffix=" 块">0</b><span>可配置屏幕数量</span></div>
-      <div class="stat card reveal"><b data-count="2" data-suffix=" MB">0</b><span>安装包体积</span></div>
-      <div class="stat card reveal"><b data-count="0" data-suffix=" 个">0</b><span>第三方依赖</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 快捷键 ================= -->
-<section id="shortcuts">
-  <div class="wrap">
-    <div class="center reveal">
-      <span class="eyebrow"><span class="dot"></span>开箱即用的默认键位</span>
-      <h2 class="title">默认快捷键<span class="grad">一览</span></h2>
-      <p class="sub">安装后无需任何配置就能直接用。所有键位都能在设置窗口里点一下输入框重新录制，修改即时生效。</p>
-    </div>
-
-    <div class="short-grid">
-      <div class="srow card reveal">
-        <div class="k"><span class="kbd hot">⌘</span><span class="plus">×2</span><span class="kbd hot">⌘</span></div>
-        <div class="t"><strong>快捷切换屏幕</strong><em>双击 Command（0.35 秒内连按两次），在当前屏幕与上一个活跃屏幕之间来回跳转</em></div>
-      </div>
-      <div class="srow card reveal">
-        <div class="k"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span class="plus">+</span><span class="kbd">1</span></div>
-        <div class="t"><strong>跳转到屏幕 1</strong><em>Command + Option + 1，鼠标直达第一块显示器</em></div>
-      </div>
-      <div class="srow card reveal">
-        <div class="k"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span class="plus">+</span><span class="kbd">2</span></div>
-        <div class="t"><strong>跳转到屏幕 2</strong><em>Command + Option + 2，鼠标直达第二块显示器</em></div>
-      </div>
-      <div class="srow card reveal">
-        <div class="k"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span class="plus">+</span><span class="kbd">N</span></div>
-        <div class="t"><strong>跳转到屏幕 N</strong><em>最多支持 1–10 号数字键，接入新显示器时自动补齐默认键位</em></div>
-      </div>
-      <div class="srow card reveal">
-        <div class="k"><span class="kbd">⎋</span></div>
-        <div class="t"><strong>取消录制</strong><em>在快捷键输入框录制过程中按 Esc，放弃本次修改</em></div>
-      </div>
-      <div class="srow card reveal">
-        <div class="k"><span class="kbd">⌫</span></div>
-        <div class="t"><strong>清除快捷键</strong><em>录制状态下按 Delete，解除该屏幕已绑定的快捷键</em></div>
-      </div>
-    </div>
-
-    <div class="tips reveal">
-      <b>关于双击修饰键：</b>除了双击 Command，也支持双击 Control、双击 Option 作为「快捷切换」键 —— 这类键位不占用任何组合键，
-      不会和 IDE、设计软件里的快捷键打架。若你的显示器较多，建议给最常用的两块屏幕留给双击 ⌘，其余用 ⌘⌥ 数字键直达。
-    </div>
-  </div>
-</section>
-
-<!-- ================= 安装 ================= -->
-<section id="install">
-  <div class="wrap">
-    <div class="center reveal">
-      <span class="eyebrow"><span class="dot"></span>三步搞定 · 无需注册</span>
-      <h2 class="title">安装方式</h2>
-      <p class="sub">MouseDance 未使用 Apple 开发者证书签名，因此需要手动解除一次 Gatekeeper 隔离标记，之后一切照常。</p>
-    </div>
-
-    <div class="steps">
-      <div class="step reveal">
-        <div class="n">1</div>
-        <div>
-          <h3>下载并拖入「应用程序」</h3>
-          <p>下载 <b>MouseDance.dmg</b>，双击打开后把 <b>MouseDance.app</b> 拖进「应用程序」文件夹，然后推出磁盘映像。</p>
-        </div>
-      </div>
-      <div class="step reveal">
-        <div class="n">2</div>
-        <div>
-          <h3>解除 Gatekeeper 隔离</h3>
-          <p>首次打开若提示「应用已损坏」或「无法验证开发者」，这是未签名应用的正常提示。打开「终端」执行下面这行命令即可：</p>
-          <div class="code"><span>xattr -cr /Applications/MouseDance.app</span><button class="cp" data-copy="xattr -cr /Applications/MouseDance.app">复制</button></div>
-          <div class="warn">⚠︎ 执行后请重新双击打开应用；若仍被拦截，可在「系统设置 → 隐私与安全性」底部点击「仍要打开」。</div>
-        </div>
-      </div>
-      <div class="step reveal">
-        <div class="n">3</div>
-        <div>
-          <h3>授予「输入监控」权限</h3>
-          <p>全局快捷键监听依赖该权限。启动后点击主窗口的「前往授权…」，在系统设置中勾选 MouseDance；若列表里已有条目，请关闭开关后再重新打开。授权成功后 MouseDance 会<b>自动重启生效</b>。</p>
-          <div class="code"><span>系统设置 → 隐私与安全性 → 输入监控 → 勾选 MouseDance</span></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= FAQ ================= -->
-<section id="faq">
-  <div class="wrap">
-    <div class="center reveal">
-      <span class="eyebrow"><span class="dot"></span>还有疑问？</span>
-      <h2 class="title">常见问题</h2>
-    </div>
-    <div class="faq">
-      <div class="q reveal"><button type="button">默认的切换快捷键到底是什么？<span class="ar">＋</span></button>
-        <div class="a"><p>「快捷切换」默认是<b>双击 Command</b>（0.35 秒内连按两次 ⌘），用于在当前屏幕与上一个活跃屏幕之间来回跳；每块屏幕的直达键默认是 <code>⌘⌥1</code>、<code>⌘⌥2</code>，依次类推最多到 <code>⌘⌥0</code>（第 10 块）。全部可自定义。</p></div>
-      </div>
-      <div class="q reveal"><button type="button">为什么按了快捷键鼠标没有反应？<span class="ar">＋</span></button>
-        <div class="a"><p>99% 是权限问题。全局快捷键监听依赖系统的「输入监控」权限：前往「系统设置 → 隐私与安全性 → 输入监控」勾选 MouseDance；如果条目已存在，请<b>关闭再重新打开</b>开关。另外每次升级到新版本，macOS 都可能重置该授权，需要重新勾选一次。</p></div>
-      </div>
-      <div class="q reveal"><button type="button">提示「应用已损坏，无法打开」怎么办？<span class="ar">＋</span></button>
-        <div class="a"><p>这是未签名应用的 Gatekeeper 提示，应用本身没有损坏。在终端执行 <code>xattr -cr /Applications/MouseDance.app</code> 解除隔离标记后重新打开即可；也可以在「隐私与安全性」面板底部点击「仍要打开」。</p></div>
-      </div>
-      <div class="q reveal"><button type="button">跳转后鼠标会落在屏幕哪个位置？<span class="ar">＋</span></button>
-        <div class="a"><p>按鼠标在源屏幕内的横纵百分比<b>等比映射</b>到目标屏幕的相同相对位置，尽量保留你的空间记忆；只有在无法判断源屏幕时才回退到目标屏幕中心。</p></div>
-      </div>
-      <div class="q reveal"><button type="button">双击 Command 会不会和系统快捷键冲突？<span class="ar">＋</span></button>
-        <div class="a"><p>双击修饰键不属于常规组合键，因此不会占用 IDE、设计软件里的任何键位。如果你有输入法或其他工具也在监听双击 ⌘，可以在设置里把它改成双击 Control、双击 Option，或者任意一个组合键。</p></div>
-      </div>
-      <div class="q reveal"><button type="button">支持几块显示器？拔掉显示器会怎样？<span class="ar">＋</span></button>
-        <div class="a"><p>默认为最多 10 块屏幕预置数字键位，实际可绑定的屏幕数不受限制。接入新显示器时会自动补齐默认快捷键；拔掉显示器后对应快捷键自然失效，重新接回即恢复原有配置。</p></div>
-      </div>
-      <div class="q reveal"><button type="button">系统要求与隐私？<span class="ar">＋</span></button>
-        <div class="a"><p>需要 <b>macOS 26 (Tahoe) 或更高版本</b>（界面使用了系统的液态玻璃等新特性）。MouseDance 仅以「只监听」模式识别快捷键组合，不记录、不上传任何按键内容，配置全部保存在本机；项目基于 Apache-2.0 协议完全开源，代码可自行审阅与编译。</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ================= 结尾 CTA ================= -->
-<section style="padding-top:20px">
-  <div class="wrap">
-    <div class="final reveal">
-      <h2>别再满屏找鼠标了</h2>
-      <p>装上 MouseDance，双击一下 Command，让指针自己跳到你正在看的那块屏幕上。</p>
-      <div class="cta-row">
-        <a class="btn btn-p" href="https://gitee.com/qianxunclub/mouse-dance/releases/latest" target="_blank" rel="noopener"><span>⬇︎ 立即免费下载<small>macOS 26+</small></span></a>
-        <a class="btn btn-g" href="https://gitee.com/qianxunclub/mouse-dance" target="_blank" rel="noopener"><span>☆ 查看源码<small>Apache-2.0 开源</small></span></a>
-      </div>
-    </div>
-  </div>
-</section>
-</main>
-
-<footer>
-  <div class="wrap f-grid">
-    <div>
-      <div class="brand" style="margin-bottom:10px">
-        <span class="mark"><svg viewBox="0 0 216 276" aria-hidden="true"><path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#fff"/></svg></span>
+  <header id="hdr">
+    <nav>
+      <a class="brand" href="#top" aria-label="MouseDance 首页">
+        <span class="mark">
+          <svg viewBox="0 0 216 276" aria-hidden="true">
+            <path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#fff" />
+          </svg>
+        </span>
         MouseDance
+      </a>
+      <button class="burger" id="burger" aria-label="打开菜单">☰</button>
+      <div class="nav-links" id="navlinks">
+        <a href="#demo">交互演示</a>
+        <a href="#features">功能特性</a>
+        <a href="#shortcuts">快捷键</a>
+        <a href="#install">安装</a>
+        <a href="#faq">常见问题</a>
       </div>
-      © 2026 qianxunclub · 基于 Apache-2.0 协议开源
-    </div>
-    <div class="f-links">
-      <a href="#demo">交互演示</a>
-      <a href="#features">功能特性</a>
-      <a href="#shortcuts">快捷键</a>
-      <a href="#install">安装方式</a>
-      <a href="#faq">常见问题</a>
-      <a href="https://gitee.com/qianxunclub/mouse-dance" target="_blank" rel="noopener">源码仓库</a>
-    </div>
-  </div>
-  <div class="wrap">
-    <div class="f-stats">
-      <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-      <span id="busuanzi_container_site_uv" style="display:none">👤 本站访客数 <b id="busuanzi_value_site_uv"></b> 人</span>
-      <span id="busuanzi_container_site_pv" style="display:none">👁 本站总访问量 <b id="busuanzi_value_site_pv"></b> 次</span>
-    </div>
-  </div>
-</footer>
+      <div class="nav-stars">
+        <a class="star" href="https://gitee.com/qianxunclub/mouse-dance" target="_blank" rel="noopener"
+          aria-label="在 Gitee 给 MouseDance 点个 Star">
+          <img src="https://gitee.com/qianxunclub/mouse-dance/badge/star.svg?theme=white" alt="Gitee Star"
+            loading="lazy">
+        </a>
+        <a class="star" href="https://github.com/qianxunclub/mouse-dance" target="_blank" rel="noopener"
+          aria-label="在 GitHub 给 MouseDance 点个 Star">
+          <img src="https://img.shields.io/github/stars/qianxunclub/mouse-dance" alt="GitHub Stars" loading="lazy">
+        </a>
+      </div>
+      <a class="nav-cta" href="https://gitee.com/qianxunclub/mouse-dance/releases/latest" target="_blank"
+        rel="noopener">免费下载</a>
+    </nav>
+  </header>
 
-<script>
-/* ---------- 滚动进度 & 导航 ---------- */
-const hdr = document.getElementById('hdr'), prog = document.getElementById('prog');
-function onScroll(){
-  const st = window.scrollY;
-  const h = document.documentElement.scrollHeight - window.innerHeight;
-  prog.style.width = (h > 0 ? (st / h * 100) : 0) + '%';
-  hdr.classList.toggle('solid', st > 40);
-}
-window.addEventListener('scroll', onScroll, {passive:true}); onScroll();
+  <main id="top">
 
-const burger = document.getElementById('burger'), navlinks = document.getElementById('navlinks');
-burger.addEventListener('click', () => navlinks.classList.toggle('open'));
-navlinks.addEventListener('click', e => { if (e.target.tagName === 'A') navlinks.classList.remove('open'); });
+    <!-- ================= HERO ================= -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div>
+          <span class="eyebrow hero-eyebrow"><span class="dot"></span>macOS 26 Tahoe · 液态玻璃 · 开源免费</span>
+          <h1>
+            <span class="line"><span>让鼠标在屏幕</span></span>
+            <span class="line"><span class="grad">之间跳舞</span></span>
+          </h1>
+          <p class="lead">
+            双击 Command</b> 就在两块屏幕之间来回瞬移，<b>⌘⌥1 / ⌘⌥2</b> 直达任意一块屏幕 ——
+            位置等比映射，落点还有彩色光环告诉你「鼠标在这儿」。
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-p" href="https://gitee.com/qianxunclub/mouse-dance/releases/latest" target="_blank"
+              rel="noopener">
+              <span>⬇︎ 下载 MouseDance.dmg<small>Apple Silicon &amp; Intel</small></span>
+            </a>
+            <a class="btn btn-g" href="#demo"><span>▶︎ 先玩玩演示<small>无需安装，键盘直接试</small></span></a>
+          </div>
+          <div class="meta-row">
+            <span><i></i>需 macOS 26 (Tahoe) 或更高</span>
+            <span><i></i>Apache-2.0 开源</span>
+            <span><i></i>零第三方依赖</span>
+            <span><i></i>约 2 MB 体积</span>
+          </div>
+        </div>
 
-/* ---------- 滚动揭示 ---------- */
-const io = new IntersectionObserver((es) => {
-  es.forEach((e, i) => {
-    if (e.isIntersecting) {
-      e.target.style.transitionDelay = Math.min(i * 70, 350) + 'ms';
-      e.target.classList.add('in');
-      io.unobserve(e.target);
+        <div class="hero-art" id="heroArt">
+          <div class="halo"></div>
+          <div class="app-icon">
+            <svg viewBox="0 0 1024 1024" aria-hidden="true">
+              <g transform="translate(240,250) scale(1.6)">
+                <path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#fff" stroke="#fff"
+                  stroke-width="16" stroke-linejoin="round" />
+              </g>
+              <g fill="#fff" opacity=".92">
+                <rect x="600" y="310" width="200" height="46" rx="23" />
+                <rect x="650" y="412" width="200" height="46" rx="23" />
+                <rect x="700" y="514" width="200" height="46" rx="23" />
+              </g>
+            </svg>
+          </div>
+          <div class="mini-screens">
+            <div class="mini"><span>⌘⌥1</span></div>
+            <div class="mini"><span>⌘⌥2</span></div>
+            <div class="mini"><span>⌘⌥3</span></div>
+          </div>
+          <svg class="hero-cursor" id="heroCursor" viewBox="0 0 216 276" aria-hidden="true">
+            <path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#ffd44d" stroke="#1a1030"
+              stroke-width="14" stroke-linejoin="round" />
+          </svg>
+          <div class="ring" id="heroRing"></div>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-hidden="true">
+      <div class="mq-track">
+        <span>◆ 双击 ⌘ 快捷切换</span><span>◆ ⌘⌥1 直达屏幕一</span><span>◆ ⌘⌥2 直达屏幕二</span><span>◆ 位置等比映射</span>
+        <span>◆ 落点光环提示</span><span>◆ 屏幕标记 3 秒</span><span>◆ 开机自启动</span><span>◆ 菜单栏常驻</span>
+      </div>
+    </div>
+
+    <!-- ================= 交互演示 ================= -->
+    <section id="demo">
+      <div class="wrap">
+        <div class="center reveal">
+          <span class="eyebrow"><span class="dot"></span>真·可交互 · 直接按你的键盘</span>
+          <h2 class="title">在这里就能<span class="grad">按一下试试</span></h2>
+          <p class="sub">下面模拟了一套三屏工作台。按 <b>⌘⌥1 / ⌘⌥2 / ⌘⌥3</b> 让鼠标直达对应屏幕，
+            或者<b>连按两次 Command</b>，在最近两块屏幕之间来回跳。这正是 MouseDance 在你真实桌面上的行为。</p>
+        </div>
+
+        <div class="card demo-shell reveal">
+          <div class="stage" id="stage">
+            <div class="screen active" data-i="0" tabindex="0" role="button" aria-label="跳转到屏幕 1">
+              <div class="no">SCREEN 01</div>
+              <div class="nm">左侧竖屏 · 文档</div>
+              <div class="keys"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span
+                  class="plus">+</span><span class="kbd">1</span></div>
+              <div class="badge">鼠标在此</div>
+              <div class="bar"></div>
+            </div>
+            <div class="screen" data-i="1" tabindex="0" role="button" aria-label="跳转到屏幕 2">
+              <div class="no">SCREEN 02</div>
+              <div class="nm">中央主屏 · 编码</div>
+              <div class="keys"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span
+                  class="plus">+</span><span class="kbd">2</span></div>
+              <div class="badge">鼠标在此</div>
+              <div class="bar"></div>
+            </div>
+            <div class="screen" data-i="2" tabindex="0" role="button" aria-label="跳转到屏幕 3">
+              <div class="no">SCREEN 03</div>
+              <div class="nm">右侧 MacBook · 沟通</div>
+              <div class="keys"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span
+                  class="plus">+</span><span class="kbd">3</span></div>
+              <div class="badge">鼠标在此</div>
+              <div class="bar"></div>
+            </div>
+            <svg id="demoCursor" viewBox="0 0 216 276" aria-hidden="true">
+              <path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#4dffc3" stroke="#0d0820"
+                stroke-width="14" stroke-linejoin="round" />
+            </svg>
+            <div id="demoRing"></div>
+          </div>
+
+          <div class="demo-bar">
+            <div class="demo-hint">提示：浏览器可能会先吃掉部分系统级组合键，若无反应就点下面的按钮，或直接点屏幕卡片。真实的 MouseDance 工作在系统层，<b>永远不会被浏览器抢走</b>。
+            </div>
+            <button class="sim" data-sim="toggle">双击 ⌘</button>
+            <button class="sim" data-sim="0">⌘⌥1</button>
+            <button class="sim" data-sim="1">⌘⌥2</button>
+            <button class="sim" data-sim="2">⌘⌥3</button>
+          </div>
+          <div class="log" id="log">› 等待输入…</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 功能特性 ================= -->
+    <section id="features">
+      <div class="wrap">
+        <div class="center reveal">
+          <span class="eyebrow"><span class="dot"></span>小工具，做到极致</span>
+          <h2 class="title">不只是「把鼠标扔过去」</h2>
+          <p class="sub">从跳转算法到落点提示，MouseDance 把多屏用户每天要重复几十次的动作，压缩成一次按键。</p>
+        </div>
+
+        <div class="feat-grid">
+          <article class="feat card reveal">
+            <div class="ico">⌘</div>
+            <h3>每块屏幕，一个专属快捷键</h3>
+            <p>接入新显示器时自动分配 ⌘⌥1、⌘⌥2、⌘⌥3……按下即到，不需要先找鼠标在哪。所有键位都可以在设置里重新录制。</p>
+          </article>
+          <article class="feat card reveal">
+            <div class="ico">⇄</div>
+            <h3>双击 Command 来回跳</h3>
+            <p>默认的「快捷切换」是连按两次 Command（0.35 秒内），在当前屏幕与上一个活跃屏幕之间往返。也可以换成双击 Control / Option 或任意组合键。</p>
+          </article>
+          <article class="feat card reveal">
+            <div class="ico">◱</div>
+            <h3>位置等比映射，不打断肌肉记忆</h3>
+            <p>鼠标不是粗暴地丢到屏幕正中，而是按它在源屏幕内的横纵百分比，落到目标屏幕的相同相对位置 —— 右下角的鼠标，跳过去还在右下角。</p>
+          </article>
+          <article class="feat card reveal">
+            <div class="ico">◎</div>
+            <h3>落点彩色光环，一眼锁定</h3>
+            <p>跳转瞬间隐藏系统指针，用自绘的彩色指针配合扩散光环提示落点，四套配色轮换出现；鼠标一动或一秒后自动恢复原生指针，不留痕迹。</p>
+          </article>
+          <article class="feat card reveal">
+            <div class="ico">▦</div>
+            <h3>屏幕标记，3 秒看清编号</h3>
+            <p>一键在所有显示器上叠加显示屏幕编号、名称与已绑定的快捷键，还会标出哪块是主屏幕，3 秒后自动淡出，配键位再也不用猜。</p>
+          </article>
+          <article class="feat card reveal">
+            <div class="ico">☰</div>
+            <h3>菜单栏即操作台</h3>
+            <p>菜单栏图标点开即可查看权限状态（绿点／红点）、直接点选任意屏幕跳转、开关开机自启、检查更新。设置窗口可完全隐藏，程序坞保持干净。</p>
+          </article>
+          <article class="feat card reveal wide">
+            <div class="ico">✦</div>
+            <h3>原生液态玻璃，与 Tahoe 同呼吸</h3>
+            <p>设置窗口、快捷键录制器与菜单全部遵循 macOS 26 Liquid Glass 设计规范，图标由 Icon Composer 分层构建，随系统外观呈现玻璃立体质感；开启「降低透明度」辅助功能时自动优雅降级。纯
+              SwiftUI + AppKit，零第三方依赖，安装包仅约 2 MB，常驻内存占用几乎可以忽略。</p>
+          </article>
+          <article class="feat card reveal">
+            <div class="ico">⟳</div>
+            <h3>自动检查更新</h3>
+            <p>内置更新器直接对接发布仓库，检测到新版本可一键下载并自动替换重启，跳过预发布版本，不用每次手动去翻下载页。</p>
+          </article>
+        </div>
+
+        <div class="stats">
+          <div class="stat card reveal"><b data-count="0.35" data-suffix=" 秒">0</b><span>双击判定阈值</span></div>
+          <div class="stat card reveal"><b data-count="10" data-suffix=" 块">0</b><span>可配置屏幕数量</span></div>
+          <div class="stat card reveal"><b data-count="2" data-suffix=" MB">0</b><span>安装包体积</span></div>
+          <div class="stat card reveal"><b data-count="0" data-suffix=" 个">0</b><span>第三方依赖</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 快捷键 ================= -->
+    <section id="shortcuts">
+      <div class="wrap">
+        <div class="center reveal">
+          <span class="eyebrow"><span class="dot"></span>开箱即用的默认键位</span>
+          <h2 class="title">默认快捷键<span class="grad">一览</span></h2>
+          <p class="sub">安装后无需任何配置就能直接用。所有键位都能在设置窗口里点一下输入框重新录制，修改即时生效。</p>
+        </div>
+
+        <div class="short-grid">
+          <div class="srow card reveal">
+            <div class="k"><span class="kbd hot">⌘</span><span class="plus">×2</span><span class="kbd hot">⌘</span>
+            </div>
+            <div class="t"><strong>快捷切换屏幕</strong><em>双击 Command（0.35 秒内连按两次），在当前屏幕与上一个活跃屏幕之间来回跳转</em></div>
+          </div>
+          <div class="srow card reveal">
+            <div class="k"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span
+                class="plus">+</span><span class="kbd">1</span></div>
+            <div class="t"><strong>跳转到屏幕 1</strong><em>Command + Option + 1，鼠标直达第一块显示器</em></div>
+          </div>
+          <div class="srow card reveal">
+            <div class="k"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span
+                class="plus">+</span><span class="kbd">2</span></div>
+            <div class="t"><strong>跳转到屏幕 2</strong><em>Command + Option + 2，鼠标直达第二块显示器</em></div>
+          </div>
+          <div class="srow card reveal">
+            <div class="k"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span
+                class="plus">+</span><span class="kbd">N</span></div>
+            <div class="t"><strong>跳转到屏幕 N</strong><em>最多支持 1–10 号数字键，接入新显示器时自动补齐默认键位</em></div>
+          </div>
+          <div class="srow card reveal">
+            <div class="k"><span class="kbd">⎋</span></div>
+            <div class="t"><strong>取消录制</strong><em>在快捷键输入框录制过程中按 Esc，放弃本次修改</em></div>
+          </div>
+          <div class="srow card reveal">
+            <div class="k"><span class="kbd">⌫</span></div>
+            <div class="t"><strong>清除快捷键</strong><em>录制状态下按 Delete，解除该屏幕已绑定的快捷键</em></div>
+          </div>
+        </div>
+
+        <div class="tips reveal">
+          <b>关于双击修饰键：</b>除了双击 Command，也支持双击 Control、双击 Option 作为「快捷切换」键 —— 这类键位不占用任何组合键，
+          不会和 IDE、设计软件里的快捷键打架。若你的显示器较多，建议给最常用的两块屏幕留给双击 ⌘，其余用 ⌘⌥ 数字键直达。
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 安装 ================= -->
+    <section id="install">
+      <div class="wrap">
+        <div class="center reveal">
+          <span class="eyebrow"><span class="dot"></span>三步搞定 · 无需注册</span>
+          <h2 class="title">安装方式</h2>
+          <p class="sub">MouseDance 未使用 Apple 开发者证书签名，因此需要手动解除一次 Gatekeeper 隔离标记，之后一切照常。</p>
+        </div>
+
+        <div class="steps">
+          <div class="step reveal">
+            <div class="n">1</div>
+            <div>
+              <h3>下载并拖入「应用程序」</h3>
+              <p>下载 <b>MouseDance.dmg</b>，双击打开后把 <b>MouseDance.app</b> 拖进「应用程序」文件夹，然后推出磁盘映像。</p>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="n">2</div>
+            <div>
+              <h3>解除 Gatekeeper 隔离</h3>
+              <p>首次打开若提示「应用已损坏」或「无法验证开发者」，这是未签名应用的正常提示。打开「终端」执行下面这行命令即可：</p>
+              <div class="code"><span>xattr -cr /Applications/MouseDance.app</span><button class="cp"
+                  data-copy="xattr -cr /Applications/MouseDance.app">复制</button></div>
+              <div class="warn">⚠︎ 执行后请重新双击打开应用；若仍被拦截，可在「系统设置 → 隐私与安全性」底部点击「仍要打开」。</div>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="n">3</div>
+            <div>
+              <h3>授予「输入监控」权限</h3>
+              <p>全局快捷键监听依赖该权限。启动后点击主窗口的「前往授权…」，在系统设置中勾选 MouseDance；若列表里已有条目，请关闭开关后再重新打开。授权成功后 MouseDance 会<b>自动重启生效</b>。
+              </p>
+              <div class="code"><span>系统设置 → 隐私与安全性 → 输入监控 → 勾选 MouseDance</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= FAQ ================= -->
+    <section id="faq">
+      <div class="wrap">
+        <div class="center reveal">
+          <span class="eyebrow"><span class="dot"></span>还有疑问？</span>
+          <h2 class="title">常见问题</h2>
+        </div>
+        <div class="faq">
+          <div class="q reveal"><button type="button">默认的切换快捷键到底是什么？<span class="ar">＋</span></button>
+            <div class="a">
+              <p>「快捷切换」默认是<b>双击 Command</b>（0.35 秒内连按两次 ⌘），用于在当前屏幕与上一个活跃屏幕之间来回跳；每块屏幕的直达键默认是
+                <code>⌘⌥1</code>、<code>⌘⌥2</code>，依次类推最多到 <code>⌘⌥0</code>（第 10 块）。全部可自定义。</p>
+            </div>
+          </div>
+          <div class="q reveal"><button type="button">为什么按了快捷键鼠标没有反应？<span class="ar">＋</span></button>
+            <div class="a">
+              <p>99% 是权限问题。全局快捷键监听依赖系统的「输入监控」权限：前往「系统设置 → 隐私与安全性 → 输入监控」勾选
+                MouseDance；如果条目已存在，请<b>关闭再重新打开</b>开关。另外每次升级到新版本，macOS 都可能重置该授权，需要重新勾选一次。</p>
+            </div>
+          </div>
+          <div class="q reveal"><button type="button">提示「应用已损坏，无法打开」怎么办？<span class="ar">＋</span></button>
+            <div class="a">
+              <p>这是未签名应用的 Gatekeeper 提示，应用本身没有损坏。在终端执行 <code>xattr -cr /Applications/MouseDance.app</code>
+                解除隔离标记后重新打开即可；也可以在「隐私与安全性」面板底部点击「仍要打开」。</p>
+            </div>
+          </div>
+          <div class="q reveal"><button type="button">跳转后鼠标会落在屏幕哪个位置？<span class="ar">＋</span></button>
+            <div class="a">
+              <p>按鼠标在源屏幕内的横纵百分比<b>等比映射</b>到目标屏幕的相同相对位置，尽量保留你的空间记忆；只有在无法判断源屏幕时才回退到目标屏幕中心。</p>
+            </div>
+          </div>
+          <div class="q reveal"><button type="button">双击 Command 会不会和系统快捷键冲突？<span class="ar">＋</span></button>
+            <div class="a">
+              <p>双击修饰键不属于常规组合键，因此不会占用 IDE、设计软件里的任何键位。如果你有输入法或其他工具也在监听双击 ⌘，可以在设置里把它改成双击 Control、双击 Option，或者任意一个组合键。</p>
+            </div>
+          </div>
+          <div class="q reveal"><button type="button">支持几块显示器？拔掉显示器会怎样？<span class="ar">＋</span></button>
+            <div class="a">
+              <p>默认为最多 10 块屏幕预置数字键位，实际可绑定的屏幕数不受限制。接入新显示器时会自动补齐默认快捷键；拔掉显示器后对应快捷键自然失效，重新接回即恢复原有配置。</p>
+            </div>
+          </div>
+          <div class="q reveal"><button type="button">系统要求与隐私？<span class="ar">＋</span></button>
+            <div class="a">
+              <p>需要 <b>macOS 26 (Tahoe) 或更高版本</b>（界面使用了系统的液态玻璃等新特性）。MouseDance
+                仅以「只监听」模式识别快捷键组合，不记录、不上传任何按键内容，配置全部保存在本机；项目基于 Apache-2.0 协议完全开源，代码可自行审阅与编译。</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 结尾 CTA ================= -->
+    <section style="padding-top:20px">
+      <div class="wrap">
+        <div class="final reveal">
+          <h2>别再满屏找鼠标了</h2>
+          <p>装上 MouseDance，双击一下 Command，让指针自己跳到你正在看的那块屏幕上。</p>
+          <div class="cta-row">
+            <a class="btn btn-p" href="https://gitee.com/qianxunclub/mouse-dance/releases/latest" target="_blank"
+              rel="noopener"><span>⬇︎ 立即免费下载<small>macOS 26+</small></span></a>
+            <a class="btn btn-g" href="https://gitee.com/qianxunclub/mouse-dance" target="_blank" rel="noopener"><span>☆
+                查看源码<small>Apache-2.0 开源</small></span></a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap f-grid">
+      <div>
+        <div class="brand" style="margin-bottom:10px">
+          <span class="mark"><svg viewBox="0 0 216 276" aria-hidden="true">
+              <path d="M0,0 L0,252 L72,180 L120,276 L168,252 L120,168 L216,168 Z" fill="#fff" />
+            </svg></span>
+          MouseDance
+        </div>
+        © 2026 qianxunclub · 基于 Apache-2.0 协议开源
+      </div>
+      <div class="f-links">
+        <a href="#demo">交互演示</a>
+        <a href="#features">功能特性</a>
+        <a href="#shortcuts">快捷键</a>
+        <a href="#install">安装方式</a>
+        <a href="#faq">常见问题</a>
+        <a href="https://gitee.com/qianxunclub/mouse-dance" target="_blank" rel="noopener">源码仓库</a>
+      </div>
+    </div>
+    <div class="wrap">
+      <div class="f-stats">
+        <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+        <span id="busuanzi_container_site_uv" style="display:none">👤 本站访客数 <b id="busuanzi_value_site_uv"></b> 人</span>
+        <span id="busuanzi_container_site_pv" style="display:none">👁 本站总访问量 <b id="busuanzi_value_site_pv"></b>
+          次</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ---------- 滚动进度 & 导航 ---------- */
+    const hdr = document.getElementById('hdr'), prog = document.getElementById('prog');
+    function onScroll() {
+      const st = window.scrollY;
+      const h = document.documentElement.scrollHeight - window.innerHeight;
+      prog.style.width = (h > 0 ? (st / h * 100) : 0) + '%';
+      hdr.classList.toggle('solid', st > 40);
     }
-  });
-}, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
-document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+    window.addEventListener('scroll', onScroll, { passive: true }); onScroll();
 
-/* ---------- 卡片光标跟随高光 + 轻微倾斜 ---------- */
-document.querySelectorAll('.card').forEach(c => {
-  c.addEventListener('pointermove', e => {
-    const r = c.getBoundingClientRect();
-    c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
-    c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
-  });
-});
-document.querySelectorAll('.feat').forEach(c => {
-  c.addEventListener('pointermove', e => {
-    const r = c.getBoundingClientRect();
-    const dx = (e.clientX - r.left - r.width / 2) / r.width;
-    const dy = (e.clientY - r.top - r.height / 2) / r.height;
-    c.style.transform = `translateY(-7px) perspective(900px) rotateX(${-dy*5}deg) rotateY(${dx*5}deg)`;
-  });
-  c.addEventListener('pointerleave', () => { c.style.transform = ''; });
-});
+    const burger = document.getElementById('burger'), navlinks = document.getElementById('navlinks');
+    burger.addEventListener('click', () => navlinks.classList.toggle('open'));
+    navlinks.addEventListener('click', e => { if (e.target.tagName === 'A') navlinks.classList.remove('open'); });
 
-/* ---------- 复制命令 ---------- */
-document.querySelectorAll('.cp').forEach(b => {
-  b.addEventListener('click', async () => {
-    const txt = b.dataset.copy;
-    try { await navigator.clipboard.writeText(txt); }
-    catch { const t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
-    const old = b.textContent; b.textContent = '已复制 ✓'; b.style.color = '#4dffc3';
-    setTimeout(() => { b.textContent = old; b.style.color = ''; }, 1600);
-  });
-});
+    /* ---------- 滚动揭示 ---------- */
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e, i) => {
+        if (e.isIntersecting) {
+          e.target.style.transitionDelay = Math.min(i * 70, 350) + 'ms';
+          e.target.classList.add('in');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: .12, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
-/* ---------- FAQ 手风琴 ---------- */
-document.querySelectorAll('.q > button').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const q = btn.parentElement, a = q.querySelector('.a'), open = q.classList.contains('open');
-    document.querySelectorAll('.q.open').forEach(o => { o.classList.remove('open'); o.querySelector('.a').style.maxHeight = 0; });
-    if (!open) { q.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
-  });
-});
+    /* ---------- 卡片光标跟随高光 + 轻微倾斜 ---------- */
+    document.querySelectorAll('.card').forEach(c => {
+      c.addEventListener('pointermove', e => {
+        const r = c.getBoundingClientRect();
+        c.style.setProperty('--mx', ((e.clientX - r.left) / r.width * 100) + '%');
+        c.style.setProperty('--my', ((e.clientY - r.top) / r.height * 100) + '%');
+      });
+    });
+    document.querySelectorAll('.feat').forEach(c => {
+      c.addEventListener('pointermove', e => {
+        const r = c.getBoundingClientRect();
+        const dx = (e.clientX - r.left - r.width / 2) / r.width;
+        const dy = (e.clientY - r.top - r.height / 2) / r.height;
+        c.style.transform = `translateY(-7px) perspective(900px) rotateX(${-dy * 5}deg) rotateY(${dx * 5}deg)`;
+      });
+      c.addEventListener('pointerleave', () => { c.style.transform = ''; });
+    });
 
-/* ---------- 数字滚动 ---------- */
-const cio = new IntersectionObserver(es => es.forEach(e => {
-  if (!e.isIntersecting) return;
-  const el = e.target, end = parseFloat(el.dataset.count), suf = el.dataset.suffix || '';
-  const dec = (end % 1 !== 0) ? 2 : 0, t0 = performance.now(), dur = 1200;
-  (function tick(now){
-    const p = Math.min((now - t0) / dur, 1), ease = 1 - Math.pow(1 - p, 3);
-    el.textContent = (end * ease).toFixed(dec) + suf;
-    if (p < 1) requestAnimationFrame(tick);
-  })(t0);
-  cio.unobserve(el);
-}), {threshold:.6});
-document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
+    /* ---------- 复制命令 ---------- */
+    document.querySelectorAll('.cp').forEach(b => {
+      b.addEventListener('click', async () => {
+        const txt = b.dataset.copy;
+        try { await navigator.clipboard.writeText(txt); }
+        catch { const t = document.createElement('textarea'); t.value = txt; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
+        const old = b.textContent; b.textContent = '已复制 ✓'; b.style.color = '#4dffc3';
+        setTimeout(() => { b.textContent = old; b.style.color = ''; }, 1600);
+      });
+    });
 
-/* ---------- 光标轨迹粒子 ---------- */
-(function(){
-  const cv = document.getElementById('trail'), ctx = cv.getContext('2d');
-  const COLORS = ['#7b5cfa','#3ddcff','#4dffc3','#ff6f9c','#ffd44d'];
-  let ps = [], w = 0, h = 0, dpr = Math.min(devicePixelRatio || 1, 2);
-  function size(){ w = cv.width = innerWidth * dpr; h = cv.height = innerHeight * dpr; cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px'; }
-  size(); addEventListener('resize', size);
-  let last = 0;
-  addEventListener('pointermove', e => {
-    const now = performance.now();
-    if (now - last < 22 || ps.length > 90) return;
-    last = now;
-    ps.push({x:e.clientX*dpr, y:e.clientY*dpr, vx:(Math.random()-.5)*.6*dpr, vy:(Math.random()*.9+.2)*dpr,
-             r:(Math.random()*2.6+1.2)*dpr, life:1, c:COLORS[(Math.random()*COLORS.length)|0]});
-  }, {passive:true});
-  (function loop(){
-    ctx.clearRect(0,0,w,h);
-    ctx.globalCompositeOperation = 'lighter';
-    for (let i = ps.length - 1; i >= 0; i--){
-      const p = ps[i];
-      p.x += p.vx; p.y += p.vy; p.life -= .016; p.r *= .985;
-      if (p.life <= 0){ ps.splice(i,1); continue; }
-      ctx.globalAlpha = p.life * .55;
-      ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fillStyle = p.c; ctx.fill();
-    }
-    ctx.globalAlpha = 1;
-    requestAnimationFrame(loop);
-  })();
-})();
+    /* ---------- FAQ 手风琴 ---------- */
+    document.querySelectorAll('.q > button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const q = btn.parentElement, a = q.querySelector('.a'), open = q.classList.contains('open');
+        document.querySelectorAll('.q.open').forEach(o => { o.classList.remove('open'); o.querySelector('.a').style.maxHeight = 0; });
+        if (!open) { q.classList.add('open'); a.style.maxHeight = a.scrollHeight + 'px'; }
+      });
+    });
 
-/* ---------- Hero 自动演示 ---------- */
-(function(){
-  const art = document.getElementById('heroArt'), cur = document.getElementById('heroCursor'), ring = document.getElementById('heroRing');
-  const minis = [...document.querySelectorAll('.mini')];
-  const COLORS = ['#ffd44d','#3ddcff','#4dffc3','#ff6f9c'];
-  let i = 0, ci = 0;
-  function go(){
-    const m = minis[i % minis.length], ar = art.getBoundingClientRect(), r = m.getBoundingClientRect();
-    const x = r.left - ar.left + r.width * .58, y = r.top - ar.top + r.height * .5;
-    cur.style.left = x + 'px'; cur.style.top = y + 'px';
-    const c = COLORS[ci % COLORS.length];
-    cur.querySelector('path').setAttribute('fill', c);
-    ring.style.borderColor = c; ring.style.left = x + 'px'; ring.style.top = y + 'px';
-    ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go');
-    i++; ci++;
-  }
-  setTimeout(go, 900);
-  setInterval(go, 2400);
-  addEventListener('resize', go);
-})();
+    /* ---------- 数字滚动 ---------- */
+    const cio = new IntersectionObserver(es => es.forEach(e => {
+      if (!e.isIntersecting) return;
+      const el = e.target, end = parseFloat(el.dataset.count), suf = el.dataset.suffix || '';
+      const dec = (end % 1 !== 0) ? 2 : 0, t0 = performance.now(), dur = 1200;
+      (function tick(now) {
+        const p = Math.min((now - t0) / dur, 1), ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = (end * ease).toFixed(dec) + suf;
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+      cio.unobserve(el);
+    }), { threshold: .6 });
+    document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
 
-/* ---------- 交互演示 ---------- */
-(function(){
-  const stage = document.getElementById('stage'), cur = document.getElementById('demoCursor'),
+    /* ---------- 光标轨迹粒子 ---------- */
+    (function () {
+      const cv = document.getElementById('trail'), ctx = cv.getContext('2d');
+      const COLORS = ['#7b5cfa', '#3ddcff', '#4dffc3', '#ff6f9c', '#ffd44d'];
+      let ps = [], w = 0, h = 0, dpr = Math.min(devicePixelRatio || 1, 2);
+      function size() { w = cv.width = innerWidth * dpr; h = cv.height = innerHeight * dpr; cv.style.width = innerWidth + 'px'; cv.style.height = innerHeight + 'px'; }
+      size(); addEventListener('resize', size);
+      let last = 0;
+      addEventListener('pointermove', e => {
+        const now = performance.now();
+        if (now - last < 22 || ps.length > 90) return;
+        last = now;
+        ps.push({
+          x: e.clientX * dpr, y: e.clientY * dpr, vx: (Math.random() - .5) * .6 * dpr, vy: (Math.random() * .9 + .2) * dpr,
+          r: (Math.random() * 2.6 + 1.2) * dpr, life: 1, c: COLORS[(Math.random() * COLORS.length) | 0]
+        });
+      }, { passive: true });
+      (function loop() {
+        ctx.clearRect(0, 0, w, h);
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = ps.length - 1; i >= 0; i--) {
+          const p = ps[i];
+          p.x += p.vx; p.y += p.vy; p.life -= .016; p.r *= .985;
+          if (p.life <= 0) { ps.splice(i, 1); continue; }
+          ctx.globalAlpha = p.life * .55;
+          ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, 6.2832); ctx.fillStyle = p.c; ctx.fill();
+        }
+        ctx.globalAlpha = 1;
+        requestAnimationFrame(loop);
+      })();
+    })();
+
+    /* ---------- Hero 自动演示 ---------- */
+    (function () {
+      const art = document.getElementById('heroArt'), cur = document.getElementById('heroCursor'), ring = document.getElementById('heroRing');
+      const minis = [...document.querySelectorAll('.mini')];
+      const COLORS = ['#ffd44d', '#3ddcff', '#4dffc3', '#ff6f9c'];
+      let i = 0, ci = 0;
+      function go() {
+        const m = minis[i % minis.length], ar = art.getBoundingClientRect(), r = m.getBoundingClientRect();
+        const x = r.left - ar.left + r.width * .58, y = r.top - ar.top + r.height * .5;
+        cur.style.left = x + 'px'; cur.style.top = y + 'px';
+        const c = COLORS[ci % COLORS.length];
+        cur.querySelector('path').setAttribute('fill', c);
+        ring.style.borderColor = c; ring.style.left = x + 'px'; ring.style.top = y + 'px';
+        ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go');
+        i++; ci++;
+      }
+      setTimeout(go, 900);
+      setInterval(go, 2400);
+      addEventListener('resize', go);
+    })();
+
+    /* ---------- 交互演示 ---------- */
+    (function () {
+      const stage = document.getElementById('stage'), cur = document.getElementById('demoCursor'),
         ring = document.getElementById('demoRing'), log = document.getElementById('log');
-  const screens = [...stage.querySelectorAll('.screen')];
-  const COLORS = ['#ffd44d','#3ddcff','#4dffc3','#ff6f9c'];
-  let active = 0, prev = 1, ci = 0, rel = {x:.62, y:.56};
+      const screens = [...stage.querySelectorAll('.screen')];
+      const COLORS = ['#ffd44d', '#3ddcff', '#4dffc3', '#ff6f9c'];
+      let active = 0, prev = 1, ci = 0, rel = { x: .62, y: .56 };
 
-  function place(anim){
-    const sr = stage.getBoundingClientRect(), r = screens[active].getBoundingClientRect();
-    const x = r.left - sr.left + r.width * rel.x, y = r.top - sr.top + r.height * rel.y;
-    cur.style.transition = anim ? '' : 'none';
-    cur.style.left = x + 'px'; cur.style.top = y + 'px';
-    if (!anim) requestAnimationFrame(() => cur.style.transition = '');
-    return {x, y};
-  }
-  function jump(i, how){
-    if (i === active){ say('› 鼠标已经在「' + screens[i].querySelector('.nm').textContent + '」上了'); return; }
-    prev = active; active = i;
-    screens.forEach((s, n) => s.classList.toggle('active', n === i));
-    const p = place(true);
-    const c = COLORS[ci++ % COLORS.length];
-    cur.querySelector('path').setAttribute('fill', c);
-    ring.style.borderColor = c; ring.style.left = p.x + 'px'; ring.style.top = p.y + 'px';
-    ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go');
-    say('› ' + how + ' → 跳转到 屏幕 0' + (i+1) + '「' + screens[i].querySelector('.nm').textContent + '」，落点保持 ' +
-        Math.round(rel.x*100) + '% / ' + Math.round(rel.y*100) + '% 相对位置');
-  }
-  let t;
-  function say(s){ log.textContent = s; clearTimeout(t); t = setTimeout(() => log.textContent = '› 等待输入…', 4200); }
-  place(false);
-  addEventListener('resize', () => place(false));
+      function place(anim) {
+        const sr = stage.getBoundingClientRect(), r = screens[active].getBoundingClientRect();
+        const x = r.left - sr.left + r.width * rel.x, y = r.top - sr.top + r.height * rel.y;
+        cur.style.transition = anim ? '' : 'none';
+        cur.style.left = x + 'px'; cur.style.top = y + 'px';
+        if (!anim) requestAnimationFrame(() => cur.style.transition = '');
+        return { x, y };
+      }
+      function jump(i, how) {
+        if (i === active) { say('› 鼠标已经在「' + screens[i].querySelector('.nm').textContent + '」上了'); return; }
+        prev = active; active = i;
+        screens.forEach((s, n) => s.classList.toggle('active', n === i));
+        const p = place(true);
+        const c = COLORS[ci++ % COLORS.length];
+        cur.querySelector('path').setAttribute('fill', c);
+        ring.style.borderColor = c; ring.style.left = p.x + 'px'; ring.style.top = p.y + 'px';
+        ring.classList.remove('go'); void ring.offsetWidth; ring.classList.add('go');
+        say('› ' + how + ' → 跳转到 屏幕 0' + (i + 1) + '「' + screens[i].querySelector('.nm').textContent + '」，落点保持 ' +
+          Math.round(rel.x * 100) + '% / ' + Math.round(rel.y * 100) + '% 相对位置');
+      }
+      let t;
+      function say(s) { log.textContent = s; clearTimeout(t); t = setTimeout(() => log.textContent = '› 等待输入…', 4200); }
+      place(false);
+      addEventListener('resize', () => place(false));
 
-  screens.forEach((s, i) => {
-    s.addEventListener('click', () => jump(i, '鼠标点击'));
-    s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(i, '键盘确认'); } });
-  });
-  stage.addEventListener('pointermove', e => {
-    const r = screens[active].getBoundingClientRect();
-    const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-    if (x >= 0 && x <= 1 && y >= 0 && y <= 1){ rel = {x, y}; place(false); }
-  });
+      screens.forEach((s, i) => {
+        s.addEventListener('click', () => jump(i, '鼠标点击'));
+        s.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); jump(i, '键盘确认'); } });
+      });
+      stage.addEventListener('pointermove', e => {
+        const r = screens[active].getBoundingClientRect();
+        const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+        if (x >= 0 && x <= 1 && y >= 0 && y <= 1) { rel = { x, y }; place(false); }
+      });
 
-  function toggle(){
-    const target = (prev >= 0 && prev !== active) ? prev : (active + 1) % screens.length;
-    jump(target, '双击 ⌘');
-  }
-  document.querySelectorAll('.sim').forEach(b => b.addEventListener('click', () => {
-    const v = b.dataset.sim;
-    b.classList.add('tap'); setTimeout(() => b.classList.remove('tap'), 130);
-    if (v === 'toggle') toggle(); else jump(+v, '⌘⌥' + (+v + 1));
-  }));
+      function toggle() {
+        const target = (prev >= 0 && prev !== active) ? prev : (active + 1) % screens.length;
+        jump(target, '双击 ⌘');
+      }
+      document.querySelectorAll('.sim').forEach(b => b.addEventListener('click', () => {
+        const v = b.dataset.sim;
+        b.classList.add('tap'); setTimeout(() => b.classList.remove('tap'), 130);
+        if (v === 'toggle') toggle(); else jump(+v, '⌘⌥' + (+v + 1));
+      }));
 
-  /* 真实键盘监听：⌘⌥数字 与 双击 ⌘ */
-  let lastMetaUp = 0, otherKey = false;
-  addEventListener('keydown', e => {
-    if (e.key !== 'Meta') otherKey = true;
-    const m = e.code.match(/^Digit([1-9])$/);
-    if (m && e.metaKey && e.altKey){
-      const i = +m[1] - 1;
-      if (i < screens.length){ e.preventDefault(); jump(i, '⌘⌥' + m[1]); }
-    }
-    if (e.key === 'Escape') log.textContent = '› Esc：在真实应用里用于取消快捷键录制';
-  });
-  addEventListener('keyup', e => {
-    if (e.key !== 'Meta'){ return; }
-    const now = performance.now();
-    if (!otherKey && now - lastMetaUp < 400){ toggle(); lastMetaUp = 0; }
-    else lastMetaUp = now;
-    otherKey = false;
-  });
-  addEventListener('blur', () => { otherKey = false; lastMetaUp = 0; });
-})();
-</script>
+      /* 真实键盘监听：⌘⌥数字 与 双击 ⌘ */
+      let lastMetaUp = 0, otherKey = false;
+      addEventListener('keydown', e => {
+        if (e.key !== 'Meta') otherKey = true;
+        const m = e.code.match(/^Digit([1-9])$/);
+        if (m && e.metaKey && e.altKey) {
+          const i = +m[1] - 1;
+          if (i < screens.length) { e.preventDefault(); jump(i, '⌘⌥' + m[1]); }
+        }
+        if (e.key === 'Escape') log.textContent = '› Esc：在真实应用里用于取消快捷键录制';
+      });
+      addEventListener('keyup', e => {
+        if (e.key !== 'Meta') { return; }
+        const now = performance.now();
+        if (!otherKey && now - lastMetaUp < 400) { toggle(); lastMetaUp = 0; }
+        else lastMetaUp = now;
+        otherKey = false;
+      });
+      addEventListener('blur', () => { otherKey = false; lastMetaUp = 0; });
+    })();
+  </script>
 </body>
+
 </html>
