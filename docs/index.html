@@ -57,6 +57,7 @@
       "featureList": [
         "多屏快捷键跳转",
         "双击 Command 快捷切换屏幕",
+        "指针跟随激活 App 跨屏跳转",
         "鼠标位置等比映射",
         "屏幕标记叠加显示",
         "落点指针高亮提示",
@@ -1587,6 +1588,25 @@
         transform: none
       }
     }
+    .shot {
+      margin: 64px auto 0;
+      max-width: 760px
+    }
+
+    .shot img {
+      width: 100%;
+      display: block;
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      box-shadow: 0 40px 90px rgba(0, 0, 0, .55)
+    }
+
+    .shot figcaption {
+      margin-top: 16px;
+      text-align: center;
+      color: var(--dim);
+      font-size: 14px
+    }
   </style>
 </head>
 
@@ -1755,6 +1775,11 @@
           </div>
           <div class="log" id="log">› 等待输入…</div>
         </div>
+
+        <figure class="shot reveal">
+          <img src="screenshot.png" alt="MouseDance 主界面：全局配置、屏幕配置、版本与更新" loading="lazy">
+          <figcaption>真实主界面：权限、快捷切换、指针跟随激活 App、每块屏幕的独立快捷键与版本更新，都在这一屏完成。</figcaption>
+        </figure>
       </div>
     </section>
 
@@ -1776,7 +1801,7 @@
           <article class="feat card reveal">
             <div class="ico">⇄</div>
             <h3>双击 Command 来回跳</h3>
-            <p>默认的「快捷切换」是连按两次 Command（0.35 秒内），在当前屏幕与上一个活跃屏幕之间往返。也可以换成双击 Control / Option 或任意组合键。</p>
+            <p>默认的「快捷切换」是连按两次 Command（0.25 秒内），在当前屏幕与上一个活跃屏幕之间往返。也可以换成双击 Control / Option 或任意组合键。</p>
           </article>
           <article class="feat card reveal">
             <div class="ico">◱</div>
@@ -1787,6 +1812,11 @@
             <div class="ico">◎</div>
             <h3>落点彩色光环，一眼锁定</h3>
             <p>跳转瞬间隐藏系统指针，用自绘的彩色指针配合扩散光环提示落点，四套配色轮换出现；鼠标一动或一秒后自动恢复原生指针，不留痕迹。</p>
+          </article>
+          <article class="feat card reveal">
+            <div class="ico">➶</div>
+            <h3>指针跟随激活 App</h3>
+            <p>开启后，用 ⌘Tab 或点选切换到另一块屏幕上的 App 时，鼠标会自动跳到该 App 窗口上，键盘流再也不用横跨桌面找指针。同屏切换不打扰，跨 Space 也能等到窗口就绪再跳。</p>
           </article>
           <article class="feat card reveal">
             <div class="ico">▦</div>
@@ -1812,7 +1842,7 @@
         </div>
 
         <div class="stats">
-          <div class="stat card reveal"><b data-count="0.35" data-suffix=" 秒">0</b><span>双击判定阈值</span></div>
+          <div class="stat card reveal"><b data-count="0.25" data-suffix=" 秒">0</b><span>双击判定阈值</span></div>
           <div class="stat card reveal"><b data-count="10" data-suffix=" 块">0</b><span>可配置屏幕数量</span></div>
           <div class="stat card reveal"><b data-count="2" data-suffix=" MB">0</b><span>安装包体积</span></div>
           <div class="stat card reveal"><b data-count="0" data-suffix=" 个">0</b><span>第三方依赖</span></div>
@@ -1833,7 +1863,7 @@
           <div class="srow card reveal">
             <div class="k"><span class="kbd hot">⌘</span><span class="plus">×2</span><span class="kbd hot">⌘</span>
             </div>
-            <div class="t"><strong>快捷切换屏幕</strong><em>双击 Command（0.35 秒内连按两次），在当前屏幕与上一个活跃屏幕之间来回跳转</em></div>
+            <div class="t"><strong>快捷切换屏幕</strong><em>双击 Command（0.25 秒内连按两次），在当前屏幕与上一个活跃屏幕之间来回跳转</em></div>
           </div>
           <div class="srow card reveal">
             <div class="k"><span class="kbd">⌘</span><span class="plus">+</span><span class="kbd">⌥</span><span
@@ -1917,7 +1947,7 @@
         <div class="faq">
           <div class="q reveal"><button type="button">默认的切换快捷键到底是什么？<span class="ar">＋</span></button>
             <div class="a">
-              <p>「快捷切换」默认是<b>双击 Command</b>（0.35 秒内连按两次 ⌘），用于在当前屏幕与上一个活跃屏幕之间来回跳；每块屏幕的直达键默认是
+              <p>「快捷切换」默认是<b>双击 Command</b>（0.25 秒内连按两次 ⌘），用于在当前屏幕与上一个活跃屏幕之间来回跳；每块屏幕的直达键默认是
                 <code>⌘⌥1</code>、<code>⌘⌥2</code>，依次类推最多到 <code>⌘⌥0</code>（第 10 块）。全部可自定义。</p>
             </div>
           </div>
