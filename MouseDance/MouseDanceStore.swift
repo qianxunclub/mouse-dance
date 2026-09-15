@@ -310,19 +310,25 @@ final class GlobalHotKeyMonitor {
 }
 
 enum ScreenJumpService {
+    /// currentLocation 与返回的 targetPoint 均为 CG 坐标（左上原点），可直接交给 CGWarpMouseCursorPosition。
+    /// DisplayShortcut.frame 是 AppKit 坐标，参与运算前必须先换算，否则落点会在屏幕内上下镜像。
+    @MainActor
     @discardableResult
     static func jumpCursor(to target: DisplayShortcut, from source: DisplayShortcut?, currentLocation: CGPoint) -> (error: CGError, targetPoint: CGPoint) {
-        let targetPoint: CGPoint
-        if let source, source.frame.width > 0, source.frame.height > 0 {
-            // 按鼠标在当前屏幕内的 xy 百分比位置，等比定位到目标屏幕
-            let ratioX = min(max((currentLocation.x - source.frame.minX) / source.frame.width, 0), 1)
-            let ratioY = min(max((currentLocation.y - source.frame.minY) / source.frame.height, 0), 1)
-            targetPoint = CGPoint(
-                x: target.frame.minX + ratioX * target.frame.width,
-                y: target.frame.minY + ratioY * target.frame.height
-            )
-        } else {
-            targetPoint = CGPoint(x: target.frame.midX, y: target.frame.midY)
+        let targetFrame = GlobalDisplaySpace.cgRect(fromAppKit: target.frame)
+        var targetPoint = CGPoint(x: targetFrame.midX, y: targetFrame.midY)
+
+        if let source {
+            let sourceFrame = GlobalDisplaySpace.cgRect(fromAppKit: source.frame)
+            if sourceFrame.width > 0, sourceFrame.height > 0 {
+                // 按鼠标在当前屏幕内的 xy 百分比位置，等比定位到目标屏幕
+                let ratioX = min(max((currentLocation.x - sourceFrame.minX) / sourceFrame.width, 0), 1)
+                let ratioY = min(max((currentLocation.y - sourceFrame.minY) / sourceFrame.height, 0), 1)
+                targetPoint = CGPoint(
+                    x: targetFrame.minX + ratioX * targetFrame.width,
+                    y: targetFrame.minY + ratioY * targetFrame.height
+                )
+            }
         }
         return (CGWarpMouseCursorPosition(targetPoint), targetPoint)
     }
@@ -742,7 +748,12 @@ final class MouseDanceStore: ObservableObject {
     private let overlayManager = ScreenOverlayManager()
     private lazy var hotKeyMonitor = GlobalHotKeyMonitor(
         shortcutProvider: { [weak self] in
-            self?.screenShortcuts ?? [:]
+            guard let self else { return [:] }
+            // CGDirectDisplayID 在插拔显示器 / 睡眠唤醒后会变化，UserDefaults 中会残留历史 ID 的快捷键，
+            // 且多个 ID 可能共用同一组合键。只让当前在线屏幕参与匹配，
+            // 否则命中失效 ID 后 jumpToScreen 会静默返回，表现为"按了快捷键鼠标不动"。
+            let liveDisplayIDs = Set(self.displays.map(\.displayID))
+            return self.screenShortcuts.filter { liveDisplayIDs.contains($0.key) }
         },
         toggleShortcutProvider: { [weak self] in
             self?.toggleShortcut
@@ -985,7 +996,8 @@ final class MouseDanceStore: ObservableObject {
 
     func jumpToDisplay(_ display: DisplayShortcut) {
         let currentLocation = CGEvent(source: nil)?.location ?? .zero
-        let sourceDisplay = displays.first(where: { $0.frame.contains(currentLocation) })
+        // currentLocation 是 CG 坐标（左上原点），displays.frame 是 AppKit 坐标，必须换算后再判定归属屏幕
+        let sourceDisplay = GlobalDisplaySpace.display(containingCGPoint: currentLocation, in: displays)
 
         if sourceDisplay?.displayID == display.displayID {
             statusMessage = "鼠标已在当前屏幕：\(display.name)。"
@@ -1101,7 +1113,7 @@ final class MouseDanceStore: ObservableObject {
 
     private func toggleScreen() {
         let currentLocation = CGEvent(source: nil)?.location ?? .zero
-        guard let source = displays.first(where: { $0.frame.contains(currentLocation) }) else { return }
+        guard let source = GlobalDisplaySpace.display(containingCGPoint: currentLocation, in: displays) else { return }
         
         let currentDisplayID = source.displayID
         let targetDisplayID: CGDirectDisplayID
