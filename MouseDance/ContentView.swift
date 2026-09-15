@@ -42,6 +42,23 @@ struct ContentView: View {
 
                 VStack(alignment: .leading, spacing: 4) {
                     HStack {
+                        Label("指针跟随激活 App", systemImage: "cursorarrow.motionlines")
+
+                        Spacer(minLength: 12)
+
+                        Toggle("指针跟随激活 App", isOn: $store.cursorFollowsAppSwitch)
+                            .labelsHidden()
+                            .toggleStyle(.switch)
+                    }
+                    .frame(height: 24)
+
+                    Text("开启后，切换到另一块屏幕上的 App 时，指针会自动跳到该 App 的最前窗口；同一块屏幕内切换不受影响。")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
                         Label("开机自启动", systemImage: "power")
 
                         Spacer(minLength: 12)

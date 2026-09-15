@@ -120,7 +120,7 @@ extension ShortcutKey {
 }
 
 final class ShortcutEventView: NSView {
-    private let doubleTapThreshold: TimeInterval = 0.35
+    private let doubleTapThreshold: TimeInterval = 0.25
 
     var onShortcutChanged: ((ShortcutKey?) -> Void)?
     var onRecordingStateChanged: ((Bool) -> Void)?

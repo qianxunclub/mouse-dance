@@ -136,8 +136,10 @@ final class GlobalHotKeyMonitor {
     private let onToggleMatch: ToggleMatchHandler
     private let onStatusChange: StatusHandler
 
-    private var eventTap: CFMachPort?
-    private var runLoopSource: CFRunLoopSource?
+    // CFMachPort / CFRunLoopSource 未标注 Sendable，且实际只在主线程（主 RunLoop）创建与拆除；
+    // 标为 nonisolated(unsafe) 以便 nonisolated 的 stop() / deinit 也能访问
+    nonisolated(unsafe) private var eventTap: CFMachPort?
+    nonisolated(unsafe) private var runLoopSource: CFRunLoopSource?
     private var lastModifierTap: (shortcut: SpecialShortcut, timestamp: CFAbsoluteTime)?
 
     init(
@@ -227,7 +229,8 @@ final class GlobalHotKeyMonitor {
         }
     }
 
-    func stop() {
+    /// nonisolated：需要在 nonisolated 的 deinit 中调用以拆除事件 tap
+    nonisolated func stop() {
         if let runLoopSource {
             CFRunLoopRemoveSource(CFRunLoopGetMain(), runLoopSource, .commonModes)
         }
@@ -275,7 +278,7 @@ final class GlobalHotKeyMonitor {
         if let lastTap = lastModifierTap,
            lastTap.shortcut == configuredShortcut,
            detectedShortcut == configuredShortcut,
-           now - lastTap.timestamp <= 0.35 {
+           now - lastTap.timestamp <= 0.25 {
             lastModifierTap = nil
             Task { @MainActor in
                 onToggleMatch()
@@ -325,6 +328,104 @@ enum ScreenJumpService {
     }
 }
 
+/// 通过 CGWindowList 查询指定进程的最前窗口。
+/// 只读取 kCGWindowBounds，不需要屏幕录制权限；不依赖 AXUIElement，因此在 App Sandbox 下同样可用。
+enum FrontmostWindowQuery {
+    struct Window {
+        let id: CGWindowID
+        /// CG 全局坐标（左上角原点，Y 向下）
+        let bounds: CGRect
+    }
+
+    static func frontmostWindow(of pid: pid_t) -> Window? {
+        guard let infoList = CGWindowListCopyWindowInfo(
+            [.optionOnScreenOnly, .excludeDesktopElements],
+            kCGNullWindowID
+        ) as? [[String: Any]] else {
+            return nil
+        }
+
+        // 返回结果本身即按 front-to-back 排序，第一个匹配项就是该进程的最前窗口
+        for info in infoList {
+            guard let ownerPID = info[kCGWindowOwnerPID as String] as? pid_t, ownerPID == pid,
+                  let layer = info[kCGWindowLayer as String] as? Int, layer == 0,
+                  let boundsDict = info[kCGWindowBounds as String] as? [String: Any],
+                  let bounds = CGRect(dictionaryRepresentation: boundsDict as CFDictionary),
+                  bounds.width >= 1, bounds.height >= 1 else {
+                continue
+            }
+
+            let windowID = (info[kCGWindowNumber as String] as? Int).map(CGWindowID.init) ?? kCGNullWindowID
+            return Window(id: windowID, bounds: bounds)
+        }
+
+        return nil
+    }
+}
+
+/// CG（左上原点）与 AppKit（左下原点）全局坐标换算，以及窗口与屏幕的归属判定。
+@MainActor
+enum GlobalDisplaySpace {
+    /// 主屏（菜单栏所在屏）高度，AppKit 中其 frame.origin 恒为 (0, 0)
+    static var primaryScreenHeight: CGFloat {
+        NSScreen.screens.first(where: { $0.frame.origin == .zero })?.frame.height
+            ?? NSScreen.screens.first?.frame.height
+            ?? 0
+    }
+
+    static func appKitRect(fromCG cgRect: CGRect) -> CGRect {
+        CGRect(
+            x: cgRect.minX,
+            y: primaryScreenHeight - cgRect.minY - cgRect.height,
+            width: cgRect.width,
+            height: cgRect.height
+        )
+    }
+
+    static func cgRect(fromAppKit rect: CGRect) -> CGRect {
+        CGRect(
+            x: rect.minX,
+            y: primaryScreenHeight - rect.maxY,
+            width: rect.width,
+            height: rect.height
+        )
+    }
+
+    /// 按相交面积判定窗口归属屏幕，处理窗口跨屏的情况
+    static func display(containingCGRect cgRect: CGRect, in displays: [DisplayShortcut]) -> DisplayShortcut? {
+        let rect = appKitRect(fromCG: cgRect)
+        var bestDisplay: DisplayShortcut?
+        var bestArea: CGFloat = 0
+
+        for display in displays {
+            let intersection = display.frame.intersection(rect)
+            guard !intersection.isNull else { continue }
+            let area = intersection.width * intersection.height
+            if area > bestArea {
+                bestArea = area
+                bestDisplay = display
+            }
+        }
+
+        return bestDisplay
+    }
+
+    /// 指针所在屏幕。location 使用 CGEvent.location（左上原点），需先换算再与 NSScreen.frame 比较
+    static func display(containingCGPoint location: CGPoint, in displays: [DisplayShortcut]) -> DisplayShortcut? {
+        let point = CGPoint(x: location.x, y: primaryScreenHeight - location.y)
+        return displays.first(where: { $0.frame.contains(point) })
+    }
+
+    /// 指针落点：窗口中心（CG 坐标，可直接交给 CGWarpMouseCursorPosition），并夹在目标屏可见范围内
+    static func cursorTargetPoint(forCGRect bounds: CGRect, in display: DisplayShortcut) -> CGPoint {
+        let visible = cgRect(fromAppKit: display.visibleFrame)
+        return CGPoint(
+            x: min(max(bounds.midX, visible.minX), visible.maxX),
+            y: min(max(bounds.midY, visible.minY), visible.maxY)
+        )
+    }
+}
+
 @MainActor
 final class ScreenOverlayManager {
     private var windows: [CGDirectDisplayID: NSPanel] = [:]
@@ -371,9 +472,9 @@ final class ScreenOverlayManager {
 
         let panelSize = CGSize(width: 160, height: 160)
 
-        // CGEvent 使用左上角原点（Y 向下），AppKit 使用左下角原点（Y 向上），需转换
-        let primaryScreenHeight = NSScreen.main?.frame.height ?? display.frame.height
-        let appKitPoint = CGPoint(x: point.x, y: primaryScreenHeight - point.y)
+        // CGEvent 使用左上角原点（Y 向下），AppKit 使用左下角原点（Y 向上），需转换。
+        // 基准必须是 origin (0,0) 的主屏高度（NSScreen.main 是 key window 所在屏，多屏下会算错）
+        let appKitPoint = CGPoint(x: point.x, y: GlobalDisplaySpace.primaryScreenHeight - point.y)
 
         var origin = CGPoint(x: appKitPoint.x - panelSize.width / 2, y: appKitPoint.y - panelSize.height / 2)
         origin.x = min(max(origin.x, display.frame.minX), max(display.frame.minX, display.frame.maxX - panelSize.width))
@@ -586,7 +687,8 @@ private struct CursorIndicatorView: View {
     }
 }
 
-private struct MousePointerShape: Shape {
+/// nonisolated：Shape 一致性要求成员不被 MainActor 隔离（Swift 6 #ConformanceIsolation）
+private nonisolated struct MousePointerShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
         path.move(to: CGPoint(x: rect.minX + rect.width * 0.16, y: rect.minY + rect.height * 0.06))
@@ -611,6 +713,19 @@ final class MouseDanceStore: ObservableObject {
     @Published private(set) var hasMarkedScreens = false
     @Published private(set) var lastMarkedAt: Date?
     @Published private(set) var launchAtLoginEnabled = false
+
+    /// 切换 App 时，若焦点落到另一块屏幕，指针自动跟随跳转到该 App 的最前窗口
+    @Published var cursorFollowsAppSwitch = false {
+        didSet {
+            guard cursorFollowsAppSwitch != oldValue else { return }
+            UserDefaults.standard.set(cursorFollowsAppSwitch, forKey: Self.cursorFollowStorageKey)
+            if !previewMode {
+                statusMessage = cursorFollowsAppSwitch
+                    ? "已开启指针跟随：切换到其他屏幕上的 App 时，指针会自动跳到其最前窗口。"
+                    : "已关闭指针跟随。"
+            }
+        }
+    }
 
     @Published var screenShortcuts: [CGDirectDisplayID: ShortcutKey] = [:] {
         didSet {
@@ -646,6 +761,8 @@ final class MouseDanceStore: ObservableObject {
     private var screenObserver: NSObjectProtocol?
     private var windowCloseObserver: NSObjectProtocol?
     private var activationObserver: NSObjectProtocol?
+    private var appActivationObserver: NSObjectProtocol?
+    private var cursorFollowTask: Task<Void, Never>?
     private var approvalPollTask: Task<Void, Never>?
     private var hasStarted = false
     private let previewMode: Bool
@@ -654,12 +771,17 @@ final class MouseDanceStore: ObservableObject {
 
     private static let shortcutsStorageKey = "mouseDance.screenShortcuts"
     private static let toggleShortcutStorageKey = "mouseDance.toggleShortcut"
+    private static let cursorFollowStorageKey = "mouseDance.cursorFollowsAppSwitch"
+    /// 目标窗口可能仍在另一屏的另一个 Space 中，Space 过渡动画需数百毫秒；
+    /// 按递增间隔重试（首个元素为立即尝试，无等待），总覆盖约 1 秒
+    private static let cursorFollowRetryDelays: [Int] = [0, 80, 150, 250, 400]
 
     init(previewMode: Bool = false) {
         self.previewMode = previewMode
         self.screenShortcuts = Self.loadScreenShortcuts()
         self.toggleShortcut = Self.loadToggleShortcut() ?? Self.defaultToggleShortcut
         self.launchAtLoginEnabled = SMAppService.mainApp.status == .enabled
+        self.cursorFollowsAppSwitch = UserDefaults.standard.bool(forKey: Self.cursorFollowStorageKey)
 
         if previewMode {
             displays = Self.previewDisplays
@@ -744,16 +866,34 @@ final class MouseDanceStore: ObservableObject {
             }
         }
 
+        // 监听系统级 App 切换（⌘Tab / 点程序坞 / activate()），用于指针跟随
+        appActivationObserver = NSWorkspace.shared.notificationCenter.addObserver(
+            forName: NSWorkspace.didActivateApplicationNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication else { return }
+            let activatedPID = app.processIdentifier
+            let activatedName = app.localizedName
+            MainActor.assumeIsolated {
+                self?.handleActivatedApplication(processIdentifier: activatedPID, name: activatedName)
+            }
+        }
+
         windowCloseObserver = NotificationCenter.default.addObserver(
             forName: NSWindow.willCloseNotification,
             object: nil,
             queue: .main
         ) { _ in
-            let normalWindows = NSApp.windows.filter { window in
-                window.styleMask.contains(.titled) && !(window is NSPanel)
-            }
-            if normalWindows.isEmpty {
-                AppDelegate.applyAccessoryPreference(true)
+            // 观察者以 .main 队列投递，闭包本身是 nonisolated @Sendable，
+            // 需显式回到 MainActor 才能访问 AppKit 状态；用 assumeIsolated 保持原有同步时序
+            MainActor.assumeIsolated {
+                let normalWindows = NSApp.windows.filter { window in
+                    window.styleMask.contains(.titled) && !(window is NSPanel)
+                }
+                if normalWindows.isEmpty {
+                    AppDelegate.applyAccessoryPreference(true)
+                }
             }
         }
     }
@@ -832,7 +972,7 @@ final class MouseDanceStore: ObservableObject {
 
     func showMainWindow() {
         NSApp.setActivationPolicy(.regular)
-        NSApp.activate(ignoringOtherApps: true)
+        NSApp.activate()
     }
 
     func restartApplication() {
@@ -863,6 +1003,63 @@ final class MouseDanceStore: ObservableObject {
         } else {
             statusMessage = "鼠标跳转失败，系统返回：\(jumpResult.error.rawValue)。"
         }
+    }
+
+    /// App 被激活时判断是否需要让指针跨屏跟随
+    private func handleActivatedApplication(processIdentifier pid: pid_t, name: String?) {
+        guard cursorFollowsAppSwitch, displays.count > 1 else { return }
+        guard pid != ProcessInfo.processInfo.processIdentifier else { return }
+
+        cursorFollowTask?.cancel()
+        cursorFollowTask = Task { @MainActor [weak self] in
+            await self?.followCursor(toActivatedProcess: pid, name: name)
+        }
+    }
+
+    private func followCursor(toActivatedProcess pid: pid_t, name: String?) async {
+        // 目标窗口可能仍在另一块屏幕的另一个 Space 上，Space 过渡动画需要数百毫秒，
+        // 因此按递增间隔重试，覆盖整段过渡时间
+        for (attempt, delay) in Self.cursorFollowRetryDelays.enumerated() {
+            if attempt > 0 {
+                try? await Task.sleep(for: .milliseconds(delay))
+                if Task.isCancelled { return }
+                // 用户已经切到别的 App，放弃本次跟随
+                if NSWorkspace.shared.frontmostApplication?.processIdentifier != pid { return }
+            }
+            if followCursorOnce(toActivatedProcess: pid, name: name) { return }
+        }
+    }
+
+    /// 返回 true 表示已得出结论（跳转成功、无需跳转或跳转失败），false 表示窗口尚未就绪需重试
+    @discardableResult
+    private func followCursorOnce(toActivatedProcess pid: pid_t, name: String?) -> Bool {
+        guard let window = FrontmostWindowQuery.frontmostWindow(of: pid),
+              let targetDisplay = GlobalDisplaySpace.display(containingCGRect: window.bounds, in: displays) else {
+            return false
+        }
+
+        let currentLocation = CGEvent(source: nil)?.location ?? .zero
+        guard let sourceDisplay = GlobalDisplaySpace.display(containingCGPoint: currentLocation, in: displays) else {
+            return true
+        }
+        // 指针已经在目标 App 所在的屏幕上，无需跟随
+        guard sourceDisplay.displayID != targetDisplay.displayID else {
+            return true
+        }
+
+        lastActiveDisplayID = sourceDisplay.displayID
+
+        let targetPoint = GlobalDisplaySpace.cursorTargetPoint(forCGRect: window.bounds, in: targetDisplay)
+        let warpError = CGWarpMouseCursorPosition(targetPoint)
+        guard warpError == .success else {
+            statusMessage = "指针跟随失败，系统拒绝了跳转请求。"
+            return true
+        }
+
+        overlayManager.showCursorIndicator(on: targetDisplay, at: targetPoint)
+        let appName = name ?? "目标 App"
+        statusMessage = "指针已跟随 \(appName) 跳转到屏幕：\(targetDisplay.name)。"
+        return true
     }
 
     @discardableResult

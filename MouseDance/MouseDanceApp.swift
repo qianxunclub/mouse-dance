@@ -175,7 +175,7 @@ struct MouseDanceApp: App {
     private func openMainWindow() {
         NSApp.setActivationPolicy(.regular)
         openWindow(id: MouseDanceWindowIdentifier.main)
-        NSApp.activate(ignoringOtherApps: true)
+        NSApp.activate()
     }
 }
 
@@ -240,7 +240,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
         if !flag {
             NSApp.setActivationPolicy(.regular)
-            NSApp.activate(ignoringOtherApps: true)
+            NSApp.activate()
         }
         return true
     }
@@ -250,8 +250,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private func startAccessoryWatchdog() {
         accessoryWatchdog?.invalidate()
         accessoryWatchdog = Timer.scheduledTimer(withTimeInterval: 1, repeats: true) { [weak self] _ in
+            guard let self else { return }
             Task { @MainActor in
-                guard let self else { return }
                 let hasVisibleMainWindow = NSApp.windows.contains { window in
                     window.isVisible
                         && window.styleMask.contains(.titled)
