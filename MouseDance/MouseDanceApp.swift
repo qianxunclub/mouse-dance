@@ -5,6 +5,11 @@ enum MouseDanceWindowIdentifier {
     static let update = "update"
 }
 
+enum MouseDanceLink {
+    /// 腾讯文档问卷：意见反馈
+    static let feedback = URL(string: "https://docs.qq.com/form/page/DTW90ZGJhcW9WUXVi")!
+}
+
 @main
 struct MouseDanceApp: App {
     @Environment(\.openWindow) private var openWindow
@@ -153,6 +158,13 @@ struct MouseDanceApp: App {
             Divider()
                 .padding(.vertical, 4)
 
+            Link(destination: MouseDanceLink.feedback) {
+                Label("意见反馈", systemImage: "square.and.pencil")
+            }
+
+            Divider()
+                .padding(.vertical, 4)
+
             Button {
                 NSApp.terminate(nil)
             } label: {
@@ -191,11 +203,18 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     private var accessoryWatchdog: Timer?
 
     /// 菜单栏图标是否被系统隐藏
+    ///
+    /// 只读 App 自身容器内的持久化域：系统写入的 "NSStatusItem Visible*" 键就在这个域里，
+    /// 用 dictionaryRepresentation() 会连带合并全局域，在 App Sandbox 下触发
+    /// cfprefsd 的 "outside an application's container" 警告。
     static var menuBarItemHiddenBySystem: Bool {
-        let defaults = UserDefaults.standard
-        return defaults.dictionaryRepresentation().keys.contains { key in
+        guard let bundleIdentifier = Bundle.main.bundleIdentifier,
+              let domain = UserDefaults.standard.persistentDomain(forName: bundleIdentifier)
+        else { return false }
+
+        return domain.contains { key, value in
             key.hasPrefix(statusItemVisibilityKeyPrefix)
-                && (defaults.object(forKey: key) as? NSNumber)?.boolValue == false
+                && (value as? NSNumber)?.boolValue == false
         }
     }
 

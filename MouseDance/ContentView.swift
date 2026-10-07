@@ -124,6 +124,16 @@ struct ContentView: View {
                     .controlSize(.small)
                 }
                 .frame(height: 24)
+
+                HStack {
+                    Label("意见反馈", systemImage: "square.and.pencil")
+                    Spacer(minLength: 12)
+
+                    Link("填写反馈…", destination: MouseDanceLink.feedback)
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                }
+                .frame(height: 24)
             } header: {
                 Text("版本与更新")
             }
