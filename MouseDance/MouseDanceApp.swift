@@ -22,6 +22,7 @@ struct MouseDanceApp: App {
             ContentView()
                 .environmentObject(store)
                 .environmentObject(updateManager)
+                .environmentObject(store.windowSwitcher)
                 .task {
                     store.start()
                 }

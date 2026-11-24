@@ -283,7 +283,7 @@ struct UpdateView: View {
 
             switch manager.status {
             case .idle:
-                statusLine(icon: "sparkles", text: "点击菜单栏「检查更新…」开始。", tint: .secondary)
+                EmptyView()
 
             case .checking:
                 HStack(spacing: 10) {
@@ -344,10 +344,6 @@ struct UpdateView: View {
                         .frame(maxWidth: .infinity, alignment: .leading)
                 }
                 .frame(height: 220)
-            } else {
-                Text("点击「下载并安装」获取最新版本。")
-                    .font(.callout)
-                    .foregroundStyle(.secondary)
             }
 
             HStack(spacing: 12) {

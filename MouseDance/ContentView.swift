@@ -4,6 +4,7 @@ import SwiftUI
 struct ContentView: View {
     @EnvironmentObject private var store: MouseDanceStore
     @EnvironmentObject private var updateManager: UpdateManager
+    @EnvironmentObject private var switcher: WindowSwitcherController
     @Environment(\.openWindow) private var openWindow
     @State private var isRecordingToggle = false
 
@@ -12,78 +13,71 @@ struct ContentView: View {
             Section {
                 permissionRow
 
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Label("快捷切换", systemImage: "keyboard")
-                            .lineLimit(1)
+                HStack {
+                    Label("快捷切换", systemImage: "keyboard")
+                        .lineLimit(1)
 
-                        Spacer(minLength: 12)
+                    Spacer(minLength: 12)
 
-                        ShortcutRecorderView(
-                            shortcut: $store.toggleShortcut,
-                            isRecording: $isRecordingToggle
-                        )
-                        .frame(width: 180, height: 24)
-                    }
-                    .frame(height: 24)
-
-                    HStack(spacing: 3) {
-                        Text("当前屏幕与上一个活跃屏幕之间切换，支持双击")
-                        Image(systemName: "command")
-                        Text(" 、")
-                        Image(systemName: "control")
-                        Text(" 、")
-                        Image(systemName: "option")
-                        Text("。")
-                    }
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    ShortcutRecorderView(
+                        shortcut: $store.toggleShortcut,
+                        isRecording: $isRecordingToggle
+                    )
+                    .frame(width: 180, height: 24)
                 }
+                .frame(height: 24)
 
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Label("指针跟随激活 App", systemImage: "cursorarrow.motionlines")
+                HStack {
+                    Label("指针跟随激活 App", systemImage: "cursorarrow.motionlines")
 
-                        Spacer(minLength: 12)
+                    Spacer(minLength: 12)
 
-                        Toggle("指针跟随激活 App", isOn: $store.cursorFollowsAppSwitch)
-                            .labelsHidden()
-                            .toggleStyle(.switch)
-                    }
-                    .frame(height: 24)
-
-                    Text("开启后，切换到另一块屏幕上的 App 时，指针会自动跳到该 App 的最前窗口；同一块屏幕内切换不受影响。")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Toggle("指针跟随激活 App", isOn: $store.cursorFollowsAppSwitch)
+                        .labelsHidden()
+                        .toggleStyle(.switch)
                 }
+                .frame(height: 24)
 
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Label("开机自启动", systemImage: "power")
+                HStack {
+                    Label("开机自启动", systemImage: "power")
 
-                        Spacer(minLength: 12)
+                    Spacer(minLength: 12)
 
-                        Toggle("开机自启动", isOn: store.launchAtLoginBinding)
-                            .labelsHidden()
-                            .toggleStyle(.switch)
-                    }
-                    .frame(height: 24)
-
-                    Text("开启后登录系统即自动运行，仅显示菜单栏图标，程序坞不显示图标。")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Toggle("开机自启动", isOn: store.launchAtLoginBinding)
+                        .labelsHidden()
+                        .toggleStyle(.switch)
                 }
+                .frame(height: 24)
 
             } header: {
                 Text("全局配置")
             }
 
             Section {
+                HStack {
+                    Label("启用窗口切换器", systemImage: "rectangle.on.rectangle")
+                    Spacer(minLength: 12)
+                    Toggle("启用窗口切换器", isOn: $switcher.isEnabled)
+                        .labelsHidden()
+                        .toggleStyle(.switch)
+                }
+                .frame(height: 24)
+
+                switcherPermissionRow(
+                    title: "辅助功能权限",
+                    granted: switcher.accessibilityGranted
+                ) {
+                    switcher.requestAccessibility()
+                }
+            } header: {
+                Text("窗口切换器")
+            }
+
+            Section {
                 if store.displays.isEmpty {
                     ContentUnavailableView(
                         "未检测到显示器",
-                        systemImage: "display.trianglebadge.exclamationmark",
-                        description: Text("请连接显示器以配置快捷键。")
+                        systemImage: "display.trianglebadge.exclamationmark"
                     )
                     .frame(minHeight: 120)
                 } else {
@@ -93,8 +87,6 @@ struct ContentView: View {
                 }
             } header: {
                 Text("屏幕配置（当前识别 \(max(store.totalScreenCount, store.displays.count)) 块屏幕）")
-            } footer: {
-                Text("为每块屏幕录制独立快捷键，按下后鼠标跳转到对应屏幕。")
             }
 
             Section {
@@ -153,6 +145,30 @@ struct ContentView: View {
                 .help("在每一块屏幕上显示其编号与快捷键")
             }
         }
+    }
+
+    private func switcherPermissionRow(
+        title: String,
+        granted: Bool,
+        action: @escaping () -> Void
+    ) -> some View {
+        HStack {
+            Label(title, systemImage: "hand.raised")
+            Spacer(minLength: 12)
+            if granted {
+                Label("已授权", systemImage: "checkmark.circle.fill")
+                    .foregroundStyle(.green)
+                    .labelStyle(.titleAndIcon)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 3)
+                    .background(.green.opacity(0.12), in: .capsule)
+            } else {
+                Button("前往授权…", action: action)
+                    .buttonStyle(.glassProminent)
+                    .controlSize(.small)
+            }
+        }
+        .frame(height: 24)
     }
 
     private var permissionRow: some View {

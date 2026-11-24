@@ -746,6 +746,8 @@ final class MouseDanceStore: ObservableObject {
     }
 
     private let overlayManager = ScreenOverlayManager()
+    /// 窗口级切换器（⌥Tab / 完全接管 ⌘Tab），默认关闭
+    let windowSwitcher = WindowSwitcherController()
     private lazy var hotKeyMonitor = GlobalHotKeyMonitor(
         shortcutProvider: { [weak self] in
             guard let self else { return [:] }
@@ -756,7 +758,12 @@ final class MouseDanceStore: ObservableObject {
             return self.screenShortcuts.filter { liveDisplayIDs.contains($0.key) }
         },
         toggleShortcutProvider: { [weak self] in
-            self?.toggleShortcut
+            guard let self else { return nil }
+            // 窗口切换器完全接管 ⌘Tab 时禁用「双击 Command」，避免与切换会话互相误触发
+            if self.windowSwitcher.isEnabled {
+                return nil
+            }
+            return self.toggleShortcut
         },
         onMatch: { [weak self] displayID in
             self?.jumpToScreen(displayID: displayID)
@@ -848,6 +855,7 @@ final class MouseDanceStore: ObservableObject {
 
         refreshScreens(updateStatus: false)
         refreshPermissionState(startMonitor: true)
+        windowSwitcher.start()
         if !inputMonitoringGranted {
             // 新版本安装后系统会重置输入监控授权，启动时给出明确引导
             statusMessage = "尚未获得输入监控权限（升级新版后系统会重置授权）。请点击菜单栏图标 →「前往授权…」重新开启，后台全局快捷键才能生效。"
