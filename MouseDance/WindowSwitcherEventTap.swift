@@ -58,7 +58,15 @@ nonisolated final class SwitcherTapSession: @unchecked Sendable {
         }
 
         if active {
-            // 会话期间吞掉所有按键，避免 ⌘S、⌘Q 等误触下层应用
+            // 数字键保留给原有的全局屏幕快捷键（例如 ⌘1 / ⌘2、⌥1 / ⌥2）。
+            // 全局快捷键监听器是 listenOnly，事件仍会继续到达这里；如果在这里
+            // 把数字键吞掉，用户配置的第 1 / 第 2 屏快捷键就会失效。
+            // 窗口切换器不再提供可见序号，因此数字键不需要承担窗口选择职责。
+            if type == .keyDown, SwitcherKeyCodes.numberIndex[keyCode] != nil {
+                return .pass
+            }
+
+            // 会话期间吞掉其余按键，避免 ⌘S、⌘Q 等误触下层应用
             guard type == .keyDown else { return .swallow }
             switch keyCode {
             case SwitcherKeyCodes.tab:
@@ -136,7 +144,9 @@ nonisolated final class SwitcherEventTap: @unchecked Sendable {
 
         guard let created = CGEvent.tapCreate(
             tap: .cgSessionEventTap,
-            place: .headInsertEventTap,
+            // 放在已有的全局快捷键监听之后：非 ⌘Tab 事件先让多屏自定义快捷键处理，
+            // 窗口切换器只在自身会话中吞掉按键，避免两个 event tap 互相影响。
+            place: .tailAppendEventTap,
             options: .defaultTap,
             eventsOfInterest: CGEventMask(mask),
             callback: { _, type, event, info in
