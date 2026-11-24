@@ -758,12 +758,8 @@ final class MouseDanceStore: ObservableObject {
             return self.screenShortcuts.filter { liveDisplayIDs.contains($0.key) }
         },
         toggleShortcutProvider: { [weak self] in
-            guard let self else { return nil }
-            // 窗口切换器完全接管 ⌘Tab 时禁用「双击 Command」，避免与切换会话互相误触发
-            if self.windowSwitcher.isEnabled {
-                return nil
-            }
-            return self.toggleShortcut
+            // 窗口切换器只接管 ⌘Tab，不应影响原有的多屏切换快捷键（默认双击 Command）。
+            self?.toggleShortcut
         },
         onMatch: { [weak self] displayID in
             self?.jumpToScreen(displayID: displayID)

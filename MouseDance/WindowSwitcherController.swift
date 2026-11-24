@@ -66,6 +66,20 @@ final class WindowSwitcherController: ObservableObject {
         ) { [weak self] _ in
             MainActor.assumeIsolated { self?.prepareForTermination() }
         })
+
+        // 从 Dock、应用自身或其他方式激活 App 时同步窗口级 MRU。
+        // 这样列表不只记录「通过切换器完成的切换」。
+        observers.append(center.addObserver(
+            forName: NSWorkspace.didActivateApplicationNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] notification in
+            MainActor.assumeIsolated {
+                guard let app = notification.userInfo?[NSWorkspace.applicationUserInfoKey]
+                        as? NSRunningApplication else { return }
+                self?.recordFrontmostWindow(of: app.processIdentifier)
+            }
+        })
     }
 
     func prepareForTermination() {
@@ -134,6 +148,9 @@ final class WindowSwitcherController: ObservableObject {
     }
 
     private func arm() {
+        // 打开面板前先记录当前真正位于最前面的窗口，避免沿用过时的 App/窗口顺序。
+        recordFrontmostWindow(of: NSWorkspace.shared.frontmostApplication?.processIdentifier)
+
         sessionGeneration &+= 1
         let generation = sessionGeneration
 
@@ -248,10 +265,23 @@ final class WindowSwitcherController: ObservableObject {
     private func commitFocus() {
         guard windows.indices.contains(selectedIndex) else { return }
         let target = windows[selectedIndex]
-        recentWindowIDs.removeAll { $0 == target.id }
-        recentWindowIDs.insert(target.id, at: 0)
-        if recentWindowIDs.count > 32 { recentWindowIDs.removeLast() }
+        recordWindow(target.id)
         focus(target, attempt: 0)
+    }
+
+    /// 把指定 App 当前真正位于最前的窗口加入窗口级 MRU。
+    /// CGWindowList 返回 front-to-back 顺序，FrontmostWindowQuery 取到的就是第一扇窗口。
+    private func recordFrontmostWindow(of pid: pid_t?) {
+        guard let pid,
+              pid != ProcessInfo.processInfo.processIdentifier,
+              let window = FrontmostWindowQuery.frontmostWindow(of: pid) else { return }
+        recordWindow(window.id)
+    }
+
+    private func recordWindow(_ id: CGWindowID) {
+        recentWindowIDs.removeAll { $0 == id }
+        recentWindowIDs.insert(id, at: 0)
+        if recentWindowIDs.count > 32 { recentWindowIDs.removeLast() }
     }
 
     /// App 激活与 AX 提窗分开做，并在随后按递增间隔校验、必要时重试：
